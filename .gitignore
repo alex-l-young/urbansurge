@@ -1,3 +1,12 @@
 .idea/
 tutorials/
 .DS_Store
+__pycache__/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Python egg
+/src/urbansurge.egg-info/
+/src/urbansurge/urbansurge.egg-info/
+/src/urbansurge/urbansurge_alex_l_young.egg-info/

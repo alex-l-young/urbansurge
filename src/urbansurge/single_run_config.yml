@@ -8,24 +8,30 @@ swmm_path: ~/SWMM/model.inp
 # Model component values.
 # Set model component values with same units as the simulation.
 
-# Link parameters. Put the link number and parameter value under the corresponding section.
-link:
-  max_depth:
-    1: 3.5
-    2: 2
-
-  length:
-    1: 4000
-
-# Node parameters.
-node:
+# Conduit/link parameters. Put the link number and parameter value under the corresponding section.
+CONDUITS:
+  # Diameter of the conduits (termed "depth") in feet.
   depth:
-    1: 6
+    2: 3
+
+  # Manning's roughness of the conduits.
+  roughness:
+    2: 0.02
+
+  # Length of the conduits in feet.
+  length:
+
+# Node/junction parameters.
+JUNCTIONS:
+  # Depth of the nodes below the surface.
+  max_depth:
+
+  # Elevation of the node.
+  invert_elevation:
 
 # Subcatchment parameters.
-subcatchment:
+SUBCATCHMENTS:
   perc_impervious:
-    10: 25
 
 
 # Precipitation.
