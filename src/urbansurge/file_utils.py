@@ -98,6 +98,37 @@ def get_inp_section(in_filepath, section, column_name, component_name):
             raise ValueError(f"No line found with Name value {component_name} in {component_name}")
 
 
+def get_component_names(in_filepath, section):
+
+    with open(in_filepath, 'r') as file:
+        # Read the file into a list of lines
+        lines = file.readlines()
+
+        # Find the line number where the section table starts
+        start_line = None
+        for i, line in enumerate(lines):
+            if line.startswith('[' + section + ']'):
+                start_line = i + 3  # Skip the header lines
+                break
+
+        # Find the index of the "Name" and specified column in the header line
+        header_line = lines[start_line-2]
+        header_values = re.split(r" {2,}", header_line.strip())
+        name_col_index = 0
+
+        # Loop through rows and add to list of names.
+        names = []
+        # for i in range(start_line, len(lines)):
+        i = start_line
+        line_values = lines[i].strip().split()
+        while line_values:
+            names.append(line_values[name_col_index])
+            i += 1
+            line_values = lines[i].strip().split()
+
+    return names
+
+
 def set_raingage(in_filepath, column_name, component_name, new_value, out_filepath=None):
     # If out_filepath is None, use in_filepath.
     if out_filepath is None:
@@ -258,11 +289,11 @@ if __name__ == '__main__':
     #
     # set_inp_section(in_filepath, section, column_name, component_name, new_value, out_filepath=out_filepath)
 
-    section = 'RAINGAGES'
-    rg_ts_name = 'TIMESERIES TS_TEST'
-    component_name = 1
-    column_name = 'Source'
-    set_raingage(in_filepath, column_name, component_name, rg_ts_name, out_filepath=out_filepath)
+    # section = 'RAINGAGES'
+    # rg_ts_name = 'TIMESERIES TS_TEST'
+    # component_name = 1
+    # column_name = 'Source'
+    # set_raingage(in_filepath, column_name, component_name, rg_ts_name, out_filepath=out_filepath)
 
     # ts_name = 'TS_TEST'
     # ts_description = 'TS_TEST_DESC'
@@ -270,3 +301,6 @@ if __name__ == '__main__':
     # values = [0, 1, 0.8, 0.6, 0.4, 0.2, 0.0]
     # add_prcp_timeseries(in_filepath, ts_name, ts_description, times, values, dates=None, overwrite=True,
     #                     out_filepath=out_filepath)
+
+    # Test name collection.
+    get_component_names(in_filepath, section)
