@@ -91,7 +91,7 @@ def get_inp_section(in_filepath, section, column_name, component_name):
             line_values = lines[update_line].strip().split()
             component_value = line_values[column_index]
 
-            print(f"Found {column_name} value to be {component_value} for {component_name} in {component_name}")
+            # print(f"Found {column_name} value to be {component_value} for {component_name} in {component_name}")
             return component_value
 
         else:
