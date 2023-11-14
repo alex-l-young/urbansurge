@@ -130,10 +130,23 @@ class SWMM:
 
     def run_simulation(self):
         # Instantiate model.
+        print(f'INP PATH: {self.inp_path}')
         with Simulation(self.inp_path) as sim:
             for ind, step in enumerate(sim):
                 if ind % 100 == 0:
                     print(sim.current_time, ",", round(sim.percent_complete * 100))
+                    
+
+    def get_component_names(self, section):
+        '''
+        Returns the names of all components for a given section.
+        :param section: Section name.
+        :return: List of component names.
+        '''
+
+        component_names = file_utils.get_component_names(self.inp_path, section)
+
+        return component_names
 
 
     def get_link_geometry(self, link_id):
@@ -224,14 +237,14 @@ class SWMM:
         '''
         Gets a link's length.
         :param link_id: Link ID.
-        :return: Roughness of link.
+        :return: Length of link.
         '''
         # Setting variables.
         section = 'CONDUITS'
         column_name = 'Length'
         component_name = link_id
 
-        # Get the link roughness.
+        # Get the link length.
         link_length = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
         link_length = float(link_length)
 
@@ -260,6 +273,180 @@ class SWMM:
         return new_value
 
 
+    def get_link_offsets(self, link_id):
+        '''
+        Gets link upstream and downstream offsets.
+        :param link_id: Link ID.
+        :return: Link offsets as a tuple. (Inlet Offset, Outlet Offset)
+        '''
+        # Link variables.
+        section = 'CONDUITS'
+        in_column_name = 'InOffset'
+        out_column_name = 'OutOffset'
+        component_name = link_id
+
+        # Get the link offsets.
+        in_offset = file_utils.get_inp_section(self.inp_path, section, in_column_name, component_name)
+        in_offset = float(in_offset)
+        out_offset = file_utils.get_inp_section(self.inp_path, section, out_column_name, component_name)
+        out_offset = float(out_offset)
+
+        return (in_offset, out_offset)
+
+
+    def set_link_offsets(self, link_id, offsets):
+        '''
+        Sets the inlet and outlet offsets for a link.
+        :param link_id: ID of the link.
+        :param offsets: Link offsets as a tuple (Inlet Offset, Outlet Offset)
+        :return: Offsets.
+        '''
+        # Link variables.
+        section = 'CONDUITS'
+        in_column_name = 'InOffset'
+        out_column_name = 'OutOffset'
+        component_name = link_id
+        inlet_value = offsets[0]
+        outlet_value = offsets[1]
+
+        # Set the new offsets.
+        file_utils.set_inp_section(self.inp_path, section, in_column_name, component_name, inlet_value)
+        file_utils.set_inp_section(self.inp_path, section, out_column_name, component_name, outlet_value)
+
+        if self.verbose == 1:
+            print(f'Set Link {link_id} offsets to {offsets}')
+
+        return offsets
+
+
+    def get_link_seepage(self, link_id):
+        '''
+        Gets link seepage rate.
+        :param link_id: Link ID.
+        :return: Link seepage rate.
+        '''
+        # Link variables.
+        section = 'LOSSES'
+        column_name = 'Seepage'
+        component_name = link_id
+
+        # Get the link seepage rate.
+        seepage_rate = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
+
+        return float(seepage_rate)
+
+
+    def set_link_seepage(self, link_id, seepage_rate):
+        '''
+        Set the link seepage rate. Roughly equivalent to hydraulic conductivity.
+        :param link_id: ID of link.
+        :param seepage_rate: Seepage rate in project units.
+        :return: Prints success if verbose.
+        '''
+        # Setting variables.
+        section = 'LOSSES'
+        column_name = 'Seepage'
+        component_name = link_id
+        new_value = seepage_rate
+
+        # Set the new diameter.
+        file_utils.set_inp_section(self.inp_path, section, column_name, component_name, new_value)
+
+        if self.verbose == 1:
+            print(f'Set Link {link_id} seepage rate to {new_value}')
+
+        return new_value
+
+
+    def get_link_slope(self, link_id):
+
+        # Length of link.
+        link_length = self.get_link_length(link_id)
+
+        # Get the endpoint node IDs.
+        conduit_section = 'CONDUITS'
+        from_column_name = 'From Node'
+        to_column_name = 'To Node'
+        component_name = link_id
+
+        from_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, from_column_name, component_name)
+        to_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, to_column_name, component_name)
+
+        # Get from and to node elevations.
+        junction_section = 'JUNCTIONS'
+        elevation_column = 'Elevation'
+
+        from_node_elev = file_utils.get_inp_section(self.inp_path, junction_section, elevation_column, from_node_id)
+        to_node_elev = file_utils.get_inp_section(self.inp_path, junction_section, elevation_column, to_node_id)
+
+        # Compute slope. Downward is negative.
+        from_node_elev = float(from_node_elev)
+        to_node_elev = float(to_node_elev)
+        S = (to_node_elev - from_node_elev) / link_length
+
+        return S
+
+
+    def get_storage_property(self, storage_id, property):
+        '''
+        Get the value of a storage property.
+        :param storage_id: ID of storage unit.
+        :param property: Name of the property.
+        :return: Value of the storage property. Evaluates type automatically.
+        '''
+        section = 'STORAGE'
+        column_name = property
+        component_name = storage_id
+
+        # Get the storage property.
+        property_value = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
+
+        return eval(property_value)
+
+
+    def set_storage_property(self, storage_id, property, property_value):
+        '''
+        Get the value of a storage property.
+        :param storage_id: ID of storage unit.
+        :param property: Name of the property.
+        :param property_value: New property value.
+        :return: Prints success message.
+        '''
+        section = 'STORAGE'
+        column_name = property
+        new_value = property_value
+        component_name = storage_id
+
+        # Set the storage property.
+        file_utils.set_inp_section(self.inp_path, section, column_name, component_name, new_value)
+
+        if self.verbose == 1:
+            print(f'Set Storage {storage_id} {property} to {new_value}')
+
+
+    def get_storage_outfall_link(self, storage_id):
+        '''
+        Gets the outfall link for a storage component.
+        :param storage_id: ID of storage unit.
+        :return: ID of outfall link.
+        '''
+        # Get conduit names.
+        conduit_names = file_utils.get_component_names(self.inp_path, 'CONDUITS')
+
+        # Loop through conduit names until the "from_node" is the storage node.
+        conduit_section = 'CONDUITS'
+        from_column_name = 'From Node'
+        outfall_link_id = None
+        for component_name in conduit_names:
+            from_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, from_column_name, component_name)
+
+            if from_node_id == str(storage_id):
+                outfall_link_id = component_name
+                break
+
+        return outfall_link_id
+
+
     def set_raingage_timeseries(self, raingage_id, timeseries_name):
         '''
         Assign a timeseries to a rain gage.
@@ -280,6 +467,8 @@ class SWMM:
         file_utils.add_prcp_timeseries(self.inp_path, ts_name, ts_description, times, values, dates=dates, overwrite=overwrite)
 
 
+    # OUTPUT METHODS
+    # ----------------------------------------------------------------------------------------------------------
     def unpack_series(self, series):
         "Unpacks SWMM output series into datetime and values."
         dts = [key for key in series.keys()]
@@ -288,31 +477,13 @@ class SWMM:
         return dts, values
 
 
-    def get_node_depths(self):
+    def get_node_depth(self):
         '''
         Get node depths.
         :return: Pandas data frame of node depths.
         '''
-        # Get list of node IDs.
-        node_ids = file_utils.get_component_names(self.inp_path, 'JUNCTIONS')
-
-        # Add outfall ids.
-        outfall_ids = file_utils.get_component_names(self.inp_path, 'OUTFALLS')
-        node_ids.extend(outfall_ids)
-
-        # Dictionary of node depths.
-        depth_dict = {}
-
-        with Output(self.out_path) as out:
-            for node_id in node_ids:
-                node_dt, node_series = self.unpack_series(out.node_series(node_id, NodeAttribute.INVERT_DEPTH))
-                depth_dict[f'{node_id}_depth'] = node_series
-
-            # Only take datetime from final node. It will be the same as the rest.
-            depth_dict['datetime'] = node_dt
-
-        # Convert depth_dict to Pandas DataFrame.
-        depth_df = pd.DataFrame(depth_dict)
+        node_attribute = 'Depth'
+        depth_df = self._get_node_series(node_attribute)
 
         return depth_df
 
@@ -322,6 +493,62 @@ class SWMM:
         Get node flooding.
         :return: Pandas data frame of node flooding.
         '''
+        node_attribute = 'Flood'
+        flood_df = self._get_node_series(node_attribute)
+
+        return flood_df
+
+
+    def get_node_head(self):
+        '''
+        Get node head.
+        :return: Pandas data frame of node head.
+        '''
+        node_attribute = 'Head'
+        head_df = self._get_node_series(node_attribute)
+
+        return head_df
+
+
+    def get_node_total_inflow(self):
+        '''
+        Get node total inflow.
+        :return: Pandas data frame of node total inflow.
+        '''
+        node_attribute = 'Total_Inflow'
+        total_inflow_df = self._get_node_series(node_attribute)
+
+        return total_inflow_df
+
+
+    def get_node_lateral_inflow(self):
+        '''
+        Get node lateral inflow.
+        :return: Pandas data frame of node lateral inflow.
+        '''
+        node_attribute = 'Lateral_Inflow'
+        lateral_inflow_df = self._get_node_series(node_attribute)
+
+        return lateral_inflow_df
+
+
+    def get_node_ponded_volume(self):
+        '''
+        Get node ponded volume.
+        :return: Pandas data frame of node ponded volume.
+        '''
+        node_attribute = 'Ponded_Volume'
+        ponded_volume_df = self._get_node_series(node_attribute)
+
+        return ponded_volume_df
+
+
+    def _get_node_series(self, node_attribute):
+        '''
+        Get node series for a node attribute.
+        :param node_attribute: Node attribute to get series for.
+        :return: Pandas data frame of series of node attribute.
+        '''
         # Get list of node IDs.
         node_ids = file_utils.get_component_names(self.inp_path, 'JUNCTIONS')
 
@@ -329,21 +556,119 @@ class SWMM:
         outfall_ids = file_utils.get_component_names(self.inp_path, 'OUTFALLS')
         node_ids.extend(outfall_ids)
 
-        # Dictionary of node depths.
-        flood_dict = {}
+        # Add storage nodes.
+        storage_ids = file_utils.get_component_names(self.inp_path, 'STORAGE')
+        node_ids.extend(storage_ids)
+
+        # Dictionary of node series.
+        series_dict = {}
+
+        # Node attributes.
+        node_attr = {
+            'Flood': NodeAttribute.FLOODING_LOSSES,
+            'Depth': NodeAttribute.INVERT_DEPTH,
+            'Head': NodeAttribute.HYDRAULIC_HEAD,
+            'Total_Inflow': NodeAttribute.TOTAL_INFLOW,
+            'Lateral_Inflow': NodeAttribute.LATERAL_INFLOW,
+            'Ponded_Volume': NodeAttribute.PONDED_VOLUME
+        }
+
+        # Series attribute.
+        series_attribute = node_attr[node_attribute]
 
         with Output(self.out_path) as out:
             for node_id in node_ids:
-                node_dt, node_series = self.unpack_series(out.node_series(node_id, NodeAttribute.FLOODING_LOSSES))
-                flood_dict[f'{node_id}_flood'] = node_series
+                node_dt, node_series = self.unpack_series(out.node_series(node_id, series_attribute))
+                series_dict[f'{node_attribute}_node_{node_id}'] = node_series
 
             # Only take datetime from final node. It will be the same as the rest.
-            flood_dict['datetime'] = node_dt
+            series_dict['datetime'] = node_dt
 
-        # Convert depth_dict to Pandas DataFrame.
-        flood_df = pd.DataFrame(flood_dict)
+        # Convert series_dict to Pandas DataFrame.
+        series_df = pd.DataFrame(series_dict)
 
-        return flood_df
+        return series_df
+
+
+    def get_link_flow(self):
+        '''
+        Get link flow rate.
+        :return: Pandas data frame of link flow rate.
+        '''
+        link_attribute = 'Flow'
+        flow_df = self._get_link_series(link_attribute)
+
+        return flow_df
+
+
+    def get_link_depth(self):
+        '''
+        Get link depth.
+        :return: Pandas data frame of link depth.
+        '''
+        link_attribute = 'Depth'
+        depth_df = self._get_link_series(link_attribute)
+
+        return depth_df
+
+
+    def get_link_velocity(self):
+        '''
+        Get link velocity.
+        :return: Pandas data frame of link velocity.
+        '''
+        link_attribute = 'Velocity'
+        velocity_df = self._get_link_series(link_attribute)
+
+        return velocity_df
+
+
+    def get_link_volume(self):
+        '''
+        Get link volume.
+        :return: Pandas data frame of link volume.
+        '''
+        link_attribute = 'Volume'
+        volume_df = self._get_link_series(link_attribute)
+
+        return volume_df
+
+
+    def _get_link_series(self, link_attribute):
+        '''
+        Get link series for a link attribute.
+        :param link_attribute: Link attribute to get series for.
+        :return: Pandas data frame of link attribute.
+        '''
+        # Get list of link IDs.
+        link_ids = file_utils.get_component_names(self.inp_path, 'CONDUITS')
+
+        # Dictionary of link series.
+        series_dict = {}
+
+        # Link attributes.
+        attr_dict = {
+            'Flow': LinkAttribute.FLOW_RATE,
+            'Depth': LinkAttribute.FLOW_DEPTH,
+            'Velocity': LinkAttribute.FLOW_VELOCITY,
+            'Volume': LinkAttribute.FLOW_VOLUME
+        }
+
+        # Series attribute.
+        series_attribute = attr_dict[link_attribute]
+
+        with Output(self.out_path) as out:
+            for link_id in link_ids:
+                link_dt, link_series = self.unpack_series(out.link_series(link_id, series_attribute))
+                series_dict[f'{link_attribute}_link_{link_id}'] = link_series
+
+            # Only take datetime from final link. It will be the same as the rest.
+            series_dict['datetime'] = link_dt
+
+        # Convert series_dict to Pandas DataFrame.
+        series_df = pd.DataFrame(series_dict)
+
+        return series_df
 
 
     def get_rainfall_timeseries(self):
@@ -361,6 +686,8 @@ class SWMM:
         rainfall_dt = pd.DataFrame(rainfall_dict)
 
         return rainfall_dt
+
+    # ----------------------------------------------------------------------------------------------------------
 
     # def close(self):
     #     self.sim.close()
