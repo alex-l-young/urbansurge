@@ -37,6 +37,10 @@ def set_inp_section(in_filepath, section, column_name, component_name, new_value
                 break
 
         if update_line is not None:
+            # Handle weird storage formatting.
+            if section == 'STORAGE' and column_index > 4:
+                column_index += 2
+
             # Update the specified column's value for the found line
             line_values = lines[update_line].strip().split()
             line_values[column_index] = str(new_value)
@@ -87,6 +91,10 @@ def get_inp_section(in_filepath, section, column_name, component_name):
                 break
 
         if update_line is not None:
+            # Handle weird storage formatting.
+            if section == 'STORAGE' and column_index > 4:
+                column_index += 2
+
             # Update the specified column's value for the found line
             line_values = lines[update_line].strip().split()
             component_value = line_values[column_index]
