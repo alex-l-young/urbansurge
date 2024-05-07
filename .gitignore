@@ -12,6 +12,6 @@ __pycache__/
 /src/urbansurge/urbansurge_alex_l_young.egg-info/
 
 # Other files.
-analysis/lab_system/Output/*
-analysis/lab_system/precipitation/*
-tests/test_files/*
+analysis/lab_system/Output/
+analysis/lab_system/precipitation/
+tests/test_files/
