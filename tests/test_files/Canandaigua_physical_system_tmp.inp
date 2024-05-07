@@ -1,0 +1,284 @@
+[TITLE]
+;;Project Title/Notes
+
+[OPTIONS]
+;;Option             Value
+FLOW_UNITS           CFS
+INFILTRATION         HORTON
+FLOW_ROUTING         DYNWAVE
+LINK_OFFSETS         DEPTH
+MIN_SLOPE            0
+ALLOW_PONDING        NO
+SKIP_STEADY_STATE    NO
+
+START_DATE           10/17/2020
+START_TIME           00:00:00
+REPORT_START_DATE    10/17/2020
+REPORT_START_TIME    00:00:00
+END_DATE             11/16/2020
+END_TIME             23:55:00
+SWEEP_START          01/01
+SWEEP_END            12/31
+DRY_DAYS             0
+REPORT_STEP          00:05:00
+WET_STEP             00:01:00
+DRY_STEP             00:05:00
+ROUTING_STEP         0:00:30 
+RULE_STEP            00:00:00
+
+INERTIAL_DAMPING     PARTIAL
+NORMAL_FLOW_LIMITED  BOTH
+FORCE_MAIN_EQUATION  H-W
+VARIABLE_STEP        0.75
+LENGTHENING_STEP     0
+MIN_SURFAREA         12.566
+MAX_TRIALS           8
+HEAD_TOLERANCE       0.005
+SYS_FLOW_TOL         5
+LAT_FLOW_TOL         5
+MINIMUM_STEP         0.5
+THREADS              1
+
+[EVAPORATION]
+;;Data Source    Parameters
+;;-------------- ----------------
+CONSTANT         0.0
+DRY_ONLY         NO
+
+[RAINGAGES]
+;;Name           Format    Interval SCF      Source    
+;;-------------- --------- ------ ------ ----------
+1                CUMULATIVE 0:05     1.0      TIMESERIES can-p2-noise    
+
+[SUBCATCHMENTS]
+;;Name           Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  SnowPack        
+;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- ----------------
+1                1                21               201      25       2500     1        0                        
+2                1                16               300      10       2500     1        0                        
+3                1                16               284      50       2500     1        0                        
+4                1                18               230      30       2500     1        0                        
+5                1                18               340      25       2500     1        0                        
+6                1                16               130      5        2500     1        0                        
+7                1                18               101      30       2500     1        0                        
+8                1                19               170      60       2500     1        0                        
+9                1                19               290      25       2500     1        0                        
+10               1                20               500      10       2500     1        0                        
+11               1                20               315      50       2500     1        0                        
+
+[SUBAREAS]
+;;Subcatchment   N-Imperv   N-Perv     S-Imperv   S-Perv     PctZero    RouteTo    PctRouted 
+;;-------------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
+1                0.03       0.1        0.05       0.05       25         OUTLET    
+2                0.03       0.1        0.05       0.05       25         OUTLET    
+3                0.03       0.1        0.05       0.05       25         OUTLET    
+4                0.03       0.1        0.05       0.05       25         OUTLET    
+5                0.03       0.1        0.05       0.05       25         OUTLET    
+6                0.03       0.1        0.05       0.05       25         OUTLET    
+7                0.03       0.1        0.05       0.05       25         OUTLET    
+8                0.03       0.1        0.05       0.05       25         OUTLET    
+9                0.03       0.1        0.05       0.05       25         OUTLET    
+10               0.03       0.1        0.05       0.05       25         OUTLET    
+11               0.03       0.1        0.05       0.05       25         OUTLET    
+
+[INFILTRATION]
+;;Subcatchment   Param1     Param2     Param3     Param4     Param5    
+;;-------------- ---------- ---------- ---------- ---------- ----------
+1                3.0        0.5        4          7          0         
+2                3.0        0.5        4          7          0         
+3                3.0        0.5        4          7          0         
+4                3.0        0.5        4          7          0         
+5                3.0        0.5        4          7          0         
+6                3.0        0.5        4          7          0         
+7                3.0        0.5        4          7          0         
+8                3.0        0.5        4          7          0         
+9                3.0        0.5        4          7          0         
+10               3.0        0.5        4          7          0         
+11               3.0        0.5        4          7          0         
+
+[JUNCTIONS]
+;;Name           Elevation  MaxDepth   InitDepth  SurDepth   Aponded   
+;;-------------- ---------- ---------- ---------- ---------- ----------
+15               132        6          0          0          0         
+16               200        6          0          0          0         
+18               120        6          0          0          0         
+19               128        6          0          0          0         
+20               102        6          0          0          0         
+12               168        6          0          0          0         
+13               152        6          0          0          0         
+14               94         6          0          0          0         
+
+[OUTFALLS]
+;;Name           Elevation  Type       Stage Data       Gated    Route To        
+;;-------------- ---------- ---------- ---------------- -------- ----------------
+17               86         FREE                        NO                       
+
+[STORAGE]
+;;Name           Elev.    MaxDepth   InitDepth  Shape      Curve Type/Params            SurDepth  Fevap    Psi      Ksat     IMD     
+;;-------------- -------- ---------- ----------- ---------- ---------------------------- --------- --------          -------- --------
+21               141      4          0          PYRAMIDAL  50         50         0        0         0        0        1        0       
+
+[CONDUITS]
+;;Name           From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   
+;;-------------- ---------------- ---------------- ---------- ---------- ---------- ---------- ---------- ----------
+1                15               18               2300       0.01       0          0          0          0         
+2                18               20               1898       0.02       0          0          0          0         
+5                16               12               1520       0.01       0          0          0          0         
+6                12               13               760        0.05       0          0          0          0         
+7                13               18               1520       0.03       0          0          0          0         
+8                20               14               400        0.01       0          0          0          0         
+9                19               14               400        0.01       0          0          0          0         
+10               14               17               400        0.01       0          0          0          0         
+11               21               15               400        0.01       3          0.0        0          0         
+
+[XSECTIONS]
+;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels    Culvert   
+;;-------------- ------------ ---------------- ---------- ---------- ---------- ---------- ----------
+1                CIRCULAR     3                0          0          0          1                    
+2                CIRCULAR     3                0          0          0          1                    
+5                CIRCULAR     3                0          0          0          1                    
+6                CIRCULAR     3                0          0          0          1                    
+7                CIRCULAR     3                0          0          0          1                    
+8                CIRCULAR     3                0          0          0          1                    
+9                CIRCULAR     1.5              0          0          0          1                    
+10               CIRCULAR     3                0          0          0          1                    
+11               CIRCULAR     1                0          0          0          1                    
+
+[LOSSES]
+;;Link           Kentry     Kexit      Kavg       Flap Gate  Seepage   
+;;-------------- ---------- ---------- ---------- ---------- ----------
+2                0          0          0          NO         .001      
+
+[TIMESERIES]
+;;Name           Date       Time       Value     
+;;-------------- ---------- ---------- ----------
+;2 inches in 6 hours
+TS-2in-6hr                  0          0         
+TS-2in-6hr                  1          0.6667    
+TS-2in-6hr                  2          0.5333    
+TS-2in-6hr                  3          0.4       
+TS-2in-6hr                  4          0.2667    
+TS-2in-6hr                  5          0.1333    
+TS-2in-6hr                  6          0         
+;
+;1 inches in 6 hours
+TS-1in-6hr                  0          0         
+TS-1in-6hr                  1          0.3333    
+TS-1in-6hr                  2          0.2667    
+TS-1in-6hr                  3          0.2       
+TS-1in-6hr                  4          0.1333    
+TS-1in-6hr                  5          0.0667    
+TS-1in-6hr                  6          0         
+;
+;0.5 inches in 6 hours
+TS-0.5in-6hr                0          0         
+TS-0.5in-6hr                1          0.1667    
+TS-0.5in-6hr                2          0.1333    
+TS-0.5in-6hr                3          0.1       
+TS-0.5in-6hr                4          0.0667    
+TS-0.5in-6hr                5          0.0333    
+TS-0.5in-6hr                6          0         
+;
+;Canandaigua precipitation period 2 with noise
+can-p2-noise     FILE "C:\Users\ay434\Box\Research\NSF_SCC\SWMM\Canandaigua\Canandaigua_5min_period2_noise.dat"
+
+[REPORT]
+;;Reporting Options
+SUBCATCHMENTS ALL
+NODES ALL
+LINKS ALL
+
+[TAGS]
+
+[MAP]
+DIMENSIONS -1306.695 -203.355 11306.695 10000.000
+Units      None
+
+[COORDINATES]
+;;Node           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+15               4245.283           3920.335          
+16               3993.711           6603.774          
+18               5209.644           4381.551          
+19               4779.874           2138.365          
+20               6226.415           2442.348          
+12               4411.375           5893.379          
+13               4761.747           5262.709          
+14               5714.759           1969.213          
+17               6065.131           932.112           
+21               2926.331           3948.891          
+
+[VERTICES]
+;;Link           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+
+[Polygons]
+;;Subcatchment   X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+1                2494.759           3438.155          
+1                3941.300           3731.656          
+1                2756.813           5964.361          
+1                1509.434           5324.948          
+2                5786.164           9350.105          
+2                6519.916           7976.939          
+2                4046.122           6624.738          
+2                3301.887           8050.314          
+3                880.503            6729.560          
+3                1572.327           5366.876          
+3                3972.746           6614.256          
+3                3270.440           8050.314          
+4                4004.193           6614.256          
+4                5209.644           4454.927          
+4                3941.300           3773.585          
+4                2777.778           5953.878          
+4                3983.229           6614.256          
+5                5587.002           7473.795          
+5                6488.470           5838.574          
+5                7389.937           6310.273          
+5                7693.920           5733.753          
+5                5178.197           4444.444          
+5                4109.015           6603.774          
+6                6498.952           7924.528          
+6                7348.008           6331.237          
+6                6467.505           5838.574          
+6                5639.413           7473.795          
+7                6488.470           5104.822          
+7                7169.811           3909.853          
+7                5880.503           3197.065          
+7                5241.090           4433.962          
+8                5157.233           4360.587          
+8                6027.254           2798.742          
+8                4737.945           2106.918          
+8                3899.371           3668.763          
+9                3878.407           3689.727          
+9                5398.323           985.325           
+9                4182.390           251.572           
+9                2526.205           3406.709          
+10               7180.294           3899.371          
+10               6457.023           5115.304          
+10               7714.885           5712.788          
+10               9580.713           2190.776          
+10               6299.790           2389.937          
+10               5880.503           3186.583          
+11               6236.897           2358.491          
+11               9549.266           2169.811          
+11               10157.233          1090.147          
+11               8899.371           922.432           
+11               8270.440           1457.023          
+11               7012.579           1761.006          
+11               6593.291           1540.881          
+11               5398.323           1016.771          
+11               4779.874           2106.918          
+11               6048.218           2767.296          
+
+;;Storage Node   X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+21               3258.804           4253.943          
+21               3299.934           3691.824          
+21               2587.004           3623.273          
+21               2559.583           4226.522          
+
+[SYMBOLS]
+;;Gage           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+1                1698.113           4004.193          
+

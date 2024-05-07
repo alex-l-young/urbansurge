@@ -12,8 +12,8 @@ import pandas as pd
 
 class TestSWMM():
     def setup(self):
-        self.in_filepath = r"test_files\Canandaigua.inp"
-        self.config_path = r"C:\Users\ay434\Documents\urbansurge\tests\test_files\test_config.yml"
+        self.in_filepath = r"test_files\Canandaigua_physical_system.inp"
+        self.config_path = r"test_files\canandaigua_config_physical.yml"
 
         self.swmm = swmm_model.SWMM(self.config_path)
 
@@ -50,7 +50,7 @@ class TestSWMM():
     def test_get_node_depths(self):
         self.swmm.configure_model()
         self.swmm.run_simulation()
-        node_depths = self.swmm.get_node_depths()
+        node_depths = self.swmm.get_node_depth()
 
         assert isinstance(node_depths, pd.DataFrame)
         assert not node_depths.empty
@@ -64,3 +64,11 @@ class TestSWMM():
         assert set(prcp_df.columns) == {'datetime', 'prcp'}
         assert not prcp_df.empty
 
+    def test_get_storage_outfall_link(self):
+        self.swmm.configure_model()
+        self.swmm.run_simulation()
+
+        storage_id = 21
+        outfall_link_id = self.swmm.get_storage_outfall_link(storage_id)
+
+        assert outfall_link_id == str(11)

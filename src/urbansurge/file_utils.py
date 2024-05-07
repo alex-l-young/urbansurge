@@ -119,6 +119,11 @@ def get_component_names(in_filepath, section):
                 start_line = i + 3  # Skip the header lines
                 break
 
+        # If section is not found, return None.
+        if start_line is None:
+            print(f'No section found with name {section}.')
+            return None
+
         # Find the index of the "Name" and specified column in the header line
         header_line = lines[start_line-2]
         header_values = re.split(r" {2,}", header_line.strip())

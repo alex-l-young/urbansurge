@@ -1,0 +1,66 @@
+# =================================================================
+# Configuration file for model run.
+# =================================================================
+
+# Path to SWMM .inp file.
+inp_path: C:\Users\ay434\Documents\urbansurge\analysis\lab_system\lab_system.inp
+
+# Run from temporary .inp file. True or False.
+temp_inp: True
+
+# Verbosity. 0 or 1.
+verbose: 1
+
+# Model component values.
+# Set model component values with same units as the simulation.
+
+# Conduit/link parameters. Put the link number and parameter value under the corresponding section.
+CONDUITS:
+  # Diameter of the conduits (termed "depth") in feet.
+  geometry:
+    #1: [4.5, 0, 0, 0]
+
+  # Manning's roughness of the conduits.
+  roughness:
+    #2: 0.02
+
+  # Length of the conduits in feet.
+  length:
+
+# Node/junction parameters.
+JUNCTIONS:
+  # Depth of the nodes below the surface.
+  max_depth:
+
+  # Elevation of the node.
+  invert_elevation:
+
+# Subcatchment parameters.
+SUBCATCHMENTS:
+  perc_impervious:
+
+
+# Precipitation.
+TIMESERIES:
+  # ts1:
+  #   name: TS-2in-6hr
+  #   description: 2 inches in 6 hours
+  #   filepath: 
+  #   dates: 
+  #   hours: [0, 1, 2, 3, 4, 5, 6]
+  #   values: [0, 0.6667, 0.5333, 0.4000, 0.2667, 0.1333, 0]
+
+
+TIMESERIES_OPTIONS:
+  # Overwrite time series already in .inp file.
+  overwrite: False
+
+# Rain gage.
+RAINGAGE:
+  # <rain gage ID:
+  #   timeseries: <timeseries name>
+
+
+
+
+

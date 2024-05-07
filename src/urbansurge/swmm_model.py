@@ -387,6 +387,71 @@ class SWMM:
         return S
 
 
+<<<<<<< Updated upstream
+=======
+    def get_weir_property(self, weir_id, weir_property_name):
+
+        # Configurations.
+        weir_section = 'WEIRS'
+        component_name = weir_id
+        component_property_name = weir_property_name
+
+        # Get the weir property.
+        weir_property = file_utils.get_inp_section(self.inp_path, weir_section, component_property_name, component_name)
+
+        return weir_property
+
+
+    def set_weir_property(self, weir_id, weir_property_name, weir_property):
+
+        # Configurations.
+        section = 'WEIRS'
+        column_name = weir_property_name
+        component_name = weir_id
+        new_value = weir_property
+
+        # Get the weir property.
+        file_utils.set_inp_section(self.inp_path, section, column_name, component_name, new_value)
+
+        if self.verbose == 1:
+            print(f'Set weir {weir_id} {column_name} to {new_value}')
+
+
+    def get_weir_geometry(self, weir_id):
+
+        # Setting variables.
+        section = 'XSECTIONS'
+        column_names = ['Shape', 'Geom1', 'Geom2', 'Geom3', 'Geom4']
+        component_name = weir_id
+
+        # Get the weir geometry.
+        weir_geometry = []
+        for column_name in column_names:
+            geom = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
+            if column_name != 'Shape':
+                geom = float(geom)
+            weir_geometry.append(geom)
+
+        return weir_geometry
+
+
+    def set_weir_geometry(self, weir_id, geom):
+
+        # Setting variables.
+        section = 'XSECTIONS'
+        column_names = ['Shape', 'Geom1', 'Geom2', 'Geom3', 'Geom4']
+        component_name = weir_id
+
+        # Set the new geometries.
+        for i, column_name in enumerate(column_names):
+            new_value = geom[i]
+            file_utils.set_inp_section(self.inp_path, section, column_name, component_name, new_value)
+
+        if self.verbose == 1:
+            print(f'Set weir {weir_id} geometry to {geom}')
+
+
+>>>>>>> Stashed changes
     def get_storage_property(self, storage_id, property):
         '''
         Get the value of a storage property.
@@ -467,6 +532,10 @@ class SWMM:
         file_utils.add_prcp_timeseries(self.inp_path, ts_name, ts_description, times, values, dates=dates, overwrite=overwrite)
 
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     # OUTPUT METHODS
     # ----------------------------------------------------------------------------------------------------------
     def unpack_series(self, series):
@@ -553,12 +622,23 @@ class SWMM:
         node_ids = file_utils.get_component_names(self.inp_path, 'JUNCTIONS')
 
         # Add outfall ids.
-        outfall_ids = file_utils.get_component_names(self.inp_path, 'OUTFALLS')
-        node_ids.extend(outfall_ids)
+        try:
+            outfall_ids = file_utils.get_component_names(self.inp_path, 'OUTFALLS')
+            node_ids.extend(outfall_ids)
+        except Exception as e:
+            print('Model has no outfalls.')
 
         # Add storage nodes.
+<<<<<<< Updated upstream
         storage_ids = file_utils.get_component_names(self.inp_path, 'STORAGE')
         node_ids.extend(storage_ids)
+=======
+        try:
+            storage_ids = file_utils.get_component_names(self.inp_path, 'STORAGE')
+            node_ids.extend(storage_ids)
+        except Exception as e:
+            print('Model has no storage components.')
+>>>>>>> Stashed changes
 
         # Dictionary of node series.
         series_dict = {}
