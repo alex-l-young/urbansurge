@@ -15,3 +15,6 @@ __pycache__/
 analysis/lab_system/Output/
 analysis/lab_system/precipitation/
 tests/test_files/
+/src/**/*.inp
+/src/**/*.out
+/src/**/*.rpt
