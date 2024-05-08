@@ -386,9 +386,6 @@ class SWMM:
 
         return S
 
-
-<<<<<<< Updated upstream
-=======
     def get_weir_property(self, weir_id, weir_property_name):
 
         # Configurations.
@@ -451,7 +448,6 @@ class SWMM:
             print(f'Set weir {weir_id} geometry to {geom}')
 
 
->>>>>>> Stashed changes
     def get_storage_property(self, storage_id, property):
         '''
         Get the value of a storage property.
@@ -532,10 +528,6 @@ class SWMM:
         file_utils.add_prcp_timeseries(self.inp_path, ts_name, ts_description, times, values, dates=dates, overwrite=overwrite)
 
 
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
     # OUTPUT METHODS
     # ----------------------------------------------------------------------------------------------------------
     def unpack_series(self, series):
@@ -629,16 +621,13 @@ class SWMM:
             print('Model has no outfalls.')
 
         # Add storage nodes.
-<<<<<<< Updated upstream
         storage_ids = file_utils.get_component_names(self.inp_path, 'STORAGE')
         node_ids.extend(storage_ids)
-=======
         try:
             storage_ids = file_utils.get_component_names(self.inp_path, 'STORAGE')
             node_ids.extend(storage_ids)
         except Exception as e:
             print('Model has no storage components.')
->>>>>>> Stashed changes
 
         # Dictionary of node series.
         series_dict = {}
