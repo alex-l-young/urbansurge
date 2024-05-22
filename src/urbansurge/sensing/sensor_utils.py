@@ -344,13 +344,13 @@ class SensorNetwork():
 
     def add_rain_gauge(self, sensor):
         self.rain_gauges[sensor.sensor_id] = sensor
-        
+
     def remove_rain_gauge(self, sensor_id):
         self.rain_gauges.pop(sensor_id)
 
 
 class Sensor():
-    def __init__(self, sensor_id, units, fs=None, dt=None, time=None, measure_data=None, model_data=None):
+    def __init__(self, sensor_id, units, fs=None, dt=None, time=None, measure_data=None, model_data=None, **kwargs):
         # Sensor ID and units are required.
         self.sensor_id = sensor_id
         self.units = units
@@ -373,6 +373,9 @@ class Sensor():
         if model_data is not None:
             self.model_data = model_data
 
+        super().__init__(**kwargs)
+
+
     def compute_residual(self):
         """
         Compute sensor residual between modeled and measured data.
@@ -385,16 +388,14 @@ class Sensor():
 
 
 class DepthSensor(Sensor):
-    def __init__(self, sensor_id, units, cfg_filepath, component_id, component_type,
-                 fs=None, dt=None, time=None, measure_data=None, model_data=None):
+    def __init__(self, cfg_filepath, component_id, component_type, **kwargs):
 
-        # Initialize parent Sensor class.
-        super().__init__(self, sensor_id, units, fs=fs, dt=dt, time=time, measure_data=measure_data,
-                         model_data=model_data)
 
         self.cfg_filepath = cfg_filepath
         self.component_id = component_id
         self.component_type = component_type
+
+        super().__init__(**kwargs)
 
 
     def depth_range(self, link_shape):
@@ -420,21 +421,66 @@ class DepthSensor(Sensor):
 
 
 class VelocitySensor(Sensor):
-    def __init__(self, sensor_id, units, cfg_filepath, component_id, component_type,
-                 fs=None, dt=None, time=None, measure_data=None, model_data=None):
-        # Initialize parent Sensor class.
-        super().__init__(self, sensor_id, units, fs=fs, dt=dt, time=time, measure_data=measure_data,
-                         model_data=model_data)
+    def __init__(self, cfg_filepath, component_id, component_type, **kwargs):
 
         self.cfg_filepath = cfg_filepath
         self.component_id = component_id
         self.component_type = component_type
 
+        super().__init__(**kwargs)
+
 
 class RainGauge(Sensor):
-    def __init__(self, sensor_id, units, fs=None, dt=None, time=None, measure_data=None, model_data=None):
+    def __init__(self, **kwargs):
 
-        # Initialize parent Sensor class.
-        super().__init__(self, sensor_id, units, fs=fs, dt=dt, time=time, measure_data=measure_data,
-                         model_data=model_data)
+        super().__init__(**kwargs)
 
+    def find_storms(self, thresh):
+        """
+        Find start and end indices of storms in a time series of precipitation.
+        Storms are defined as periods where precipitation exceeds a certain threshold.
+        :param thresh: Precipitation threshold to define a storm.
+        :return: Start and end indices for storms as numpy arrays.
+        """
+        # Precipitation is the measured data.
+        P = self.measure_data
+
+        # Integer boolean array where P > thresh.
+        exceed = P > thresh
+        exceed = exceed.astype(int)
+
+        # Difference between boolean exceedances.
+        exceed_diff = np.diff(exceed)
+
+        # Storms start where exceed is equal to 1 (i.e., crosses threshold).
+        self.storm_start_idx = np.where(exceed_diff == 1)[0]
+
+        # Storm end index is the storm start index plus the last index.
+        self.storm_end_idx = np.append(self.storm_start_idx[1:], len(P) - 1)
+
+        # Number of storms.
+        self.n_storms = len(self.storm_start_idx)
+
+        return self.storm_start_idx, self.storm_end_idx
+
+    def compute_cumu_storm_prcp(self):
+        P = self.measure_data
+        # Loop through peaks and compute cumulative storm precipitation.
+        cumu_storm_prcp = np.zeros(len(self.storm_start_idx))
+        for i in range(len(self.storm_start_idx)):
+            cumu_prcp = np.sum(P[self.storm_start_idx[i]:self.storm_end_idx[i]])
+            cumu_storm_prcp[i] = cumu_prcp
+
+        self.cumu_storm_prcp = cumu_storm_prcp
+        return self.cumu_storm_prcp
+
+    def compute_max_storm_prcp(self):
+        P = self.measure_data
+        # Loop through peaks and compute maximum storm precipitation.
+        max_storm_prcp = np.zeros(len(self.storm_start_idx))
+        for i in range(len(self.storm_start_idx)):
+            max_prcp = np.max(P[self.storm_start_idx[i]:self.storm_end_idx[i]])
+            max_storm_prcp[i] = max_prcp
+
+        self.max_storm_prcp = max_storm_prcp
+        return self.max_storm_prcp
