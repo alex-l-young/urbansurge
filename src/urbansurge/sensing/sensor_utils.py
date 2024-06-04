@@ -328,6 +328,7 @@ class SensorNetwork():
     def __init__(self):
         self.depth_sensors = {}
         self.velocity_sensors = {}
+        self.flow_sensors = {}
         self.rain_gauges = {}
 
     def add_depth_sensor(self, sensor):
@@ -341,6 +342,12 @@ class SensorNetwork():
 
     def remove_velocity_sensor(self, sensor_id):
         self.velocity_sensors.pop(sensor_id)
+
+    def add_flow_sensor(self, sensor):
+        self.flow_sensors[sensor.sensor_id] = sensor
+
+    def remove_flow_sensor(self, sensor_id):
+        self.flow_sensors.pop(sensor_id)
 
     def add_rain_gauge(self, sensor):
         self.rain_gauges[sensor.sensor_id] = sensor
@@ -428,6 +435,26 @@ class VelocitySensor(Sensor):
         self.component_type = component_type
 
         super().__init__(**kwargs)
+
+
+class FlowSensor(Sensor):
+    def __init__(self, cfg_filepath, component_id, component_type, **kwargs):
+
+        self.cfg_filepath = cfg_filepath
+        self.component_id = component_id
+        self.component_type = component_type
+
+        super().__init__(**kwargs)
+
+    def compute_cumu_storm_flow(self, P_start_idxs, P_end_idxs):
+        # Loop through peaks and compute cumulative storm flow.
+        cumu_storm_flow = np.zeros(len(P_start_idxs))
+        for i in range(len(P_start_idxs)):
+            cumu_flow = np.sum(self.measure_data[P_start_idxs[i]:P_end_idxs[i]])
+            cumu_storm_flow[i] = cumu_flow
+
+        self.cumu_storm_flow = cumu_storm_flow
+        return self.cumu_storm_flow
 
 
 class RainGauge(Sensor):
