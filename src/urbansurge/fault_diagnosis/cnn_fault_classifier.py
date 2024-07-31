@@ -18,9 +18,9 @@ class SimpleCNN(nn.Module):
         self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
 
         # Fully connected layers for regression
-        self.fc1 = nn.Linear(64 * 1 * 24, 128)  # after 3 max-poolings, size becomes 1x24
+        self.fc1 = nn.Linear(64 * 62 * 20, 128)  # Adjusted to match the flattened output size
         self.fc2 = nn.Linear(128, 64)
-        self.fc3 = nn.Linear(64, 5)  # for the 5x1 output
+        self.fc3 = nn.Linear(64, 2)  # Two output classes
 
     def forward(self, x):
         # Apply first convolutional layer, then activation, then pooling
@@ -32,9 +32,11 @@ class SimpleCNN(nn.Module):
         # Apply third convolutional layer, then activation, then pooling
         # x = self.maxpool(self.relu(self.conv3(x)))
         x = self.relu(self.conv3(x))
+        print(x.shape)
 
         # Flatten the tensor
         x = x.view(x.size(0), -1)
+        # print(x.shape)
 
         # Pass through fully connected layers
         x = self.relu(self.fc1(x))

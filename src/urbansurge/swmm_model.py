@@ -11,6 +11,7 @@ from swmm.toolkit.shared_enum import LinkAttribute, NodeAttribute, SubcatchAttri
 import yaml
 import shutil
 import os
+import numpy as np
 import pandas as pd
 
 
@@ -143,10 +144,82 @@ class SWMM:
         :param section: Section name.
         :return: List of component names.
         '''
-
         component_names = file_utils.get_component_names(self.inp_path, section)
 
         return component_names
+
+
+    def get_components_by_tag(self, tag):
+        '''
+        Returns the names of all components for a given tag.
+        :param tag: tag name.
+        :return: List of component names.
+        '''
+        component_names = file_utils.get_components_by_tag(self.inp_path, tag)
+
+        return component_names
+
+
+    def get_node_section(self, node_id):
+        '''
+        Find which section the node ID falls under.
+        :param node_id:
+        :return: Section name.
+        '''
+        node_sections = ['JUNCTIONS', 'OUTFALLS', 'STORAGE']
+
+        for node_section in node_sections:
+            component_names = self.get_component_names(node_section)
+            if node_id in component_names:
+                return node_section
+
+        return 'NODE ID NOT FOUND IN ANY NODE SECTION'
+
+
+    def get_downstream_components(self, node_id, component_type):
+        '''
+        Get all link or weir IDs downstream of a node.
+        :param node_id: Node ID to start at.
+        :param component_type: Type of downstream component ['Link', 'Weir'].
+        :return: Downstream link IDs in upstream to downstream order.
+        '''
+        # Handle section names for different component types.
+        section_dict = {'Link': 'CONDUITS', 'Weir': 'WEIRS'}
+        section = section_dict[component_type]
+        ids = self.get_component_names(section)
+        weir_ids = self.get_component_names(section)
+
+        # Outfall IDs.
+        outfall_section = 'OUTFALLS'
+        outfall_ids = self.get_component_names(outfall_section)
+        outfall_ids = [int(i) for i in outfall_ids]
+
+        # Column names for from and to nodes.
+        from_column_name = 'From Node'
+        to_column_name = 'To Node'
+
+        # From and to nodes.
+        nodes = np.zeros((len(ids), 3))
+        for i, id in enumerate(ids):
+            from_node_id = file_utils.get_inp_section(self.inp_path, section, from_column_name, id)
+            to_node_id = file_utils.get_inp_section(self.inp_path, section, to_column_name, id)
+            nodes[i,:] = [id, from_node_id, to_node_id]
+
+        # Loop through downstream links until an outfall is reached.
+        downstream_components = []
+        while node_id not in outfall_ids:
+            # If from node is in component section.
+            if node_id in nodes[:,1]:
+                # Save component.
+                downstream_component = int(nodes[nodes[:,1] == node_id, 0][0])
+                downstream_components.append(downstream_component)
+
+                # Set new to node.
+                node_id = nodes[nodes[:,1] == node_id, 2]
+
+                continue
+
+        return downstream_components
 
 
     def get_link_geometry(self, link_id):
@@ -372,12 +445,20 @@ class SWMM:
         from_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, from_column_name, component_name)
         to_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, to_column_name, component_name)
 
-        # Get from and to node elevations.
-        junction_section = 'JUNCTIONS'
-        elevation_column = 'Elevation'
+        # Find what type of node the from and to nodes are.
+        from_node_section = self.get_node_section(from_node_id)
+        to_node_section = self.get_node_section(to_node_id)
 
-        from_node_elev = file_utils.get_inp_section(self.inp_path, junction_section, elevation_column, from_node_id)
-        to_node_elev = file_utils.get_inp_section(self.inp_path, junction_section, elevation_column, to_node_id)
+        # Get from and to node elevations.
+        from_elevation_column = 'Elevation'
+        to_elevation_column = 'Elevation'
+        if from_node_section == 'STORAGE':
+            from_elevation_column = 'Elev.'
+        if to_node_section == 'STORAGE':
+            to_elevation_column = 'Elev.'
+
+        from_node_elev = file_utils.get_inp_section(self.inp_path, from_node_section, from_elevation_column, from_node_id)
+        to_node_elev = file_utils.get_inp_section(self.inp_path, to_node_section, to_elevation_column, to_node_id)
 
         # Compute slope. Downward is negative.
         from_node_elev = float(from_node_elev)
@@ -385,6 +466,7 @@ class SWMM:
         S = (to_node_elev - from_node_elev) / link_length
 
         return S
+
 
     def get_weir_property(self, weir_id, weir_property_name):
 
@@ -701,6 +783,19 @@ class SWMM:
         volume_df = self._get_link_series(link_attribute)
 
         return volume_df
+
+
+    def get_link_circular_Rh(self, depth, diameter):
+        '''
+        Computes hydraulic radius (Rh) for a circular pipe.
+        :return: Hydraulic radius.
+        '''
+        theta = 2 * np.arccos(1 - 2 * depth / diameter)
+        A = (diameter**2 / 8) * (theta - np.sin(theta))
+        P = 0.5 * diameter * theta
+        Rh = A / P
+
+        return Rh
 
 
     def _get_link_series(self, link_attribute):

@@ -5,7 +5,7 @@ from urbansurge.sensing import sensor_utils
 
 class TestSensorUtils():
     def setup(self):
-        self.in_filepath = r"test_files\Canandaigua_physical_system.inp"
+        self.in_filepath = r"test_files\lab_system.inp"
 
     def test_conduit_nodes(self):
         conduit_nodes_dict = sensor_utils.link_nodes(self.in_filepath)
@@ -27,10 +27,17 @@ class TestSensorUtils():
 
     def test_upstream_assign(self):
         # Conduit nodes dictionary.
-        conduit_nodes_dict = sensor_utils.link_nodes(self.in_filepath, int_convert=False)
-
-        # Adjacency matrix.
-        A, node_names = sensor_utils.adjacency_matrix(conduit_nodes_dict, self.in_filepath)
+        link_node_dict = sensor_utils.link_nodes(self.in_filepath, int_convert=False)
 
         # Sensor nodes.
-        sensor_nodes = sensor_utils.upstream_assign(A, node_names, Nups=2)
+        sensor_nodes = sensor_utils.upstream_assign(link_node_dict, self.in_filepath, Nups=2)
+
+
+    def test_upstream_assign_links(self):
+        # Link nodes dictionary.
+        link_node_dict = sensor_utils.link_nodes(self.in_filepath, int_convert=False)
+
+        # Sensor links.
+        sensor_links = sensor_utils.upstream_assign_links(link_node_dict, self.in_filepath, Nups=1, exclude_weirs=True)
+
+        print(sensor_links)

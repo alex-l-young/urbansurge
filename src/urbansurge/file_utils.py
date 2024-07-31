@@ -142,6 +142,38 @@ def get_component_names(in_filepath, section):
     return names
 
 
+def get_components_by_tag(in_filepath, component_tag):
+    with open(in_filepath, 'r') as file:
+        # Read the file into a list of lines
+        lines = file.readlines()
+
+    # Find the line number where the section table starts
+    start_line = None
+    for i, line in enumerate(lines):
+        if line.startswith('[TAGS]'):
+            start_line = i + 1  # Skip the header lines
+            break
+
+    # If section is not found, return None.
+    if start_line is None:
+        print(f'No section found with name TAGS.')
+        return None
+
+    # Find the index of the "Name" and specified column in the header line
+    name_col_index = 1
+
+    # Loop through rows and add to list of names.
+    names = []
+    i = start_line
+    line_values = lines[i].strip().split()
+    while line_values:
+        names.append(line_values[name_col_index])
+        i += 1
+        line_values = lines[i].strip().split()
+
+    return names
+
+
 def set_raingage(in_filepath, column_name, component_name, new_value, out_filepath=None):
     # If out_filepath is None, use in_filepath.
     if out_filepath is None:
