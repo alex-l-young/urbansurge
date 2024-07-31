@@ -4,9 +4,21 @@
 
 # Library imports.
 import re
+from typing import List, Union
 
 
-def set_inp_section(in_filepath, section, column_name, component_name, new_value, out_filepath=None):
+def set_inp_section(in_filepath: str, section: str, column_name: str, component_name: int, new_value: Union[int, float],
+                    out_filepathNone):
+    """
+    Set a value in the .inp file.
+    :param in_filepath: Path to inp file.
+    :param section: Section to edit.
+    :param column_name: Column to edit.
+    :param component_name: Component name to edit. From "name" column.
+    :param new_value: New value to set.
+    :param out_filepath: If specified, creates a new .inp file with the new value. Otherwise overwrites in_filepath.
+    :return: None
+    """
     # If out_filename is None, use in_filename.
     if out_filepath is None:
         out_filepath = in_filepath
@@ -106,7 +118,13 @@ def get_inp_section(in_filepath, section, column_name, component_name):
             raise ValueError(f"No line found with Name value {component_name} in {component_name}")
 
 
-def get_component_names(in_filepath, section):
+def get_component_names(in_filepath: str, section: str) -> List:
+    """
+    Retrieve component names from a section in the .inp file.
+    :param in_filepath: Path to inp file.
+    :param section: Section from which to get values from the "names" column.
+    :return: Component names from the section.
+    """
 
     with open(in_filepath, 'r') as file:
         # Read the file into a list of lines
