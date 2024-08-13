@@ -45,6 +45,9 @@ class ANNClassifier(nn.Module):
         return x
 
     def fit_model(self, X_train, y_train):
+        # Set model to training mode.
+        self.train()
+
         # Data loader.
         train_loader = self.prepare_data(X_train, y_train, self.shuffle_train)
 
@@ -73,6 +76,9 @@ class ANNClassifier(nn.Module):
         return self
 
     def test_model(self, X_test, y_test):
+        # Set model to evaluation mode.
+        self.eval()
+
         # Test loader.
         test_loader = self.prepare_data(X_test, y_test, self.shuffle_test)
 
@@ -98,6 +104,9 @@ class ANNClassifier(nn.Module):
         return predictions, labels
 
     def predict(self, X):
+        # Set model to evaluation mode.
+        self.eval()
+
         # Convert to torch tensor.
         X = torch.tensor(X, dtype=torch.float32)
 
