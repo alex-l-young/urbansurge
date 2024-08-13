@@ -1,20 +1,14 @@
-import torch.nn as nn
+import torch
+from torch.utils.data import DataLoader
 
+from urbansurge.fault_diagnosis.ann_classifier import ANNClassifier
+from urbansurge.fault_diagnosis.data_utils import ANNDataset
 
-class SimpleANN(nn.Module):
-    def __init__(self):
-        super(SimpleANN, self).__init__()
-
-        # Fully connected layers
-        self.fc1 = nn.Linear(720, 512)  # input layer, 672 comes from 7x96
-        self.fc2 = nn.Linear(512, 256)
-        self.fc3 = nn.Linear(256, 128)
-        self.fc4 = nn.Linear(128, 64)
-        self.fc5 = nn.Linear(64, 1)  # output layer
-
-        # Activation function
-        self.relu = nn.ReLU()
-
+class ANNRegressor(ANNClassifier):
+    def __init__(self, input_features, output_features, lr, num_epochs, criterion,
+                 shuffle_train=True, shuffle_test=False):
+        super(ANNRegressor, self).__init__(input_features, output_features, lr, num_epochs, criterion,
+                 shuffle_train=shuffle_train, shuffle_test=shuffle_test)
 
     def forward(self, x):
         # Forward pass.
@@ -26,3 +20,18 @@ class SimpleANN(nn.Module):
         x = self.fc5(x) # No activation for regression.
 
         return x
+
+    @staticmethod
+    def prepare_data(X, y, shuffle):
+        # Convert X to torch tensor.
+        X_prep = torch.tensor(X, dtype=torch.float32)
+
+        # Convert y to categorical one-hot encoded tensor.
+        y_prep = torch.tensor(y, dtype=torch.float32)
+        y_prep = y_prep.unsqueeze(1)
+
+        # Create dataset and data loader.
+        dataset = ANNDataset(X_prep, y_prep)
+        dataloader = DataLoader(dataset, batch_size=32, shuffle=shuffle)
+
+        return dataloader
