@@ -8,7 +8,7 @@ from typing import List, Union
 
 
 def set_inp_section(in_filepath: str, section: str, column_name: str, component_name: int, new_value: Union[int, float],
-                    out_filepathNone):
+                    out_filepath=None):
     """
     Set a value in the .inp file.
     :param in_filepath: Path to inp file.
