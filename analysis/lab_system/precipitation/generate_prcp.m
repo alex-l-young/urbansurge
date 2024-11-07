@@ -23,6 +23,12 @@ P(1:impulse_spacing/dt:Nimpulse*impulse_spacing/dt) = impulse_values;
 
 figure()
 plot(t, P)
+xlabel('Time (min)')
+ylabel('Precip. Intensity')
+set(gca, 'FontSize', 18)
+f = gcf;
+prcp_fig_fp = "C:\Users\ay434\Box\Research\Smart_Stormwater\Manuscript\Figures\prcp_ramp.png";
+exportgraphics(f,prcp_fig_fp,'Resolution',300)
 
 %% Random impulses.
 impulse_max = 1;
