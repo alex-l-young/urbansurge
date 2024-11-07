@@ -71,7 +71,7 @@ class SWMM:
         # Length.
         conduit_lengths = self.cfg['CONDUITS']['length']
         if conduit_lengths:
-            for link_id, roughness in conduit_lengths.items():
+            for link_id, length in conduit_lengths.items():
                 self.set_link_length(link_id, length)
 
         # Junctions.
@@ -176,50 +176,132 @@ class SWMM:
         return 'NODE ID NOT FOUND IN ANY NODE SECTION'
 
 
-    def get_downstream_components(self, node_id, component_type):
-        '''
-        Get all link or weir IDs downstream of a node.
-        :param node_id: Node ID to start at.
-        :param component_type: Type of downstream component ['Link', 'Weir'].
-        :return: Downstream link IDs in upstream to downstream order.
-        '''
-        # Handle section names for different component types.
-        section_dict = {'Link': 'CONDUITS', 'Weir': 'WEIRS'}
-        section = section_dict[component_type]
-        ids = self.get_component_names(section)
-        weir_ids = self.get_component_names(section)
+    def get_downstream_components(self, start_component_id, start_component_type, downstream_component_type):
 
-        # Outfall IDs.
-        outfall_section = 'OUTFALLS'
-        outfall_ids = self.get_component_names(outfall_section)
-        outfall_ids = [int(i) for i in outfall_ids]
+        # Make component ID a string.
+        start_component_id = str(start_component_id)
+
+        # Handle section names for different component types.
+        section_dict = {'Link': 'CONDUITS', 'Junction': 'JUNCTIONS', 'Outfall': 'OUTFALLS', 'Storage': 'STORAGE'}
+        non_link_component_types = list(section_dict.keys())
+        non_link_component_types.remove('Link')
+        downstream_section = section_dict[downstream_component_type]
+        downstream_section_ids = self.get_component_names(downstream_section)
 
         # Column names for from and to nodes.
         from_column_name = 'From Node'
         to_column_name = 'To Node'
 
-        # From and to nodes.
-        nodes = np.zeros((len(ids), 3))
-        for i, id in enumerate(ids):
-            from_node_id = file_utils.get_inp_section(self.inp_path, section, from_column_name, id)
-            to_node_id = file_utils.get_inp_section(self.inp_path, section, to_column_name, id)
-            nodes[i,:] = [id, from_node_id, to_node_id]
+        # Conduit names.
+        conduit_ids = self.get_component_names('CONDUITS')
+        junction_ids = self.get_component_names('JUNCTIONS')
+        storage_ids = self.get_component_names('STORAGE')
+        outfall_ids = self.get_component_names('OUTFALLS')
 
-        # Loop through downstream links until an outfall is reached.
+        # {Node: component type} dictionary.
+        node_type_dict = {}
+        for id in junction_ids:
+            node_type_dict[id] = 'Junction'
+        for id in storage_ids:
+            node_type_dict[id] = 'Storage'
+        for id in outfall_ids:
+            node_type_dict[id] = 'Outfall'
+
+        # Create dataframe with columns | conduit_id | from_node_id | to_node_id | from CONDUITS section.
+        nodes = {'conduit_id': [], 'from_node_id': [], 'to_node_id': []}
+        for i, id in enumerate(conduit_ids):
+            from_node_id = file_utils.get_inp_section(self.inp_path, 'CONDUITS', from_column_name, id)
+            to_node_id = file_utils.get_inp_section(self.inp_path, 'CONDUITS', to_column_name, id)
+            nodes['conduit_id'].append(id)
+            nodes['from_node_id'].append(from_node_id)
+            nodes['to_node_id'].append(to_node_id)
+
+        # Make nodes into a data frame.
+        nodes = pd.DataFrame(nodes)
+
+        # Traverse downstream components to outfall while collecting components of required type.
         downstream_components = []
-        while node_id not in outfall_ids:
-            # If from node is in component section.
-            if node_id in nodes[:,1]:
-                # Save component.
-                downstream_component = int(nodes[nodes[:,1] == node_id, 0][0])
-                downstream_components.append(downstream_component)
+        component_id = start_component_id
+        component_type = start_component_type
 
-                # Set new to node.
-                node_id = nodes[nodes[:,1] == node_id, 2]
+        # If starting on a link and output is links, add that link.
+        if downstream_component_type == 'Link' and start_component_type == 'Link':
+            downstream_components.append(component_id)
 
-                continue
+        break_counter = 1
+        while component_id not in outfall_ids:
+            # Immediate downstream component.
+            if component_type == 'Link':
+                # Get the outlet node (to node) of the link.
+                next_component_id = nodes.loc[nodes['conduit_id'] == component_id, 'to_node_id'].iloc[0]
+                next_component_type = node_type_dict[next_component_id]
+            elif component_type in non_link_component_types:
+                # Get the conduit corresponding to the node.
+                next_component_id = nodes.loc[nodes['from_node_id'] == component_id, 'conduit_id'].iloc[0]
+                next_component_type = 'Link'
+            else:
+                raise Exception(f'Component type of "{component_type}" not one of {list(section_dict.keys())}')
+
+            # Add component to downstream components if the component should be collected.
+            if next_component_type == downstream_component_type and next_component_id in downstream_section_ids:
+                downstream_components.append(next_component_id)
+
+            # Update component ID.
+            component_id = next_component_id
+            component_type = next_component_type
+
+            # Break loop if it repeats more than 10,000 times.
+            if break_counter >= 1e4:
+                raise Exception('Downstream search budget of {} exceeded'.format(break_counter))
+            break_counter += 1
+
+        # If the desired downstream component is an outfall, add it once the previous loop has finished.
+        if downstream_component_type == 'Outfall':
+            downstream_components = [component_id]
 
         return downstream_components
+
+    def upstream_distance(self, component_1, component_1_type, component_2, component_2_type):
+        """
+        Calculates the distance upstream from component 1 to component 2.
+        :param component_1: ID of component 1.
+        :param component_2: ID of component 2.
+        :return: Distance upstream from component 1 to component 2. Returns 0 if component_1 == component_2 and np.nan
+            if component_1 is upstream of component 2.
+        """
+        # Make component names strings.
+        component_1 = str(component_1)
+        component_2 = str(component_2)
+
+        # All links downstream of component 2.
+        downstream_links = self.get_downstream_components(component_2, component_2_type, component_1_type)
+
+        # Handle edge cases.
+        if component_1 == component_2 and component_1_type == component_2_type:
+            return 0.0
+        elif component_1 not in downstream_links:
+            # Check if component_1 is in downstream links.
+            return np.nan
+        elif downstream_links[0] == component_1:
+            # If there are no between links, component_1 == component_2, return length of current link.
+            return self.get_link_length(component_1)
+
+        # List of links between component 2 and component 1.
+        # TODO: if component_1 isn't a link, it will not be found.
+        between_links = []
+        for link in downstream_links:
+            if link == component_1:
+                break
+            else:
+                between_links.append(link)
+
+        # Length of links in between_links.
+        between_lengths = [self.get_link_length(link) for link in between_links]
+
+        # Upstream distance.
+        dist = np.sum(between_lengths)
+
+        return dist
 
 
     def get_link_geometry(self, link_id):
@@ -567,11 +649,11 @@ class SWMM:
             print(f'Set Storage {storage_id} {property} to {new_value}')
 
 
-    def get_storage_outfall_link(self, storage_id):
+    def get_storage_outlet(self, storage_id):
         '''
-        Gets the outfall link for a storage component.
+        Gets the outlet link for a storage component.
         :param storage_id: ID of storage unit.
-        :return: ID of outfall link.
+        :return: ID of outlet link.
         '''
         # Get conduit names.
         conduit_names = file_utils.get_component_names(self.inp_path, 'CONDUITS')
@@ -579,15 +661,37 @@ class SWMM:
         # Loop through conduit names until the "from_node" is the storage node.
         conduit_section = 'CONDUITS'
         from_column_name = 'From Node'
-        outfall_link_id = None
+        outlet_link_id = None
         for component_name in conduit_names:
             from_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, from_column_name, component_name)
 
             if from_node_id == str(storage_id):
-                outfall_link_id = component_name
+                outlet_link_id = component_name
                 break
 
-        return outfall_link_id
+        return outlet_link_id
+
+    def get_storage_inlet(self, storage_id):
+        '''
+        Gets the inlet link for a storage component.
+        :param storage_id: ID of storage unit.
+        :return: ID of inlet link.
+        '''
+        # Get conduit names.
+        conduit_names = file_utils.get_component_names(self.inp_path, 'CONDUITS')
+
+        # Loop through conduit names until the "to_node" is the storage node.
+        conduit_section = 'CONDUITS'
+        from_column_name = 'To Node'
+        inlet_link_id = None
+        for component_name in conduit_names:
+            from_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, from_column_name, component_name)
+
+            if from_node_id == str(storage_id):
+                inlet_link_id = component_name
+                break
+
+        return inlet_link_id
 
 
     def set_raingage_timeseries(self, raingage_id, timeseries_name):
@@ -796,6 +900,27 @@ class SWMM:
         Rh = A / P
 
         return Rh
+    
+    def compute_area_from_depth(self, depth, link_id):
+        '''
+        Computes the cross-sectional wetted area of the pipe from depth and diameter.
+        :param depth: Depth of flow.
+        :param link_id: ID of link.
+        :return area: Cross-sectional area of water.
+        '''
+        # Link geometry.
+        geom = self.get_link_geometry(link_id)
+
+        # Link diameter.
+        D = geom[0]
+        
+        # Calculate the angle theta in radians
+        theta = 2 * np.arccos(1 - 2 * depth / D)
+        
+        # Calculate the area of the circular segment
+        area = (D**2 / 8) * (theta - np.sin(theta))
+        
+        return area
 
 
     def _get_link_series(self, link_attribute):
@@ -865,3 +990,11 @@ class SWMM:
     #     # Delete temporary run file if it was created.
     #     if self.cfg['temp_inp'] is True:
     #         os.remove(self.cfg['inp_path'])
+
+
+if __name__ == '__main__':
+    # SWMM model configuration file path.
+    config_path = r"C:\Users\ay434\Documents\urbansurge\analysis\lab_system\lab_system_config.yml"
+
+    swmm_model = SWMM(config_path)
+    print(swmm_model.compute_area_from_depth())
