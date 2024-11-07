@@ -6,10 +6,10 @@ from torch.utils.data import DataLoader
 
 from urbansurge.fault_diagnosis.data_utils import ANNDataset
 
-class ANNRegressor(nn.Module):
+class ANNClassifier(nn.Module):
     def __init__(self, input_features, output_features, lr, num_epochs, criterion,
                  shuffle_train=True, shuffle_test=False):
-        super(ANNRegressor, self).__init__()
+        super(ANNClassifier, self).__init__()
 
         # Training parameters.
         self.lr = lr # Learning rate.
@@ -122,8 +122,7 @@ class ANNRegressor(nn.Module):
         X_prep = torch.tensor(X, dtype=torch.float32)
 
         # Convert y to categorical one-hot encoded tensor.
-        y_prep = torch.tensor(y, dtype=torch.float32)
-        # y_prep = torch.nn.functional.one_hot(y_prep, num_classes=torch.max(y_prep) + 1).type(torch.FloatTensor)
+        y_prep = torch.tensor(y, dtype=torch.long)
 
         # Create dataset and data loader.
         dataset = ANNDataset(X_prep, y_prep)

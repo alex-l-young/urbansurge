@@ -40,7 +40,8 @@ class ANNClassifier(nn.Module):
         x = self.relu(self.fc2(x))
         x = self.relu(self.fc3(x))
         x = self.relu(self.fc4(x))
-        x = self.softmax(self.fc5(x))
+        # x = self.softmax(self.fc5(x))
+        x = self.fc5(x)
 
         return x
 
@@ -122,7 +123,7 @@ class ANNClassifier(nn.Module):
 
         # Convert y to categorical one-hot encoded tensor.
         y_prep = torch.tensor(y, dtype=torch.long)
-        y_prep = torch.nn.functional.one_hot(y_prep, num_classes=torch.max(y_prep) + 1).type(torch.FloatTensor)
+        # y_prep = torch.nn.functional.one_hot(y_prep, num_classes=torch.max(y_prep) + 1).type(torch.FloatTensor)
 
         # Create dataset and data loader.
         dataset = ANNDataset(X_prep, y_prep)
