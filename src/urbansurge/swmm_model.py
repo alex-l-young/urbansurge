@@ -43,8 +43,10 @@ class SWMM:
     def _parse_config(self, config_path: str) -> dict:
         """
         Parses the configuration file.
+
         :param config_path: Path to configuration file.
         :return: Configuration dictionary.
+
         """
         with open(config_path, "r") as ymlfile:
             cfg = yaml.safe_load(ymlfile)
@@ -141,8 +143,10 @@ class SWMM:
     def get_component_names(self, section):
         '''
         Returns the names of all components for a given section.
+
         :param section: Section name.
         :return: List of component names.
+        
         '''
         component_names = file_utils.get_component_names(self.inp_path, section)
 
