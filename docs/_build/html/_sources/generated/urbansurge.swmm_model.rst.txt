@@ -1,0 +1,29 @@
+﻿urbansurge.swmm\_model
+======================
+
+.. automodule:: urbansurge.swmm_model
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      SWMM
+   
+   
+
+   
+   
+   
+
+
+
