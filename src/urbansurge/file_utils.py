@@ -11,6 +11,7 @@ def set_inp_section(in_filepath: str, section: str, column_name: str, component_
                     out_filepath=None):
     """
     Set a value in the .inp file.
+    
     :param in_filepath: Path to inp file.
     :param section: Section to edit.
     :param column_name: Column to edit.

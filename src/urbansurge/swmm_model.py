@@ -17,6 +17,11 @@ import pandas as pd
 
 class SWMM:
     def __init__(self, config_path):
+        """
+        SWMM class for manipulation of an EPA SWMM model.
+
+        :param config_path: Path to configuration file.
+        """
         # Parse the configuration file into a dictionary.
         self.cfg = self._parse_config(config_path)
 
@@ -55,6 +60,12 @@ class SWMM:
 
 
     def configure_model(self):
+        """
+        Configure the EPA SWMM model from the configuration file. 
+
+        :return: No return.
+        
+        """
 
         # Conduits.
         # =====================================================
@@ -116,10 +127,11 @@ class SWMM:
 
 
     def _create_temp_inp(self):
-        '''
+        """
         Create a temporary inp file to run the model from.
+
         :return: Sets the name of self.cfg['inp_path'] to temporary path.
-        '''
+        """
         # Create new temporary file path.
         split_inp_path = os.path.splitext(self.cfg['inp_path'])
         inp_temp_path = split_inp_path[0] + '_tmp' + split_inp_path[1]
@@ -141,35 +153,40 @@ class SWMM:
                     
 
     def get_component_names(self, section):
-        '''
+        """
         Returns the names of all components for a given section.
 
-        :param section: Section name.
-        :return: List of component names.
-        
-        '''
+        :param section: The name of the section.
+        :type section: str
+        :return: A list of component names.
+        :rtype: list
+
+        """
+
         component_names = file_utils.get_component_names(self.inp_path, section)
 
         return component_names
 
 
     def get_components_by_tag(self, tag):
-        '''
+        """
         Returns the names of all components for a given tag.
+
         :param tag: tag name.
         :return: List of component names.
-        '''
+        """
         component_names = file_utils.get_components_by_tag(self.inp_path, tag)
 
         return component_names
 
 
     def get_node_section(self, node_id):
-        '''
+        """
         Find which section the node ID falls under.
+
         :param node_id:
         :return: Section name.
-        '''
+        """
         node_sections = ['JUNCTIONS', 'OUTFALLS', 'STORAGE']
 
         for node_section in node_sections:
@@ -268,6 +285,7 @@ class SWMM:
     def upstream_distance(self, component_1, component_1_type, component_2, component_2_type):
         """
         Calculates the distance upstream from component 1 to component 2.
+
         :param component_1: ID of component 1.
         :param component_2: ID of component 2.
         :return: Distance upstream from component 1 to component 2. Returns 0 if component_1 == component_2 and np.nan
@@ -309,11 +327,12 @@ class SWMM:
 
 
     def get_link_geometry(self, link_id):
-        '''
+        """
         Gets a link's geometry.
+
         :param link_id: Link ID.
         :return: Geometry of link. 4 item list for "Geom1" through "Geom4"
-        '''
+        """
         # Setting variables.
         section = 'XSECTIONS'
         column_names = ['Geom1', 'Geom2', 'Geom3', 'Geom4']
@@ -330,12 +349,13 @@ class SWMM:
 
 
     def set_link_geometry(self, link_id, geom):
-        '''
+        """
         Set a link's geometry.
+
         :param link_id: Link ID to edit.
         :param geom: Four item list with values for "Geom1" through "Geom4".
         :return: Prints success if verbose.
-        '''
+        """
         # Setting variables.
         section = 'XSECTIONS'
         column_names = ['Geom1', 'Geom2', 'Geom3', 'Geom4']
@@ -353,11 +373,12 @@ class SWMM:
 
 
     def get_link_roughness(self, link_id):
-        '''
+        """
         Gets a link's roughness.
+
         :param link_id: Link ID.
         :return: Roughness of link.
-        '''
+        """
         # Setting variables.
         section = 'CONDUITS'
         column_name = 'Roughness'
@@ -371,12 +392,13 @@ class SWMM:
 
 
     def set_link_roughness(self, link_id, roughness):
-        '''
+        """
         Set a link's roughness.
+
         :param link_id: Link ID to edit.
         :param roughness: New link roughness.
         :return: Prints success if verbose.
-        '''
+        """
         # Setting variables.
         section = 'CONDUITS'
         column_name = 'Roughness'
@@ -393,11 +415,12 @@ class SWMM:
 
 
     def get_link_length(self, link_id):
-        '''
+        """
         Gets a link's length.
+
         :param link_id: Link ID.
         :return: Length of link.
-        '''
+        """
         # Setting variables.
         section = 'CONDUITS'
         column_name = 'Length'
@@ -411,12 +434,13 @@ class SWMM:
 
 
     def set_link_length(self, link_id, length):
-        '''
+        """
         Set a link's length.
+
         :param link_id: Link ID to edit.
         :param length: New link length.
         :return: Prints success if verbose.
-        '''
+        """
         # Setting variables.
         section = 'CONDUITS'
         column_name = 'Length'
@@ -433,11 +457,12 @@ class SWMM:
 
 
     def get_link_offsets(self, link_id):
-        '''
+        """
         Gets link upstream and downstream offsets.
+
         :param link_id: Link ID.
         :return: Link offsets as a tuple. (Inlet Offset, Outlet Offset)
-        '''
+        """
         # Link variables.
         section = 'CONDUITS'
         in_column_name = 'InOffset'
@@ -454,12 +479,13 @@ class SWMM:
 
 
     def set_link_offsets(self, link_id, offsets):
-        '''
+        """
         Sets the inlet and outlet offsets for a link.
+
         :param link_id: ID of the link.
         :param offsets: Link offsets as a tuple (Inlet Offset, Outlet Offset)
         :return: Offsets.
-        '''
+        """
         # Link variables.
         section = 'CONDUITS'
         in_column_name = 'InOffset'
@@ -479,11 +505,12 @@ class SWMM:
 
 
     def get_link_seepage(self, link_id):
-        '''
+        """
         Gets link seepage rate.
+
         :param link_id: Link ID.
         :return: Link seepage rate.
-        '''
+        """
         # Link variables.
         section = 'LOSSES'
         column_name = 'Seepage'
@@ -496,12 +523,13 @@ class SWMM:
 
 
     def set_link_seepage(self, link_id, seepage_rate):
-        '''
+        """
         Set the link seepage rate. Roughly equivalent to hydraulic conductivity.
+
         :param link_id: ID of link.
         :param seepage_rate: Seepage rate in project units.
         :return: Prints success if verbose.
-        '''
+        """
         # Setting variables.
         section = 'LOSSES'
         column_name = 'Seepage'
@@ -617,12 +645,13 @@ class SWMM:
 
 
     def get_storage_property(self, storage_id, property):
-        '''
+        """
         Get the value of a storage property.
+
         :param storage_id: ID of storage unit.
         :param property: Name of the property.
         :return: Value of the storage property. Evaluates type automatically.
-        '''
+        """
         section = 'STORAGE'
         column_name = property
         component_name = storage_id
@@ -634,13 +663,14 @@ class SWMM:
 
 
     def set_storage_property(self, storage_id, property, property_value):
-        '''
+        """
         Get the value of a storage property.
+
         :param storage_id: ID of storage unit.
         :param property: Name of the property.
         :param property_value: New property value.
         :return: Prints success message.
-        '''
+        """
         section = 'STORAGE'
         column_name = property
         new_value = property_value
@@ -654,11 +684,12 @@ class SWMM:
 
 
     def get_storage_outlet(self, storage_id):
-        '''
+        """
         Gets the outlet link for a storage component.
+
         :param storage_id: ID of storage unit.
         :return: ID of outlet link.
-        '''
+        """
         # Get conduit names.
         conduit_names = file_utils.get_component_names(self.inp_path, 'CONDUITS')
 
@@ -676,11 +707,12 @@ class SWMM:
         return outlet_link_id
 
     def get_storage_inlet(self, storage_id):
-        '''
+        """
         Gets the inlet link for a storage component.
+
         :param storage_id: ID of storage unit.
         :return: ID of inlet link.
-        '''
+        """
         # Get conduit names.
         conduit_names = file_utils.get_component_names(self.inp_path, 'CONDUITS')
 
@@ -699,12 +731,13 @@ class SWMM:
 
 
     def set_raingage_timeseries(self, raingage_id, timeseries_name):
-        '''
+        """
         Assign a timeseries to a rain gage.
+
         :param raingage_id: Rain gage ID.
         :param timeseries_name: Timeseries name.
         :return: None
-        '''
+        """
 
         section = 'RAINGAGES'
         rg_ts_name = f'TIMESERIES {timeseries_name}'
@@ -729,10 +762,11 @@ class SWMM:
 
 
     def get_node_depth(self):
-        '''
+        """
         Get node depths.
+
         :return: Pandas data frame of node depths.
-        '''
+        """
         node_attribute = 'Depth'
         depth_df = self._get_node_series(node_attribute)
 
@@ -740,10 +774,11 @@ class SWMM:
 
 
     def get_node_flooding(self):
-        '''
+        """
         Get node flooding.
+
         :return: Pandas data frame of node flooding.
-        '''
+        """
         node_attribute = 'Flood'
         flood_df = self._get_node_series(node_attribute)
 
@@ -751,10 +786,11 @@ class SWMM:
 
 
     def get_node_head(self):
-        '''
+        """
         Get node head.
+
         :return: Pandas data frame of node head.
-        '''
+        """
         node_attribute = 'Head'
         head_df = self._get_node_series(node_attribute)
 
@@ -762,10 +798,11 @@ class SWMM:
 
 
     def get_node_total_inflow(self):
-        '''
+        """
         Get node total inflow.
+
         :return: Pandas data frame of node total inflow.
-        '''
+        """
         node_attribute = 'Total_Inflow'
         total_inflow_df = self._get_node_series(node_attribute)
 
@@ -773,10 +810,11 @@ class SWMM:
 
 
     def get_node_lateral_inflow(self):
-        '''
+        """
         Get node lateral inflow.
+
         :return: Pandas data frame of node lateral inflow.
-        '''
+        """
         node_attribute = 'Lateral_Inflow'
         lateral_inflow_df = self._get_node_series(node_attribute)
 
@@ -784,10 +822,11 @@ class SWMM:
 
 
     def get_node_ponded_volume(self):
-        '''
+        """
         Get node ponded volume.
+
         :return: Pandas data frame of node ponded volume.
-        '''
+        """
         node_attribute = 'Ponded_Volume'
         ponded_volume_df = self._get_node_series(node_attribute)
 
@@ -795,11 +834,12 @@ class SWMM:
 
 
     def _get_node_series(self, node_attribute):
-        '''
+        """
         Get node series for a node attribute.
+
         :param node_attribute: Node attribute to get series for.
         :return: Pandas data frame of series of node attribute.
-        '''
+        """
         # Get list of node IDs.
         node_ids = file_utils.get_component_names(self.inp_path, 'JUNCTIONS')
 
@@ -850,10 +890,11 @@ class SWMM:
 
 
     def get_link_flow(self):
-        '''
+        """
         Get link flow rate.
+
         :return: Pandas data frame of link flow rate.
-        '''
+        """
         link_attribute = 'Flow'
         flow_df = self._get_link_series(link_attribute)
 
@@ -861,10 +902,11 @@ class SWMM:
 
 
     def get_link_depth(self):
-        '''
+        """
         Get link depth.
+
         :return: Pandas data frame of link depth.
-        '''
+        """
         link_attribute = 'Depth'
         depth_df = self._get_link_series(link_attribute)
 
@@ -872,10 +914,11 @@ class SWMM:
 
 
     def get_link_velocity(self):
-        '''
+        """
         Get link velocity.
+
         :return: Pandas data frame of link velocity.
-        '''
+        """
         link_attribute = 'Velocity'
         velocity_df = self._get_link_series(link_attribute)
 
@@ -883,10 +926,11 @@ class SWMM:
 
 
     def get_link_volume(self):
-        '''
+        """
         Get link volume.
+
         :return: Pandas data frame of link volume.
-        '''
+        """
         link_attribute = 'Volume'
         volume_df = self._get_link_series(link_attribute)
 
@@ -894,10 +938,11 @@ class SWMM:
 
 
     def get_link_circular_Rh(self, depth, diameter):
-        '''
+        """
         Computes hydraulic radius (Rh) for a circular pipe.
+
         :return: Hydraulic radius.
-        '''
+        """
         theta = 2 * np.arccos(1 - 2 * depth / diameter)
         A = (diameter**2 / 8) * (theta - np.sin(theta))
         P = 0.5 * diameter * theta
@@ -906,12 +951,13 @@ class SWMM:
         return Rh
     
     def compute_area_from_depth(self, depth, link_id):
-        '''
+        """
         Computes the cross-sectional wetted area of the pipe from depth and diameter.
+
         :param depth: Depth of flow.
         :param link_id: ID of link.
         :return area: Cross-sectional area of water.
-        '''
+        """
         # Link geometry.
         geom = self.get_link_geometry(link_id)
 
@@ -928,11 +974,12 @@ class SWMM:
 
 
     def _get_link_series(self, link_attribute):
-        '''
+        """
         Get link series for a link attribute.
+
         :param link_attribute: Link attribute to get series for.
         :return: Pandas data frame of link attribute.
-        '''
+        """
         # Get list of link IDs.
         link_ids = file_utils.get_component_names(self.inp_path, 'CONDUITS')
 
