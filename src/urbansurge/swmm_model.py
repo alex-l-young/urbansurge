@@ -963,6 +963,11 @@ class SWMM:
 
         # Link diameter.
         D = geom[0]
+
+        # Depth cannot be greater than diameter.
+        if np.any(depth > D):
+            print('Found depth(s) greater than diameter -- assuming pipe is full.')
+            depth[depth > D] = D
         
         # Calculate the angle theta in radians
         theta = 2 * np.arccos(1 - 2 * depth / D)
