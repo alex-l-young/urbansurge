@@ -9,8 +9,9 @@ close all
 clear
 
 i = 0; % trial number (modify to write to new spreadsheet)
-fs = 4000; % daq sampling rate (Hz)
-dt = 5; % trial length (s)
+dt_sensor = 0.03; % Sensor sampling rate.
+fs = 1/dt_sensor; % daq sampling rate (Hz)
+dt = 40; % trial length (s)
 
 dq = daq("ni");
 dq.Rate = fs;
@@ -27,13 +28,20 @@ ch1.TerminalConfig = "SingleEnded";
 V_ai0 = data(:,1);
 V_ai1 = data(:,2);
 
-% write to spreadsheet
-tab = table(time, V_ai0, V_ai1);
-date = string(datetime('now'));
-path = "sensor_data\";
-filename = date + "_" + "sensor_data" + ".csv";
-writetable(tab, path+filename, 'WriteMode', 'append');
+figure()
+subplot(211)
+plot(time, V_ai0)
+xlabel('Time (s)')
+ylabel('Voltage (V)')
 
+subplot(212)
 plot(time, V_ai1)
 xlabel('Time (s)')
 ylabel('Voltage (V)')
+
+%% write to spreadsheet
+tab = table(time, V_ai0, V_ai1);
+date = string(datetime('now', 'Format', 'yyyy-MM-dd''_''HH-mm-ss'));
+path = "sensor_data\";
+filename = date + "_" + "sensor_data" + ".csv";
+writetable(tab, fullfile(path,filename));
