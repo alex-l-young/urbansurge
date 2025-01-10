@@ -964,10 +964,12 @@ class SWMM:
         # Link diameter.
         D = geom[0]
 
-        # Depth cannot be greater than diameter.
+        # Depth cannot be greater than diameter or less than 0.
         if np.any(depth > D):
             print('Found depth(s) greater than diameter -- assuming pipe is full.')
             depth[depth > D] = D
+        elif np.any(depth < 0):
+            depth[depth < 0] = 0
         
         # Calculate the angle theta in radians
         theta = 2 * np.arccos(1 - 2 * depth / D)
@@ -1047,6 +1049,86 @@ class SWMM:
     #     if self.cfg['temp_inp'] is True:
     #         os.remove(self.cfg['inp_path'])
 
+def diameter_fault(swmm, fault_component, fault_value, value_type):
+    # Get initial diameter.
+    initial_geometry = swmm.get_link_geometry(fault_component)
+    initial_diameter = initial_geometry[0]
+
+    # Handle percentage fault or absolute fault.
+    if value_type == 'fraction':
+        offset = initial_diameter * fault_value
+    elif value_type == 'absolute':
+        offset = fault_value
+    else:
+        raise ValueError('Value type incorrectly specified as', value_type)
+
+    # Update the link diameter.
+    update_geometry = initial_geometry.copy()
+    update_geometry[0] = initial_diameter - offset
+    swmm.set_link_geometry(fault_component, update_geometry)
+
+    # Update the link offsets.
+    swmm.set_link_offsets(fault_component, (offset, offset))
+    
+    return swmm
+
+def roughness_fault(swmm, fault_component, fault_value, value_type):
+    # Assign fault variables.
+    link_id = fault_component
+    n = fault_value
+
+    # Get link roughness.
+    link_n = swmm.get_link_roughness(link_id)
+
+    # Handle percentage fault or absolute fault.
+    if value_type == 'fraction':
+        n = link_n * fault_value
+    elif value_type == 'absolute':
+        n = fault_value
+    else:
+        raise ValueError('Value type incorrectly specified as', value_type)
+
+    # Update the link roughness.
+    swmm.set_link_roughness(link_id, n)
+    
+    return swmm
+    
+def silting_fault(swmm, fault_component, fault_value):
+    # Assign fault variables.
+    storage_id = fault_component
+    silt_depth = fault_value
+
+    # Get storage depth.
+    Ds_init = swmm.get_storage_property(storage_id, 'MaxDepth')
+    
+    # Get inlet conduit offsets.
+    inlet_link_id = swmm.get_storage_inlet(storage_id)
+    (inlet_in_offset, inlet_out_offset_init) = swmm.get_link_offsets(inlet_link_id)
+
+    # Get outlet conduit offsets.
+    outlet_link_id = swmm.get_storage_outlet(storage_id)
+    (outlet_in_offset_init, outlet_out_offset) = swmm.get_link_offsets(outlet_link_id)
+
+    # Get the storage invert elevation.
+    zi_init = swmm.get_storage_property(storage_id, 'Elev.')
+
+    # Update the storage_depth.
+    Ds = Ds_init - silt_depth
+    swmm.set_storage_property(storage_id, 'MaxDepth', Ds)
+    
+    # Update inlet conduit offset.
+    inlet_out_offset = inlet_out_offset_init - silt_depth
+    swmm.set_link_offsets(inlet_link_id, (inlet_in_offset, inlet_out_offset))
+
+    # Update outlet conduit offset.
+    outlet_in_offset = outlet_in_offset_init - silt_depth
+    swmm.set_link_offsets(outlet_link_id, (outlet_in_offset, outlet_out_offset))
+
+    # Update storage invert elevation.
+    zi = zi_init + silt_depth
+    swmm.set_storage_property(storage_id, 'Elev.', zi)
+    
+    return swmm
 
 if __name__ == '__main__':
     # SWMM model configuration file path.
