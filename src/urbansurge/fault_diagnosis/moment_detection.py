@@ -2,12 +2,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats, spatial
 
-def moment_fault_detect(dt, y_base, y_obs, significance=0.05):
+def moment_fault_detect(dt, y_base, y_obs, significance=0.05, detection_method='diverge', pad=0.0):
     """
+
     :param dt: Time stamps as datetime objects.
     :param y_base: Baseline samples at one sensor location. Dimension: (samples, timesteps, sensors)
     :param y_obs: Observed sensor reading. Dimension: (sensors, timesteps)
-    :param alpha: Significance level.
+    :param significance: Significance level.
+    :param pad: If detection_method is 'diverge, the padding is added to the range of the baseline moments, decreasing false positives at the expense of true sensitivity.
+
     :return: Whether or not a fault was detected at the sensor.
     """
     # Number of samples and time steps.
@@ -43,7 +46,7 @@ def moment_fault_detect(dt, y_base, y_obs, significance=0.05):
             m3_base[i] = np.sum((t - m1_base[i])**3 * y_samp) / np.sum(y_samp)
 
         # Fit an MVN on the moments.
-        # Stack the vectors to create a data matrix of shape (n_samples, n_features)
+        # Stack the vectors to create a data matrix of shape (n_observations, n_variables)
         base_moments = np.stack((m0_base, m1_base, m2_base, m3_base), axis=1)
 
         # Calculate mean and covariance matrix
@@ -60,35 +63,59 @@ def moment_fault_detect(dt, y_base, y_obs, significance=0.05):
         # Concatenate into a single vector.
         obs_moments = np.array([m0_obs, m1_obs, m2_obs, m3_obs])
 
-        # fig, axes = plt.subplots(2, 2)
-        # axes[0,0].scatter(base_moments[:,0], base_moments[:,1], c='k', marker='x')
-        # axes[0,0].scatter(obs_moments[0], obs_moments[1])
+        # If m0_obs is 0.0, then other moments will be nan. This is a fault.
+        if m0_obs == 0:
+            print('NO FLOW OBSERVED >>> Declaring fault')
+            detections[si] = 1
+            continue
+        
+        if detection_method == 'mahal':
+            # If covariance matrix is singular, there is no noise, so return detection if observations are different from baseline at all.
+            SMALL = 1e-10
+            try:
+                if np.linalg.matrix_rank(base_cov) < base_cov.shape[0]:
+                    print('COVARIANCE MATRIX NON-INVERTIBLE. Assuming measurement error is 0.0 and using L2-norm detection.')
+                    if np.linalg.norm(obs_moments - base_moments[0,:]) > SMALL:
+                        detections[si] = 1
+                        continue
+                    else:
+                        detections[si] = 0
+                        continue
+            except Exception as e:
+                print(e)
+                fig, ax = plt.subplots()
+                for si in range(n_sensor):
+                    ax.plot(y_obs[si,:])
+            
+            # Calculate the Mahalanobis distance of the test vector
+            mahalanobis_distance = spatial.distance.mahalanobis(obs_moments, base_mean, np.linalg.inv(base_cov))
 
-        # axes[0,1].scatter(base_moments[:,1], base_moments[:,2], c='k', marker='x')
-        # axes[0,1].scatter(obs_moments[1], obs_moments[2])
+            # Determine the confidence threshold (critical value from chi-squared distribution with 4 DOF)
+            threshold = np.sqrt(stats.chi2.ppf(1 - alpha, df=4))
 
-        # axes[1,0].scatter(base_moments[:,2], base_moments[:,3], c='k', marker='x')
-        # axes[1,0].scatter(obs_moments[2], obs_moments[3])
+            # Check if the observed vector falls outside the 95% confidence hyperellipse. If yes, fault detected.
+            detections[si] = mahalanobis_distance > threshold
 
-        # If covariance matrix is singular, there is no noise, so return detection if observations are different from baseline at all.
-        SMALL = 10e-5
-        if np.linalg.matrix_rank(base_cov) < base_cov.shape[0]:
-            print('COVARIANCE MATRIX NON-INVERTIBLE. Assuming measurement error is 0.0 and using L2-norm detection.')
-            if np.linalg.norm(obs_moments - base_moments[0,:]) > SMALL:
-                detections[si] = 1
-                continue
+        elif detection_method == 'diverge':
+            # Detection when observed moment falls outside range of baseline moment samples.
+            # Find column-wise min and max of baseline moments.
+            b_min = base_moments.min(axis=0)
+            b_max = base_moments.max(axis=0)
 
-        # Calculate the Mahalanobis distance of the test vector
-        mahalanobis_distance = spatial.distance.mahalanobis(obs_moments, base_mean, np.linalg.inv(base_cov))
+            # print('BASE M MAX:', b_max)
+            # print('BASE M MIN:', b_min)
+            # print('OBS MOMENTS:', obs_moments)
 
-        # Determine the confidence threshold (critical value from chi-squared distribution with 4 DOF)
-        threshold = np.sqrt(stats.chi2.ppf(1 - alpha, df=4))
+            # Check if elements of observed moments are outside the range of the respective baseline moments.
+            baseline_range = np.abs(b_max - b_min)
+            pad_absolute = baseline_range * pad
+            detection = np.all((obs_moments < b_min - pad_absolute) | (obs_moments > b_max + pad_absolute))
+            detections[si] = detection
 
-        # Check if the observed vector falls outside the 95% confidence hyperellipse. If yes, fault detected.
-        detections[si] = mahalanobis_distance > threshold
+            # print('DETECTION:', detection)
 
     # If there are detections at any of the sensors, return detection.
-    if np.all(detections == 1):
+    if np.any(detections):
         detect = True
     else:
         detect = False

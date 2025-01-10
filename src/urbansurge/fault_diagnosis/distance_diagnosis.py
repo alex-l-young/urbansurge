@@ -33,7 +33,7 @@ class DistanceDiagnoser:
         # Step 2: Compute the L2 norm (Euclidean distance) along the last axis
         l2_norm_matrix = scipy.spatial.distance.cdist(self.X_train, X_test)
         # print(X_test.shape)
-        print(l2_norm_matrix.shape)
+        # print(l2_norm_matrix.shape)
 
         # # Argmin across rows.
         # if n_l2 == 1:
