@@ -44,3 +44,50 @@ def align_measurement_dfs(df_ref, df, time_col, corr_col):
     df_shift['time'] = t_shifted
 
     return df_shift
+
+
+def V_to_htank(V):
+    """
+    Convert tank sensor voltage to height (cm).
+    """
+    return 2.3017*V + 4.3401
+
+
+def voltage_to_depth(V, b0, b1):
+    """
+    Convert sensor voltage to water depth (cm) based on calibration regression.
+
+    :param V: Voltage from sensor.
+    :param b0: Intercept.
+    :param b1: Slope.
+
+    :return depth: Water depth.
+    """
+    return b0 + b1 * V
+
+
+def approx_dVdt(t,V):
+    """
+    Approximate dV/dt for tank.
+
+    :param t: Time array.
+    :param V: Voltage array.
+    """
+    dt = t[1]-t[0]
+    dVdt = np.zeros(len(V))
+    for k in range(1,len(t)-1):
+        dVdt[k] = (V[k+1] - V[k-1])/(2*dt)
+
+    return dVdt
+
+
+def flow_rate(dVdt, A):
+    """
+    Calculate flow rate from voltage derivative and area of tank.
+
+    :param dVdt: Approximated dVdt from output of approx_dVdt().
+    :param A: Cross-sectional area of the tank.
+    """
+    return 2.3017*dVdt*A
+
+
