@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats, spatial
 
-def moment_fault_detect(dt, y_base, y_obs, significance=0.05, detection_method='diverge', pad=0.0):
+def moment_fault_detect(dt, y_base, y_obs, significance=0.05, detection_method='diverge', pad=0.0, return_moments=False):
     """
 
     :param dt: Time stamps as datetime objects.
@@ -10,6 +10,7 @@ def moment_fault_detect(dt, y_base, y_obs, significance=0.05, detection_method='
     :param y_obs: Observed sensor reading. Dimension: (sensors, timesteps)
     :param significance: Significance level.
     :param pad: If detection_method is 'diverge, the padding is added to the range of the baseline moments, decreasing false positives at the expense of true sensitivity.
+    :param return_moments: Return baseline and observation moment arrays.
 
     :return: Whether or not a fault was detected at the sensor.
     """
@@ -120,4 +121,9 @@ def moment_fault_detect(dt, y_base, y_obs, significance=0.05, detection_method='
     else:
         detect = False
 
-    return detect
+    # Optional return moments.
+    if return_moments is True:
+        moments = {'baseline': base_moments, 'observation': obs_moments}
+        return detect, moments
+    else:
+        return detect
