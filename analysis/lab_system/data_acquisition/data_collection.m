@@ -8,13 +8,24 @@ Write data to spreadsheet
 close all
 clear
 
-i = 0; % trial number (modify to write to new spreadsheet)
-dt_sensor = 0.03; % Sensor sampling rate.
-fs = 1/dt_sensor; % daq sampling rate (Hz)
-dt = 40; % trial length (s)
-
+% Trigger valve.
+%************************************
 dq = daq("ni");
-dq.Rate = fs;
+
+% Output trigger signal.
+ch0_out = addoutput(dq, "Dev1", "ao0", "Voltage");
+
+% Trigger signal.
+write(dq, 0);
+write(dq, 3);
+write(dq, 0);
+pause(1)
+
+% Data Collection.
+%***********************************
+% Clear daq instance and prepare for data collection
+clear dq
+dq = daq("ni");
 
 % add inputs
 ch0 = addinput(dq, "Dev1", "ai0", "Voltage"); % bucket sensor
@@ -24,6 +35,11 @@ ch1 = addinput(dq, "Dev1", "ai1", "Voltage"); % pipe sensor [###]
 ch1.TerminalConfig = "SingleEnded";
 
 % collect data
+i = 0; % trial number (modify to write to new spreadsheet)
+dt_sensor = 0.03; % Sensor sampling rate.
+fs = 1/dt_sensor; % daq sampling rate (Hz)
+dt = 60; % trial length (s)
+dq.Rate = fs;
 [data, time, start] = read(dq, seconds(dt), OutputFormat="Matrix");
 V_ai0 = data(:,1);
 V_ai1 = data(:,2);
