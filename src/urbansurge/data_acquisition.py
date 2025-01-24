@@ -87,3 +87,30 @@ def flow_rate(dVdt, A):
     return 2.3017*dVdt*A
 
 
+def flow_to_swmm_readable():
+    # Save as SWMM-readable .dat files.
+
+    # Starting date time.
+    start_dt = datetime.strptime('2020-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
+    dts = [start_dt + timedelta(seconds=i * dt) for i in range(len(t))]
+
+    # Date strings.
+    dates = [datetime.strftime(d, '%d-%m-%Y') for d in dts]
+    times = [datetime.strftime(d, '%H:%M:%S') for d in dts]
+
+    # File path.
+    file_dir = Path(r"swmm_files")
+
+    # Loop through time series and save.
+    for i in range(P.shape[1]):
+        # File name.
+        fname = f"P_{i}.dat"
+
+        # Format data into a data frame.
+        df = pd.DataFrame({'date': dates, 'time': times, 'P': P[:,i]})
+
+        print(df.dtypes)
+
+        # Save the dataframe as a dat file
+        df.to_csv(file_dir / fname, index=False, header=False, sep='\t')
+    return 
