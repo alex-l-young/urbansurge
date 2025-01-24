@@ -87,7 +87,7 @@ def flow_rate(dVdt, A):
     return 2.3017*dVdt*A
 
 
-def flow_to_swmm_readable():
+def flow_to_swmm_readable(Q, t, file_dir, file_name):
     # Save as SWMM-readable .dat files.
 
     # Starting date time.
@@ -101,16 +101,15 @@ def flow_to_swmm_readable():
     # File path.
     file_dir = Path(r"swmm_files")
 
-    # Loop through time series and save.
-    for i in range(P.shape[1]):
-        # File name.
-        fname = f"P_{i}.dat"
+    # File name.
+    fname = f"P_{i}.dat"
 
-        # Format data into a data frame.
-        df = pd.DataFrame({'date': dates, 'time': times, 'P': P[:,i]})
+    # Format data into a data frame.
+    df = pd.DataFrame({'date': dates, 'time': times, 'P': P})
 
-        print(df.dtypes)
+    print(df.dtypes)
 
-        # Save the dataframe as a dat file
-        df.to_csv(file_dir / fname, index=False, header=False, sep='\t')
+    # Save the dataframe as a dat file
+    df.to_csv(file_dir / fname, index=False, header=False, sep='\t')
+    
     return 
