@@ -8,16 +8,16 @@ from scipy.signal import correlate
 
 # UrbanSurge imports.
 
-def align_measurement_dfs(df_ref, df, time_col, corr_col):
+def align_measurements(df_ref, df, time_col, corr_col):
     """
-    Aligns a data frame to a reference data frame based on the lag of the maximum correlation.  
+    Aligns a data frame time column to a reference data frame based on the lag of the maximum correlation.  
 
     :param df_ref: Reference data frame containing a time column and column to correlate.
     :param df: Data frame to shift to reference data frame.
     :param time_col: Name of the time column in both data frames.
     :param corr_col: Name of the column to correlate on.
 
-    :return df_shift: Same as df, but with a shifted time column to match reference data frame.
+    :return t_align: Same as df, but with a shifted time column to match reference data frame.
     """
     t = df_ref[time_col].to_numpy()
     Nt = len(t)
@@ -31,19 +31,15 @@ def align_measurement_dfs(df_ref, df, time_col, corr_col):
 
     # Shift. How far df is shifted from df_ref (negative is to left, positive is to right).
     shift = Nt - max_corr_idx
-    t_shifted = np.arange(t[0] - shift * dt, t[-1] - shift * dt, dt)
+    t_align = np.arange(t[0] - shift * dt, t[-1] - shift * dt, dt)
 
-    # Handle edge cases where t_shifted ends up one dt off from t.
-    if len(t_shifted) < Nt:
-        t_shifted = np.append(t_shifted, t_shifted[-1] + dt)
-    elif len(t_shifted) > Nt:
-        t_shifted = t_shifted[:Nt]
+    # Handle edge cases where t_align ends up one dt off from t.
+    if len(t_align) < Nt:
+        t_align = np.append(t_align, t_align[-1] + dt)
+    elif len(t_align) > Nt:
+        t_align = t_align[:Nt]
 
-    # Update time column in df_test.
-    df_shift = df.copy()
-    df_shift['time'] = t_shifted
-
-    return df_shift
+    return t_align
 
 
 def V_to_htank(V):
@@ -53,15 +49,15 @@ def V_to_htank(V):
     return 2.3017*V + 4.3401
 
 
-def voltage_to_depth(V, b0, b1):
+def voltage_to_value(V, b0, b1):
     """
-    Convert sensor voltage to water depth (cm) based on calibration regression.
+    Convert sensor voltage to desired measurement units based on calibration regression.
 
     :param V: Voltage from sensor.
     :param b0: Intercept.
     :param b1: Slope.
 
-    :return depth: Water depth.
+    :return value: Value in desired units.
     """
     return b0 + b1 * V
 
