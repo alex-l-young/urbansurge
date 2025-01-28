@@ -17,9 +17,11 @@ ch0_out = addoutput(dq, "Dev1", "ao0", "Voltage");
 
 % Trigger signal.
 write(dq, 0);
-write(dq, 3);
+write(dq, 4);
+pause(0.1)
 write(dq, 0);
 pause(1)
+disp('TRIGGERED')
 
 % Data Collection.
 %***********************************
@@ -34,6 +36,9 @@ ch0.TerminalConfig = "SingleEnded";
 ch1 = addinput(dq, "Dev1", "ai1", "Voltage"); % pipe sensor [###]
 ch1.TerminalConfig = "SingleEnded";
 
+ch2 = addinput(dq, "Dev1", "ai2", "Voltage"); % pipe sensor [###]
+ch2.TerminalConfig = "SingleEnded";
+
 % collect data
 i = 0; % trial number (modify to write to new spreadsheet)
 dt_sensor = 0.03; % Sensor sampling rate.
@@ -43,20 +48,26 @@ dq.Rate = fs;
 [data, time, start] = read(dq, seconds(dt), OutputFormat="Matrix");
 V_ai0 = data(:,1);
 V_ai1 = data(:,2);
+V_ai2 = data(:,3);
 
 figure()
-subplot(211)
+subplot(311)
 plot(time, V_ai0)
 xlabel('Time (s)')
 ylabel('Voltage (V)')
 
-subplot(212)
+subplot(312)
 plot(time, V_ai1)
 xlabel('Time (s)')
 ylabel('Voltage (V)')
 
+subplot(313)
+plot(time, V_ai2)
+xlabel('Time (s)')
+ylabel('Voltage (V)')
+
 %% write to spreadsheet
-tab = table(time, V_ai0, V_ai1);
+tab = table(time, V_ai0, V_ai1, V_ai2);
 date = string(datetime('now', 'Format', 'yyyy-MM-dd''_''HH-mm-ss'));
 path = "sensor_data\";
 filename = date + "_" + "sensor_data" + ".csv";
