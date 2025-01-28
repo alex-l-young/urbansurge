@@ -18,3 +18,4 @@ tests/test_files/
 /src/**/*.inp
 /src/**/*.out
 /src/**/*.rpt
+*.asv
