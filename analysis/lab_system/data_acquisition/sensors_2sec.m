@@ -4,10 +4,10 @@ clear
 dq = daq("ni");
 
 % Sample duration.
-duration = 5; % Seconds
+duration = 3; % Seconds
 
 % DAQ channel.
-channel = 'ai2';
+channel = 'ai1';
 
 % DAQ sampling rate.
 dt_sensor = 0.03; % Sensor sampling rate.
@@ -24,19 +24,19 @@ plot(data.Time, data.Variables)
 xlabel('Time (s)')
 ylabel('Voltage (V)')
 
-dataM = mean(data.Variables);
+dataM = mean(data.Variables)
 stDev = std(data.Variables);
 z = abs((data.Variables - dataM))./stDev;
 
-newData = data.Variables;
-filtered = newData(z < 4);
+%newData = data.Variables;
+%filtered = newData(z < 4);
 
-figure();
-plot(filtered)
-xlabel('Time (s)')
-ylabel('Voltage (V)')
-newRange = max(filtered) - min(filtered)
-newMean = mean(filtered)
+%figure();
+%plot(filtered)
+%xlabel('Time (s)')
+%ylabel('Voltage (V)')
+%newRange = max(filtered) - min(filtered)
+%newMean = mean(filtered)
 
-figure()
-plot()
+%figure()
+%plot()
