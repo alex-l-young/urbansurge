@@ -8,30 +8,53 @@ from scipy.signal import correlate
 
 # UrbanSurge imports.
 
-def align_measurements(df_ref, df, time_col, corr_col):
+def align_measurements(df_ref, df, time_col, corr_col, pulse_length):
     """
-    Aligns a data frame time column to a reference data frame based on the lag of the maximum correlation.  
+    Aligns a data frame time column to a reference data frame based on the lag
+    where the mean absolute difference (MAD) is minimized.
 
-    :param df_ref: Reference data frame containing a time column and column to correlate.
-    :param df: Data frame to shift to reference data frame.
+    :param df_ref: Reference data frame containing a time column and column to compare.
+    :param df: Data frame to shift to the reference data frame.
     :param time_col: Name of the time column in both data frames.
-    :param corr_col: Name of the column to correlate on.
+    :param corr_col: Name of the column to compare.
+    :param pulse_length: Length of pulse in number of time steps.
 
-    :return t_align: Same as df, but with a shifted time column to match reference data frame.
+    :return t_align: Same as df, but with a shifted time column to match the reference data frame.
     """
     t = df_ref[time_col].to_numpy()
     Nt = len(t)
     dt = t[1] - t[0]
 
-    # Cross correlation.
-    corr_ar = correlate(df_ref[corr_col], df[corr_col])
+    # Extract relevant data for comparison.
+    ref_data = df_ref.loc[:pulse_length, corr_col].to_numpy()
+    working_data = df.loc[:pulse_length, corr_col].to_numpy()
 
-    # Index of maximum cross correlation.
-    max_corr_idx = np.argmax(corr_ar)
+    # Buffer zone for comparisons.
+    buffer_size = 20
 
-    # Shift. How far df is shifted from df_ref (negative is to left, positive is to right).
-    shift = Nt - max_corr_idx
-    t_align = np.arange(t[0] - shift * dt, t[-1] - shift * dt, dt)
+    m1s = []
+    m2s = []
+    for overlap in range(buffer_size, Nt):
+        # 1st.
+        ref_1 = ref_data[:overlap]
+        work_1 = working_data[-overlap:]
+        # 2nd.
+        ref_2 = ref_data[-overlap:]
+        work_2 = working_data[:overlap]
+
+        # Compute MAD within bounds.
+        m1 = np.mean(np.abs(ref_1 - work_1))
+        m2 = np.mean(np.abs(ref_2 - work_2))
+        m1s.append(m1)
+        m2s.append(m2)
+
+    ms = np.concatenate((m1s, np.flip(m2s)))
+    min_m = np.argmin(ms)
+    shift = buffer_size - len(ref_data) + min_m
+    print(shift)
+
+    # Compute the shift.
+    t_align = np.arange(t[0] + shift * dt, t[-1] + shift * dt, dt)
 
     # Handle edge cases where t_align ends up one dt off from t.
     if len(t_align) < Nt:
