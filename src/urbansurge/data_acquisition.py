@@ -4,9 +4,10 @@
 
 # Library imports.
 import numpy as np
-from scipy.signal import correlate
-from datetime import datetime
+import pandas as pd
+from datetime import datetime, timedelta
 from pathlib import Path
+from typing import List
 
 # UrbanSurge imports.
 
@@ -111,29 +112,23 @@ def flow_rate(dVdt, A):
     return 2.3017*dVdt*A
 
 
-def flow_to_swmm_readable(Q, t, file_dir, file_name):
-    # Save as SWMM-readable .dat files.
+def flow_to_swmm_readable(Q: np.ndarray, t: List[datetime], file_dir: Path, file_name: str) -> None:
+    """
+    Convert flow data and save as SWMM-readable .dat files.
 
-    # Starting date time.
-    start_dt = datetime.strptime('2020-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
-    dts = [start_dt + timedelta(seconds=i * dt) for i in range(len(t))]
+    :param Q: Flow time series.
+    :param t: List of datetime objects.
+    :param file_dir: File directory as Path object.
+    :param file_name: Name of file with .dat.
 
+    :return: None
+    """
     # Date strings.
-    dates = [datetime.strftime(d, '%d-%m-%Y') for d in dts]
-    times = [datetime.strftime(d, '%H:%M:%S') for d in dts]
-
-    # File path.
-    file_dir = Path(r"swmm_files")
-
-    # File name.
-    fname = f"P_{i}.dat"
+    dates = [datetime.strftime(d, '%d-%m-%Y') for d in t]
+    times = [datetime.strftime(d, '%H:%M:%S') for d in t]
 
     # Format data into a data frame.
-    df = pd.DataFrame({'date': dates, 'time': times, 'P': P})
-
-    print(df.dtypes)
+    df = pd.DataFrame({'date': dates, 'time': times, 'Q': Q})
 
     # Save the dataframe as a dat file
-    df.to_csv(file_dir / fname, index=False, header=False, sep='\t')
-    
-    return 
+    df.to_csv(file_dir / file_name, index=False, header=False, sep='\t')
