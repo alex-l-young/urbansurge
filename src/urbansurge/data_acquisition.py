@@ -53,7 +53,6 @@ def align_measurements(df_ref, df, time_col, corr_col, pulse_length):
     ms = np.concatenate((m1s, np.flip(m2s)))
     min_m = np.argmin(ms)
     shift = buffer_size - len(ref_data) + min_m
-    print(shift)
 
     # Compute the shift.
     t_align = np.arange(t[0] + shift * dt, t[-1] + shift * dt, dt)
