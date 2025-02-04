@@ -29,6 +29,24 @@ def flatten_df(df):
     return single_row_df
 
 
+def impulse(a, L, dt):
+    """
+    Generates a cos^2 impulse of defined magnitude, and duration.
+
+    :param a: Impulse peak magnitude.
+    :param L: Length of impulse in time steps.
+    :param dt: Time step length.
+
+    :return I: Impulse values.
+    :return t: Time array.  
+    """
+    b = np.pi / 2
+    t = np.arange(0, L, dt)
+    I = a * np.cos(np.pi / L * t + b)**2
+    
+    return I, t
+
+
 if __name__ == '__main__':
     data = {'dt': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
           'node1': [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115],
