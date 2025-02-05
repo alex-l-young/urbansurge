@@ -3,6 +3,7 @@
 # ========================================================
 
 # Library imports.
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
@@ -29,15 +30,15 @@ def align_measurements(df_ref, df, time_col, corr_col, pulse_length):
     dt = t[1] - t[0]
 
     # Extract relevant data for comparison.
-    ref_data = df_ref.loc[:pulse_length, corr_col].to_numpy()
-    working_data = df.loc[:pulse_length, corr_col].to_numpy()
+    ref_data = df_ref[corr_col].to_numpy()[:pulse_length]
+    working_data = df[corr_col].to_numpy()[:pulse_length]
 
     # Buffer zone for comparisons.
     buffer_size = 20
 
     m1s = []
     m2s = []
-    for overlap in range(buffer_size, Nt):
+    for overlap in range(buffer_size, len(ref_data) + 1):
         # 1st.
         ref_1 = ref_data[:overlap]
         work_1 = working_data[-overlap:]
