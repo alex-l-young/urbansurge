@@ -14,6 +14,7 @@ import shutil
 import os
 import numpy as np
 import pandas as pd
+from typing import Union
 
 
 class SWMM:
@@ -765,17 +766,28 @@ class SWMM:
         file_utils.add_timeseries_file(self.inp_path, ts_name, ts_description, file_path, overwrite=False)
         
 
-    def set_node_inflow(self, node_id, timeseries_name, timeseries_dir):
+    def set_node_inflow(self, node_id: Union[str, int], ts_name: str, Sfactor=1.0) -> None:
         """
-        Add an inflow time series specified by a file to a node.
+        # TODO: NOT COMPLETE.
+        Add an inflow time series specified by a file to a node. Type is FLOW.
 
         :param node_id: ID of node to add inflow to.
-        :param timeseries_name: Name of time series. Must match the <timeseries name>.dat
-        :param timeseries_dir: 
+        :param ts_name: Name of time series. Must match the <timeseries name>.dat
+        :param Sfactor: Scale factor. Default = 1.0.
         """
         section = 'INFLOWS'
 
-        return
+        data_dict = {
+            'Constituent': 'FLOW',
+            'Time Series': ts_name,
+            'Type': 'FLOW',
+            'Mfactor': 1.0,
+            'Sfactor': Sfactor
+        }
+
+        # Set the inflow.
+        for column_name, new_value in data_dict.items():
+            file_utils.set_inp_section(self.inp_path, section, column_name, node_id, new_value)
 
 
     # OUTPUT METHODS
