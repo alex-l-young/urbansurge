@@ -6,6 +6,7 @@
 from urbansurge import file_utils
 
 # Library imports.
+from pathlib import Path
 from pyswmm import Simulation, Nodes, Links, Output
 from swmm.toolkit.shared_enum import LinkAttribute, NodeAttribute, SubcatchAttribute, SystemAttribute
 import yaml
@@ -749,6 +750,32 @@ class SWMM:
     def add_prcp_timeseries(self, ts_name, ts_description, times, values, dates=None, overwrite=False):
         # TODO: Add functionality to assign a file as a timeseries.
         file_utils.add_prcp_timeseries(self.inp_path, ts_name, ts_description, times, values, dates=dates, overwrite=overwrite)
+
+    
+    def add_timeseries_file(self, ts_name: str, ts_description: str, file_path: Path) -> None:
+        """
+        Add timeseries file to SWMM model.
+
+        :param ts_name: Name of time series. No spaces.
+        :param ts_description: Description of time series.
+        :file_path: Path to .dat time series file.
+
+        :return: None.
+        """
+        file_utils.add_timeseries_file(self.inp_path, ts_name, ts_description, file_path, overwrite=False)
+        
+
+    def set_node_inflow(self, node_id, timeseries_name, timeseries_dir):
+        """
+        Add an inflow time series specified by a file to a node.
+
+        :param node_id: ID of node to add inflow to.
+        :param timeseries_name: Name of time series. Must match the <timeseries name>.dat
+        :param timeseries_dir: 
+        """
+        section = 'INFLOWS'
+
+        return
 
 
     # OUTPUT METHODS
