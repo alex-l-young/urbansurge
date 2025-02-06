@@ -328,6 +328,83 @@ def add_prcp_timeseries(in_filepath, ts_name, ts_description, times, values, dat
         f.writelines(lines)
 
 
+def add_timeseries_file(in_filepath, ts_name, ts_description, file_path, overwrite=False, out_filepath=None):
+
+    # If out_filename is None, use in_filename.
+    if out_filepath is None:
+        out_filepath = in_filepath
+
+    # Open the input file.
+    with open(in_filepath, 'r') as f:
+        lines = f.readlines()
+
+    # Loop through lines.
+    for i in range(len(lines)):
+
+        # Find the correct section.
+        if lines[i].strip().startswith('[TIMESERIES]'):
+            # Line index of first row of timeseries table.
+            table_start_idx = i + 3
+
+            # Find last row of time series table.
+            table_end_idx = i + 1
+            while lines[table_end_idx].strip() != '':
+                table_end_idx += 1
+
+            # Get column start indices for Date, Time, and Value.
+            column_split = [*lines[i + 1]]
+            col_inds = [0] # Index for Name is 0.
+            for c_name in ['Date', 'Time', 'Value']:
+                ci, _ = string_index(lines[i+1], c_name)
+                col_inds.append(ci)
+
+            # Add description line.
+            if overwrite is True:
+                ts_lines = [] # New lines to add.
+            else:
+                ts_lines = [';\n']  # New lines to add.
+            line_template = [' ' for _ in column_split] # Template line to populate.
+            line_template[-1] = '\n'
+            desc_line = ';' + ts_description
+            desc_line = desc_line + ''.join([' ' for _ in range(len(column_split) - len(desc_line))]) + '\n'
+            ts_lines.append(desc_line)
+
+            # Add new line with time series file.
+            new_line = line_template.copy()
+            new_line[col_inds[0]:len(ts_name)+1] = ts_name # Timeseries name.
+            new_line[col_inds[1]:len('FILE') + 1] = ['FILE'] # File tag.
+            new_line[col_inds[2]:len(str(file_path)) + 1] = f'"{file_path}"' # file path.
+
+            # Join the line.
+            new_line = ''.join(new_line)
+            ts_lines.append(new_line)
+
+            # Add a newline after the time series section.
+            ts_lines.append('\n')
+
+            # Insert the new lines in the correct location within the file.
+            if overwrite is True:
+                # Remove the existing time series data.
+                del lines[table_start_idx:table_end_idx]
+
+                # Add in the new time series data.
+                lines[table_start_idx:table_start_idx] = ts_lines
+
+            elif overwrite is False:
+                # Add in the new time series data.
+                lines[table_end_idx:table_end_idx] = ts_lines
+
+            else:
+                raise ValueError('Overwrite not specified as True or False.')
+
+            # Break out of looping through lines.
+            break
+
+    # write the modified contents back to the file
+    with open(out_filepath, 'w') as f:
+        f.writelines(lines)
+
+
 def string_index(full_string, match_string):
     """
     Find the start and end indices of a match_string in the full_string.
