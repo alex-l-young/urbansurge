@@ -89,6 +89,59 @@ def split_storms(R: List[float], t: List[float]) -> Tuple[Dict[int, List[float]]
     return S, St
 
 
+def perturb_storm_arrival(R: List[float], t: List[float], sig_t: float) -> List[float]:
+    """
+    Perturbs arrival time of storms.
+
+    :param R: List of rainfall intensity values.
+    :type R: List[float]
+    :param t: List of corresponding time stamps.
+    :type t: List[float]
+    :param sig_t: Standard deviation of arrival time normal distribution.
+    :type sig_t: float
+    
+    """
+
+    # Split the storms.
+    S, St = split_storms(R, t)
+
+    # Time step.
+    dt = t[1] - t[0]
+    
+    # Perturbed runoff array.
+    Rp = np.zeros_like(R)
+
+    for Si, Ri in S.items():
+        # Index of first time step.
+        ti = np.argwhere(t == St[Si][0])[0][0]
+
+        # Shift in number of array indices. Ensure Ri not shifted completely off of Rp.
+        storm_start_idx = len(Rp) + 1
+        storm_end_idx = -1
+        while storm_start_idx > len(Rp) or storm_end_idx < 0:
+            shift = round(np.random.normal(0, sig_t) / dt)
+
+            storm_start_idx = ti + shift
+            storm_end_idx = ti + shift + len(Ri)
+
+        if storm_start_idx < 0:
+            idx_diff = -storm_start_idx
+            storm_start_idx = 0
+            # print('SS', 'Rp', len(Rp[storm_start_idx:storm_end_idx]), 'Ri', len(Ri[idx_diff:]), len(Ri), 'SH', shift)
+            Rp[storm_start_idx:storm_end_idx] += Ri[idx_diff:]
+        elif storm_end_idx > len(Rp):
+            idx_diff = storm_end_idx - len(Rp)
+            storm_end_idx = len(Rp)
+            # print('SE', 'Rp', len(Rp[storm_start_idx:storm_end_idx]), 'Ri', len(Ri[:-idx_diff]), len(Ri), 'SH', shift)
+            Rp[storm_start_idx:storm_end_idx] += Ri[:-idx_diff]
+        else:
+            Rp[storm_start_idx:storm_end_idx] += Ri
+
+    return Rp
+
+
+
+
 
 if __name__ == '__main__':
     data = {'dt': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
