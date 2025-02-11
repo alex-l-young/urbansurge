@@ -134,9 +134,9 @@ def perturb_storm_arrival(
     dt = t[1] - t[0]
     Nt = len(t)
     
-    # Perturbed runoff array.
-    Sp: Dict[int, List[float]] = {}  # Storm index to rainfall slices
-    Stp: Dict[int, List[float]] = {}  # Storm index to time slices
+    # # Perturbed arrival time dictionaries.
+    Sp: Dict[int, List[float]] = {}
+    Stp: Dict[int, List[float]] = {}
 
     for Si, Ri in S.items():
         # Index of first time step.
@@ -169,7 +169,37 @@ def perturb_storm_arrival(
     return Sp, Stp
 
 
-# def perturb_storm_magnitude(R: List[float], t: List[float], sig_t: float) -> List[float]:
+def perturb_storm_magnitude(
+    S: Dict[int, List[float]], 
+    St: Dict[int, List[float]], 
+    t: List[float], 
+    sig_m: float
+) -> Tuple[Dict[int, List[float]], Dict[int, List[float]]]:
+    """
+    Perturbs the magnitude of storms.
+
+    :param S: Dictionary mapping storm indices to rainfall intensity slices.
+    :type S: Dict[int, List[float]]
+    :param St: Dictionary mapping storm indices to corresponding time stamp slices.
+    :type St: Dict[int, List[float]]
+    :param t: List of time stamps for the full time series.
+    :type t: List[float]
+    :param sig_m: Standard deviation for the normal distribution used to perturb storm magnitudes.
+    :type sig_m: float
+    :return: Two dictionaries containing the perturbed rainfall intensities and corresponding time stamps.
+    :rtype: Tuple[Dict[int, List[float]], Dict[int, List[float]]]
+    """
+    # Perturbed magnitude dictionaries.
+    Sp: Dict[int, List[float]] = {} 
+
+    for Si, Ri in S.items():
+        # Perturb the storm magnitude.
+        perturbation = np.random.normal(0, sig_m)
+        Rpi = Ri * (1 + perturbation)
+        Rpi[Rpi < 0] = 0
+        Sp[Si] = Rpi
+    
+    return Sp, St
 
 
 if __name__ == '__main__':
