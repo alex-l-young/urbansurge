@@ -89,6 +89,27 @@ def split_storms(R: List[float], t: List[float]) -> Tuple[Dict[int, List[float]]
     return S, St
 
 
+def combine_storms(
+    S: Dict[int, List[float]], 
+    St: Dict[int, List[float]], 
+    t: List[float]
+) -> List[float]:
+    # Initialize the output rainfall array with zeros
+    Rp = np.zeros_like(t, dtype=float)
+
+    # Iterate over each storm
+    for Si, Ri in S.items():
+        ti = np.array(St[Si])  # Convert storm timestamps to array
+
+        # Find indices in t corresponding to ti
+        indices = np.searchsorted(t, ti)
+
+        # Add rainfall values at corresponding indices
+        np.add.at(Rp, indices, Ri)
+
+    return Rp.tolist()
+    
+
 def perturb_storm_arrival(
     S: Dict[int, List[float]], 
     St: Dict[int, List[float]], 
