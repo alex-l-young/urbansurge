@@ -6,6 +6,7 @@
 # Library imports.
 import pandas as pd
 import numpy as np
+from typing import Dict, List, Tuple
 
 
 def flatten_df(df):
@@ -45,6 +46,48 @@ def impulse(a, L, dt):
     I = a * np.cos(np.pi / L * t + b)**2
     
     return I, t
+
+
+def split_storms(R: List[float], t: List[float]) -> Tuple[Dict[int, List[float]], Dict[int, List[float]]]:
+    """
+    Splits rainfall data into individual storms.
+
+    :param R: List of rainfall intensity values.
+    :type R: List[float]
+    :param t: List of corresponding time stamps.
+    :type t: List[float]
+    :raises ValueError: If `R` and `t` have different lengths.
+    :return: A tuple containing two dictionaries:
+        - `S`: Maps storm indices to lists of rainfall intensity values.
+        - `St`: Maps storm indices to lists of corresponding time stamps.
+    :rtype: Tuple[Dict[int, List[float]], Dict[int, List[float]]]
+    """
+    if len(R) != len(t):
+        raise ValueError("R and t must have the same length.")
+
+    S: Dict[int, List[float]] = {}  # Storm index to rainfall slices
+    St: Dict[int, List[float]] = {}  # Storm index to time slices
+
+    storm_index = -1
+    in_storm = False
+    start_idx = 0
+
+    for i in range(len(R)):
+        if R[i] > 0 and not in_storm:
+            # Start of a new storm
+            storm_index += 1
+            start_idx = i
+            in_storm = True
+
+        # End of a storm detected when R falls back to 0 and stays at 0
+        if in_storm and (i == len(R) - 1 or R[i + 1] == 0):
+            # Capture the storm slice
+            S[storm_index] = R[start_idx:i + 1]
+            St[storm_index] = t[start_idx:i + 1]
+            in_storm = False
+
+    return S, St
+
 
 
 if __name__ == '__main__':
