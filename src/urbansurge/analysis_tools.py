@@ -103,7 +103,7 @@ def combine_storms(
 
     # Iterate over each storm
     for Si, Ri in S.items():
-        ti = np.array(St[Si])  # Convert storm timestamps to array
+        ti = np.array(St[Si])
 
         # Find indices in t corresponding to ti
         indices = np.searchsorted(t, ti)
@@ -153,6 +153,7 @@ def perturb_storm_arrival(
             storm_start_idx = ti_start + shift
             storm_end_idx = ti_start + shift + len(Ri)
 
+        # Handle partial shifts off of Rp.
         if storm_start_idx < 0:
             idx_diff = -storm_start_idx
             Sp[Si] = Ri[idx_diff:]
