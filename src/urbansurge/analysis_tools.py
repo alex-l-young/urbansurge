@@ -105,7 +105,7 @@ def combine_storms(
         indices = np.searchsorted(t, ti)
 
         # Add rainfall values at corresponding indices
-        np.add.at(Rp, indices, Ri)
+        np.add.at(Rp, indices, Ri.flatten())
 
     return Rp.tolist()
     
@@ -120,15 +120,10 @@ def perturb_storm_arrival(
     Perturbs the arrival time of storms.
 
     :param S: Dictionary mapping storm indices to rainfall intensity slices.
-    :type S: Dict[int, List[float]]
     :param St: Dictionary mapping storm indices to corresponding time stamp slices.
-    :type St: Dict[int, List[float]]
     :param t: List of time stamps for the full time series.
-    :type t: List[float]
     :param sig_t: Standard deviation for the normal distribution used to shift storms.
-    :type sig_t: float
     :return: Two dictionaries containing the perturbed rainfall intensities and corresponding time stamps.
-    :rtype: Tuple[Dict[int, List[float]], Dict[int, List[float]]]
     """
     # Time step.
     dt = t[1] - t[0]
@@ -179,15 +174,10 @@ def perturb_storm_magnitude(
     Perturbs the magnitude of storms.
 
     :param S: Dictionary mapping storm indices to rainfall intensity slices.
-    :type S: Dict[int, List[float]]
     :param St: Dictionary mapping storm indices to corresponding time stamp slices.
-    :type St: Dict[int, List[float]]
     :param t: List of time stamps for the full time series.
-    :type t: List[float]
     :param sig_m: Standard deviation for the normal distribution used to perturb storm magnitudes.
-    :type sig_m: float
     :return: Two dictionaries containing the perturbed rainfall intensities and corresponding time stamps.
-    :rtype: Tuple[Dict[int, List[float]], Dict[int, List[float]]]
     """
     # Perturbed magnitude dictionaries.
     Sp: Dict[int, List[float]] = {} 
@@ -200,6 +190,76 @@ def perturb_storm_magnitude(
         Sp[Si] = Rpi
     
     return Sp, St
+
+
+def generate_runoff(
+        dt: float,
+        T: float,
+        n_pulse: int,
+        a_bounds: Tuple[float, float],
+        L_bounds: Tuple[float, float],
+        sig_a: float,
+        sig_L: float,
+        sig_imp: float,
+        n_runoff: int,
+        seed: int = None
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Generate N runoff time series.
+
+    :param dt: Time step.
+    :param T: Simulation length in days.
+    :param n_pulse: Number of pulses.
+    :param a_bounds: Magnitude bounds.
+    :param L_bounds: Impulse length bounds in seconds.
+    :param sig_a: Standard deviation for magnitude.
+    :param sig_L: Standard deviation for impulse length in seconds.
+    :param sig_imp: Standard deviation for impulse start in seconds.
+    :param n_runoff: Number of runoff time series to generate.
+    :return: Runoff array and corresponding array of time stamps.
+    """
+    # Generate a long time series of pulses.
+    T_sec = T * 86400 # T in seconds.
+    t = np.arange(0, T_sec, dt)
+
+    # Set random seed.
+    if seed is not None:
+        np.random.seed(seed) # Using 10 and 30.
+
+    # Runoff array.
+    R = np.zeros((len(t), n_runoff))
+
+    for i in range(n_pulse):
+        # Sample a from uniform.
+        a = np.random.uniform(a_bounds[0], a_bounds[1])
+
+        # Sample start time from uniform.
+        impulse_start = np.random.choice(t, 1)[0]
+
+        # Impulse length.
+        L = np.random.uniform(L_bounds[0], L_bounds[1])
+
+        for j in range(n_runoff):
+            # Sample individual runoff time series from parameters.
+
+            # Magnitude. Ensure it is between bounds.
+            a_j = np.min([np.max([np.random.normal(a, sig_a), a_bounds[0]]), a_bounds[1]])
+
+            # Impulse start. Ensure it lies between 0 and max(t).
+            impulse_start_j = np.min([np.max([int(np.random.normal(impulse_start, sig_imp)), 0]), np.max(t)])
+
+            # Impulse length. Ensure it is between bounds.
+            L_j = np.min([np.max([np.random.normal(L, sig_L), L_bounds[0]]), L_bounds[1]])
+
+            # Generate impulse.
+            R_impulse, _ = impulse(a_j, L_j, dt)
+
+            # Add to runoff array at correct start point.
+            idx = np.arange(impulse_start_j, np.min([impulse_start_j + len(R_impulse), len(t)])).astype(int)
+
+            R[idx,j] = R[idx,j] + R_impulse[:len(idx)]
+
+    return R, t
 
 
 if __name__ == '__main__':
