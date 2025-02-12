@@ -225,7 +225,7 @@ def generate_runoff(
     """
     # Generate a long time series of pulses.
     T_sec = T * 86400 # T in seconds.
-    t = np.arange(0, T_sec, dt)
+    t = np.arange(0, T_sec, dt).astype(float)
 
     # Set random seed.
     if seed is not None:
@@ -234,12 +234,12 @@ def generate_runoff(
     # Runoff array.
     R = np.zeros((len(t), n_runoff))
 
-    for i in range(n_pulse):
+    for _ in range(n_pulse):
         # Sample a from uniform.
         a = np.random.uniform(a_bounds[0], a_bounds[1])
 
-        # Sample start time from uniform.
-        impulse_start = np.random.choice(t, 1)[0]
+        # Sample start index from time array.
+        impulse_start = np.random.choice(np.arange(len(t)))
 
         # Impulse length.
         L = np.random.uniform(L_bounds[0], L_bounds[1])
@@ -251,7 +251,8 @@ def generate_runoff(
             a_j = np.min([np.max([np.random.normal(a, sig_a), a_bounds[0]]), a_bounds[1]])
 
             # Impulse start. Ensure it lies between 0 and max(t).
-            impulse_start_j = np.min([np.max([int(np.random.normal(impulse_start, sig_imp)), 0]), np.max(t)])
+            impulse_start_shift = impulse_start + round(np.random.normal(0, sig_imp) / dt)
+            impulse_start_j = np.min([np.max([impulse_start_shift, 0]), len(t)])
 
             # Impulse length. Ensure it is between bounds.
             L_j = np.min([np.max([np.random.normal(L, sig_L), L_bounds[0]]), L_bounds[1]])
