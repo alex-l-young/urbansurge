@@ -53,14 +53,11 @@ def split_storms(R: List[float], t: List[float]) -> Tuple[Dict[int, List[float]]
     Splits rainfall data into individual storms.
 
     :param R: List of rainfall intensity values.
-    :type R: List[float]
     :param t: List of corresponding time stamps.
-    :type t: List[float]
     :raises ValueError: If `R` and `t` have different lengths.
     :return: A tuple containing two dictionaries:
         - `S`: Maps storm indices to lists of rainfall intensity values.
         - `St`: Maps storm indices to lists of corresponding time stamps.
-    :rtype: Tuple[Dict[int, List[float]], Dict[int, List[float]]]
     """
     if len(R) != len(t):
         raise ValueError("R and t must have the same length.")
@@ -90,10 +87,17 @@ def split_storms(R: List[float], t: List[float]) -> Tuple[Dict[int, List[float]]
 
 
 def combine_storms(
-    S: Dict[int, List[float]], 
-    St: Dict[int, List[float]], 
-    t: List[float]
-) -> List[float]:
+    S: Dict[int, np.ndarray], 
+    St: Dict[int, np.ndarray], 
+    t: np.ndarray
+) -> np.ndarray:
+    """
+    Combines storm dictionaries into a single rainfall time series.
+
+    :param S: Dictionary mapping storm indices to rainfall intensity slices.
+    :param St: Dictionary mapping storm indices to corresponding time stamp slices.
+    :param t: List of time stamps for the full time series.
+    """
     # Initialize the output rainfall array with zeros
     Rp = np.zeros_like(t, dtype=float)
 
@@ -107,15 +111,15 @@ def combine_storms(
         # Add rainfall values at corresponding indices
         np.add.at(Rp, indices, Ri.flatten())
 
-    return Rp.tolist()
+    return Rp
     
 
 def perturb_storm_arrival(
-    S: Dict[int, List[float]], 
-    St: Dict[int, List[float]], 
-    t: List[float], 
+    S: Dict[int, np.ndarray], 
+    St: Dict[int, np.ndarray], 
+    t: np.ndarray, 
     sig_t: float
-) -> Tuple[Dict[int, List[float]], Dict[int, List[float]]]:
+) -> Tuple[Dict[int, np.ndarray], Dict[int, np.ndarray]]:
     """
     Perturbs the arrival time of storms.
 
@@ -130,8 +134,8 @@ def perturb_storm_arrival(
     Nt = len(t)
     
     # # Perturbed arrival time dictionaries.
-    Sp: Dict[int, List[float]] = {}
-    Stp: Dict[int, List[float]] = {}
+    Sp: Dict[int, np.ndarray] = {}
+    Stp: Dict[int, np.ndarray] = {}
 
     for Si, Ri in S.items():
         # Index of first time step.
@@ -165,11 +169,11 @@ def perturb_storm_arrival(
 
 
 def perturb_storm_magnitude(
-    S: Dict[int, List[float]], 
-    St: Dict[int, List[float]], 
-    t: List[float], 
+    S: Dict[int, np.ndarray], 
+    St: Dict[int, np.ndarray], 
+    t: np.ndarray, 
     sig_m: float
-) -> Tuple[Dict[int, List[float]], Dict[int, List[float]]]:
+) -> Tuple[Dict[int, np.ndarray], Dict[int, np.ndarray]]:
     """
     Perturbs the magnitude of storms.
 
@@ -180,7 +184,7 @@ def perturb_storm_magnitude(
     :return: Two dictionaries containing the perturbed rainfall intensities and corresponding time stamps.
     """
     # Perturbed magnitude dictionaries.
-    Sp: Dict[int, List[float]] = {} 
+    Sp: Dict[int, np.ndarray] = {} 
 
     for Si, Ri in S.items():
         # Perturb the storm magnitude.
