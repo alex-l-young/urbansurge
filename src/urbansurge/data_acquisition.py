@@ -9,6 +9,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List
+import math
 
 # UrbanSurge imports.
 
@@ -102,16 +103,64 @@ def approx_dVdt(t,V):
 
     return dVdt
 
-
-def flow_rate(dVdt, A):
+def tank_area(): # lol should probably make this a constant?
     """
-    Calculate flow rate from voltage derivative and area of tank.
+    Return value for tank cross-sectional area. 
 
-    :param dVdt: Approximated dVdt from output of approx_dVdt().
-    :param A: Cross-sectional area of the tank.
+    :return: Area of the tank for the experimental setup. 
     """
+    # Tank measurements
+    thickness = 0.125 # inches
+    tank_OD = 57.75/np.pi # inches
+    tank_ID = (tank_OD - 2*thickness)*2.54 # cm
+
+    return 0.25*np.pi*(tank_ID**2)
+
+
+def flow_rate(V, t):
+    """
+    Calculate flow rate from voltage and time series.
+
+    :param V: Numpy array of voltage readings from tank sensor.
+    :param t: Numpy array of corresponding times for voltage readings. 
+    """
+    #### SMOOTH VOLTAGE FIRST
+
+    dVdt = approx_dVdt(t, V)
+    A = tank_area()
+
     return 2.3017*dVdt*A
 
+def discrete_flow_series(Q: np.ndarray, t: np.ndarray, h = 1): #### should we chop this off at 20 sec? 
+    """
+    Convert a continuous flow measurement to a discrete flow series.
+
+    :param Q: Numpy array containing original flow measurements.
+    :param t: Numpy array containing corresponding times for Q.
+    :param h: Desired timestep for discrete flow series.
+
+    :return: Tuple containing numpy array of discrete flow series, and list of datetime objects.
+    """
+    # Compute number of points per timestep.
+    pts_per_h = math.ceil(h/(t[1] - t[0]))
+
+    # Initialize lists.
+    flow_series = [0]
+    k = 0
+    dt = [datetime(2024, 1, 1, 0, 0, 0)]
+
+    # Compute discrete values by averaging within each timestep.
+    for i in range(0, len(Q)-pts_per_h, pts_per_h):
+        k += 1
+        sum = 0
+        for j in range(i, i+pts_per_h):
+            sum += Q[j]
+        if sum < 0:
+            sum = 0
+        flow_series.append(sum/pts_per_h)
+        dt.append(datetime(2024, 1, 1, 0, 0, k))
+
+    return (np.array(flow_series), dt)
 
 def flow_to_swmm_readable(Q: np.ndarray, t: List[datetime], file_dir: Path, file_name: str) -> None:
     """
