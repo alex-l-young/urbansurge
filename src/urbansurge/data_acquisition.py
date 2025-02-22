@@ -103,7 +103,7 @@ def approx_dVdt(t,V):
 
     return dVdt
 
-def tank_area(): # lol should probably make this a constant?
+def tank_area(): 
     """
     Return value for tank cross-sectional area. 
 
@@ -119,19 +119,18 @@ def tank_area(): # lol should probably make this a constant?
 
 def flow_rate(V, t):
     """
-    Calculate flow rate from voltage and time series.
+    Calculate flow rate from smoothed voltage and time series.
 
     :param V: Numpy array of voltage readings from tank sensor.
     :param t: Numpy array of corresponding times for voltage readings. 
     """
-    #### SMOOTH VOLTAGE FIRST
 
     dVdt = approx_dVdt(t, V)
     A = tank_area()
 
     return 2.3017*dVdt*A
 
-def discrete_flow_series(Q: np.ndarray, t: np.ndarray, h = 1): #### should we chop this off at 20 sec? 
+def discrete_flow_series(Q: np.ndarray, t: np.ndarray, h = 1): #### chop off after 20 sec
     """
     Convert a continuous flow measurement to a discrete flow series.
 
