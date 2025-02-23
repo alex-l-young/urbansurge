@@ -890,8 +890,6 @@ class SWMM:
             print('Model has no outfalls.')
 
         # Add storage nodes.
-        storage_ids = file_utils.get_component_names(self.inp_path, 'STORAGE')
-        node_ids.extend(storage_ids)
         try:
             storage_ids = file_utils.get_component_names(self.inp_path, 'STORAGE')
             node_ids.extend(storage_ids)
