@@ -173,7 +173,7 @@ def flow_to_swmm_readable(Q: np.ndarray, t: List[datetime], file_dir: Path, file
     :return: None
     """
     # Date strings.
-    dates = [datetime.strftime(d, '%d-%m-%Y') for d in t]
+    dates = [datetime.strftime(d, '%m-%d-%Y') for d in t]
     times = [datetime.strftime(d, '%H:%M:%S') for d in t]
 
     # Format data into a data frame.
