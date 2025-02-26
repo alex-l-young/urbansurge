@@ -144,13 +144,12 @@ def discrete_flow_series(Q: np.ndarray, t: np.ndarray, h = 1): #### chop off aft
     pts_per_h = math.ceil(h/(t[1] - t[0]))
 
     # Initialize lists.
-    flow_series = [0]
+    flow_series = []
     k = 0
-    dt = [datetime(2024, 1, 1, 0, 0, 0)]
+    dt = []
 
     # Compute discrete values by averaging within each timestep.
     for i in range(0, len(Q)-pts_per_h, pts_per_h):
-        k += 1
         sum = 0
         for j in range(i, i+pts_per_h):
             sum += Q[j]
@@ -158,8 +157,9 @@ def discrete_flow_series(Q: np.ndarray, t: np.ndarray, h = 1): #### chop off aft
             sum = 0
         flow_series.append(sum/pts_per_h)
         dt.append(datetime(2024, 1, 1, 0, 0, k))
+        k += 1
 
-    return (np.array(flow_series), dt)
+    return (np.array(flow_series[:30]), dt[:30])
 
 def flow_to_swmm_readable(Q: np.ndarray, t: List[datetime], file_dir: Path, file_name: str) -> None:
     """
