@@ -1,0 +1,128 @@
+[TITLE]
+;;Project Title/Notes
+
+[OPTIONS]
+;;Option             Value
+FLOW_UNITS           CFS
+INFILTRATION         HORTON
+FLOW_ROUTING         DYNWAVE
+LINK_OFFSETS         DEPTH
+MIN_SLOPE            0
+ALLOW_PONDING        NO
+SKIP_STEADY_STATE    NO
+
+START_DATE           02/26/2025
+START_TIME           00:00:00
+REPORT_START_DATE    02/26/2025
+REPORT_START_TIME    00:00:00
+END_DATE             02/26/2025
+END_TIME             06:00:00
+SWEEP_START          1/1
+SWEEP_END            12/31
+DRY_DAYS             0
+REPORT_STEP          00:15:00
+WET_STEP             00:05:00
+DRY_STEP             01:00:00
+ROUTING_STEP         0:00:20 
+RULE_STEP            00:00:00
+
+INERTIAL_DAMPING     PARTIAL
+NORMAL_FLOW_LIMITED  BOTH
+FORCE_MAIN_EQUATION  H-W
+VARIABLE_STEP        0.75
+LENGTHENING_STEP     0
+MIN_SURFAREA         0
+MAX_TRIALS           0
+HEAD_TOLERANCE       0
+SYS_FLOW_TOL         5
+LAT_FLOW_TOL         5
+MINIMUM_STEP         0.5
+THREADS              1
+
+[EVAPORATION]
+;;Data Source    Parameters
+;;-------------- ----------------
+CONSTANT         0.0
+DRY_ONLY         NO
+
+[JUNCTIONS]
+;;Name           Elevation  MaxDepth   InitDepth  SurDepth   Aponded   
+;;-------------- ---------- ---------- ---------- ---------- ----------
+J1               2.15       0          0          0          0         
+J2               2.7        0          0          0          0         
+J3               2.75       0          0          0          0         
+J4               3.12       0          0          0          0         
+J5               3.43       0          0          0          0         
+J6               3.96       0          0          0          0         
+J7               2.725      0          0          0          0         
+J8               2.725      0          0          0          0         
+
+[OUTFALLS]
+;;Name           Elevation  Type       Stage Data       Gated    Route To        
+;;-------------- ---------- ---------- ---------------- -------- ----------------
+Out1             1.68       FREE                        NO                       
+
+[CONDUITS]
+;;Name           From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   
+;;-------------- ---------------- ---------------- ---------- ---------- ---------- ---------- ---------- ----------
+1                Out1             J1               10         0.01       0          0          0          0         
+2                J1               J2               10         0.01       0          0          0          0         
+4                J3               J4               10         0.01       0          0          0          0         
+5                J4               J5               10         0.01       0          0          0          0         
+6                J5               J6               10         0.01       0          0          0          0         
+7                J2               J7               0.755      0.01       0          0          0          0         
+8                J7               J8               0.69       0.01       0          0          0          0         
+9                J8               J3               0.755      0.01       0          0          0          0         
+
+[XSECTIONS]
+;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels    Culvert   
+;;-------------- ------------ ---------------- ---------- ---------- ---------- ---------- ----------
+1                CIRCULAR     0.25             0          0          0          1                    
+2                CIRCULAR     0.25             0          0          0          1                    
+4                CIRCULAR     0.25             0          0          0          1                    
+5                CIRCULAR     0.25             0          0          0          1                    
+6                CIRCULAR     0.25             0          0          0          1                    
+7                CIRCULAR     0.25             0          0          0          1                    
+8                CIRCULAR     0.25             0          0          0          1                    
+9                CIRCULAR     0.25             0          0          0          1                    
+
+[INFLOWS]
+;;Node           Constituent      Time Series      Type     Mfactor  Sfactor  Baseline Pattern
+;;-------------- ---------------- ---------------- -------- -------- -------- -------- --------
+J6               FLOW             baseline1        FLOW     1.0      1.0              
+
+[TIMESERIES]
+;;Name           Date       Time       Value     
+;;-------------- ---------- ---------- ----------
+baseline1        FILE "C:\Users\rabbi\OneDrive\Documents\GitHub\urbansurge\analysis\lab_system\data_acquisition\swmm_impulse_files\impulse_file_baseline_1.dat"
+
+[REPORT]
+;;Reporting Options
+SUBCATCHMENTS ALL
+NODES ALL
+LINKS ALL
+
+[TAGS]
+
+[MAP]
+DIMENSIONS -803.084 0.000 10340.450 10000.000
+Units      Feet
+
+[COORDINATES]
+;;Node           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+J1               1613.286           4531.435          
+J2               3226.572           4567.023          
+J3               4934.757           4602.610          
+J4               6465.006           4638.197          
+J5               8125.741           4661.922          
+J6               9833.926           4827.995          
+J7               3772.242           4602.610          
+J8               4294.187           4614.472          
+Out1             -296.560           4472.123          
+
+[VERTICES]
+;;Link           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+
+[Polygons]
