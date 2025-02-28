@@ -164,7 +164,6 @@ class SWMM:
         :rtype: list
 
         """
-
         component_names = file_utils.get_component_names(self.inp_path, section)
 
         return component_names
@@ -193,10 +192,45 @@ class SWMM:
 
         for node_section in node_sections:
             component_names = self.get_component_names(node_section)
+            if component_names is None:
+                continue
+
             if node_id in component_names:
                 return node_section
 
         return 'NODE ID NOT FOUND IN ANY NODE SECTION'
+    
+
+    def get_node_coordinates(self, node_id) -> np.array:
+        """
+        Get the X, Y coordinates of a node.
+
+        :param node_id: ID of node.
+        :return: (X, Y) as a numpy array.
+        """
+        section = 'COORDINATES'
+        x_column_name = 'X-Coord'
+        y_column_name = 'Y-Coord'
+        component_name = node_id
+        X = file_utils.get_inp_section(self.inp_path, section, x_column_name, component_name)
+        Y = file_utils.get_inp_section(self.inp_path, section, y_column_name, component_name)
+
+        return np.array([float(X), float(Y)])
+    
+
+    def get_node_invert_elevation(self, node_id) -> float:
+        """
+        Get the invert elevation of a node.
+
+        :param node_id: ID of the node.
+        :return: Node invert elevation.
+        """
+        section = self.get_node_section(str(node_id))
+        column_name = 'Elevation'
+        component_name = str(node_id)
+        invert_elevation = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
+
+        return float(invert_elevation)
 
 
     def get_downstream_components(self, start_component_id, start_component_type, downstream_component_type):
@@ -372,6 +406,25 @@ class SWMM:
             print(f'Set Link {link_id} geometry to {geom}')
 
         return geom
+    
+
+    def get_link_nodes(self, link_id):
+        """
+        Get the from and to node IDs at the end of a link.
+
+        :param link_id: Link ID.
+        :return: from_node_id, to_node_id
+        """
+        # Get the endpoint node IDs.
+        conduit_section = 'CONDUITS'
+        from_column_name = 'From Node'
+        to_column_name = 'To Node'
+        component_name = link_id
+
+        from_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, from_column_name, component_name)
+        to_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, to_column_name, component_name)
+
+        return from_node_id, to_node_id
 
 
     def get_link_roughness(self, link_id):
@@ -582,6 +635,164 @@ class SWMM:
         S = (to_node_elev - from_node_elev) / link_length
 
         return S
+    
+
+    @staticmethod
+    def node_positions(s1, s2, n_segment, n_round=3):
+        """
+        Generate equally spaced coordinates between two points.
+
+        This function computes `n_segment - 1` intermediate coordinates between 
+        two given points, `s1` and `s2`, such that they divide the segment into 
+        `n_segment` equal parts.
+
+        Parameters
+        ----------
+        s1 : ndarray
+            A 1D NumPy array representing the coordinates of the starting point.
+        s2 : ndarray
+            A 1D NumPy array representing the coordinates of the ending point.
+        n_segment : int
+            The total number of segments to divide the line into.
+        n_round : int, optional
+            The number of decimal places to round the coordinates to (default is 3).
+
+        Returns
+        -------
+        ndarray
+            A (n_segment-1, 2) NumPy array containing the intermediate coordinates.
+
+        Notes
+        -----
+        - The function assumes `s1` and `s2` are 2D points (i.e., have two elements).
+        - The function does not include `s1` and `s2` in the returned array.
+        - The segments are evenly spaced along the straight line connecting `s1` and `s2`.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> s1 = np.array([6145.251, 8446.927])
+        >>> s2 = np.array([3709.497, 4905.028])
+        >>> node_positions(s1, s2, n_segment=5)
+        array([[5430.75 , 7591.962],
+            [4716.248, 6737.005],
+            [4001.747, 5882.038],
+            [3287.246, 5027.071]])
+        """
+        u = s2 - s1
+        L = np.linalg.norm(u)
+        n = u / L  # Unit vector
+
+        c = L / n_segment  # Segment length
+
+        # Generate points between s1 and s2
+        I = np.arange(1, n_segment)  # Exclude start and end points
+        uc = s1 + np.outer(I, n) * c
+
+        return np.round(uc, n_round)
+
+    
+    @staticmethod
+    def discretize_invert_elevations(h1, h2, n_segment):
+        """
+        Invert elevations for discretized nodes.
+
+        :param h1: Invert elevation of point 1.
+        :param h2: Invert elevation of point 2.
+        :param n_segment: Number of segments that the original link was discretized into.
+
+        :return: Invert elevations of discretized nodes.
+        """
+
+        return np.linspace(h1, h2, n_segment + 1)[1:-1]
+    
+
+    def discretize_link(self, link_id, n_segment):
+        """
+        Discretize link into N segments that preserve the original properties of the original link.
+
+        :param swmm: SWMM model object.
+        :param link_id: Link to discretize.
+        :n_segment: Number of segments to discretize link into.
+        """
+        # Get upstream and downstream node IDs.
+        from_node_id, to_node_id = self.get_link_nodes(link_id)
+        
+        # Get coordinates of the nodes.
+        s1 = self.get_node_coordinates(from_node_id)
+        s2 = self.get_node_coordinates(to_node_id)
+
+        # Get discretized node coordinates.
+        Dnode_coords = SWMM.node_positions(s1, s2, n_segment)
+
+        # Get invert elevations of from and to nodes.
+        h1 = self.get_node_invert_elevation(from_node_id)
+        h2 = self.get_node_invert_elevation(to_node_id)
+
+        # Invert elevations of discretized nodes.
+        Dnode_elev = SWMM.discretize_invert_elevations(h1, h2, n_segment)
+
+        # Format new nodes.
+        #------------------------------------------------
+        # Get IDs of existing coordinate nodes.
+        exist_node_ids = self.get_component_names('COORDINATES')
+        exist_node_ids = [int(i) for i in exist_node_ids]
+        
+        # Create new discretized node ids.
+        Dnode_ids = [max(exist_node_ids) + i + 1 for i in range(len(Dnode_coords))]
+
+        # Set surcharge depth to 100 + maximum invert elevation.
+        max_elev = max(self.get_node_invert_elevation(int(nid)) for nid in exist_node_ids)
+        sur_depth = max_elev + 100
+
+        # Add new junctions.
+        for i in range(Dnode_coords.shape[0]):
+            coord_dict = {'Node': Dnode_ids[i], 'X-Coord': Dnode_coords[i,0], 'Y-Coord': Dnode_coords[i,1]}
+            file_utils.add_inp_row(self.inp_path, 'COORDINATES', coord_dict)
+
+            junction_dict = {'Name': Dnode_ids[i], 'Elevation': Dnode_elev[i], 'MaxDepth': 0, 'InitDepth': 0, 'SurDepth': sur_depth, 'Aponded': 0}
+            file_utils.add_inp_row(self.inp_path, 'JUNCTIONS', junction_dict)
+
+        # Format new conduits.
+        #------------------------------------------------
+        # Existing conduit parameters.
+        geom = self.get_link_geometry(link_id)
+        L = self.get_link_length(link_id)
+        roughness = self.get_link_roughness(link_id)
+
+        # New conduit segment length.
+        Lc = L / n_segment
+
+        # Remove the conduit from the inp file.
+        file_utils.remove_inp_row(self.inp_path, 'CONDUITS', link_id)
+        file_utils.remove_inp_row(self.inp_path, 'XSECTIONS', link_id)
+
+        # Existing conduit IDs.
+        # Get IDs of existing coordinate nodes.
+        exist_link_ids = self.get_component_names('CONDUITS')
+        exist_link_ids = [int(i) for i in exist_link_ids]
+        
+        # Create new discretized node ids.
+        c_ids = [str(max(exist_link_ids) + i + 1) for i in range(n_segment)]
+
+        # Set new CONDUITS AND XSECTIONS sections.
+        for i in range(n_segment):
+            # From and to nodes.
+            if i == 0:
+                from_node = from_node_id
+                to_node = Dnode_ids[i]
+            elif i == n_segment - 1:
+                from_node = Dnode_ids[i-1]
+                to_node = to_node_id
+            else:
+                from_node = Dnode_ids[i-1]
+                to_node = Dnode_ids[i]
+
+            xsection_dict = {'Link': c_ids[i], 'Shape': 'CIRCULAR', 'Geom1': geom[0], 'Geom2': geom[1], 'Geom3': geom[2], 'Geom4': geom[3], 'Barrels': 1, 'Culvert': ''}
+            conduits_dict = {'Name': c_ids[i], 'From Node': from_node, 'To Node': to_node, 'Length': Lc, 'Roughness': roughness, 'InOffset': 0, 'OutOffset': 0, 'InitFlow': 0, 'MaxFlow': 0}
+
+            file_utils.add_inp_row(self.inp_path, 'XSECTIONS', xsection_dict)
+            file_utils.add_inp_row(self.inp_path, 'CONDUITS', conduits_dict)
 
 
     def get_weir_property(self, weir_id, weir_property_name):

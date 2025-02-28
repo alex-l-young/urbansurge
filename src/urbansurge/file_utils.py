@@ -117,6 +117,111 @@ def get_inp_section(in_filepath, section, column_name, component_name):
 
         else:
             raise ValueError(f"No line found with Name value {component_name} in {component_name}")
+        
+
+def get_section_column_names(in_filepath, section):
+    with open(in_filepath, 'r') as file:
+        # Read the file into a list of lines
+        lines = file.readlines()
+
+        # Find the line number where the section table starts
+        start_line = None
+        for i, line in enumerate(lines):
+            if line.startswith('[' + section + ']'):
+                start_line = i + 3  # Skip the header lines
+                break
+
+        # Find the index of the "Name" and specified column in the header line
+        header_line = lines[start_line-2]
+        header_values = re.split(r" {2,}", header_line.strip())
+
+        # Remove the two semicolons on the first column name.
+        header_values[0] = header_values[0].strip(';')
+
+    return header_values
+        
+
+def remove_inp_row(in_filepath, section, component_name):
+    with open(in_filepath, 'r') as file:
+        # Read the file into a list of lines
+        lines = file.readlines()
+
+        # Find the line number where the section table starts
+        start_line = None
+        for i, line in enumerate(lines):
+            if line.startswith('[' + section + ']'):
+                start_line = i + 3  # Skip the header lines
+                break
+
+        # Find the index of the "Name" and specified column in the header line
+        header_line = lines[start_line-2]
+        header_values = re.split(r" {2,}", header_line.strip())
+        name_col_index = 0
+
+        # Find the line number that corresponds to the specified "Name" value
+        update_line = None
+        for i in range(start_line, len(lines)):
+            line_values = lines[i].strip().split()
+            if line_values[name_col_index] == str(component_name):
+                update_line = i
+                break
+
+        if update_line is not None:
+            line_to_remove = lines[update_line]
+            del lines[update_line]
+
+            # Write the updated file
+            with open(in_filepath, 'w') as file:
+                file.writelines(lines)
+            print(f"Removed Line: {line_to_remove}")
+        else:
+            print(f"No line found with Name value {component_name} in {component_name}")
+
+
+def add_inp_row(in_filepath, section, row_dict, out_filepath=None, verbose=False):
+    # If out_filename is None, use in_filename.
+    if out_filepath is None:
+        out_filepath = in_filepath
+
+    # Column names from section.
+    column_names = get_section_column_names(in_filepath, section)
+
+    with open(in_filepath, 'r') as file:
+        # Read the file into a list of lines
+        lines = file.readlines()
+
+        # Find the line number where the section table starts
+        start_line = None
+        for i, line in enumerate(lines):
+            if line.startswith('[' + section + ']'):
+                start_line = i + 3  # Skip the header lines
+                break
+
+        # Populate new line.
+        new_line = []
+        for i, column_name in enumerate(column_names):
+            new_line.append(str(row_dict[column_name]))
+        new_line = " ".join(new_line) + "\n"
+
+        # Find the last line in the section.
+        for i in range(start_line, len(lines)):
+            if lines[i].strip() == '':
+                insert_line_idx = i
+                break
+
+        # Insert the new line.
+        lines.insert(insert_line_idx, new_line)
+
+        # Add the new line.
+        try:
+            # Write the updated file
+            with open(in_filepath, 'w') as file:
+                file.writelines(lines)
+            if verbose is True:
+                print(f'Added new line: {new_line}')
+        except Exception as e:
+            print('Could not insert line.')
+            print(e)
 
 
 def get_component_names(in_filepath: str, section: str) -> List:
