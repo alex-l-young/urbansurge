@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 import math
 
 # UrbanSurge imports.
@@ -160,6 +160,35 @@ def discrete_flow_series(Q: np.ndarray, t: np.ndarray, h = 1): #### chop off aft
         k += 1
 
     return (np.array(flow_series[:30]), dt[:30])
+
+
+def mean_reading(df_list: List, time_align_col: str, data_col: str) -> Tuple[np.array, np.array]:
+    """
+    Computes the ensemble mean sensor reading across the data frames in df_list.
+
+    :param df_list: List of data frames.
+    :param time_align_col: Name of time alignment column.
+    :param data_col: Name of column containing data to ensemble.
+
+    :return: Ensemble of data.
+    :return: Corresponding time array.
+    """
+    time_align_min = max([min(df[time_align_col]) for df in df_list])
+    time_align_max = min([max(df[time_align_col]) for df in df_list])
+
+    for i, df in enumerate(df_list):
+        min_idx = np.argmin(np.abs(df[time_align_col].to_numpy() - time_align_min))
+        max_idx = np.argmin(np.abs(df[time_align_col].to_numpy() - time_align_max))
+        y = df[data_col].iloc[min_idx:max_idx].to_numpy()
+        if i == 0:
+            data_mean = y
+        else:
+            data_mean += y
+
+    data_mean /= len(df_list)
+
+    return data_mean, df[time_align_col].iloc[min_idx:max_idx].to_numpy()
+
 
 def flow_to_swmm_readable(Q: np.ndarray, t: List[datetime], file_dir: Path, file_name: str) -> None:
     """
