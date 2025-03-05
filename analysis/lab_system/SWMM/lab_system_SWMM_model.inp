@@ -16,14 +16,14 @@ START_TIME           00:00:00
 REPORT_START_DATE    01/01/2024
 REPORT_START_TIME    00:00:00
 END_DATE             01/01/2024
-END_TIME             00:05:00
+END_TIME             01:00:00
 SWEEP_START          01/01
 SWEEP_END            12/31
 DRY_DAYS             0
 REPORT_STEP          00:00:01
 WET_STEP             00:00:01
 DRY_STEP             00:00:01
-ROUTING_STEP         0:00:01 
+ROUTING_STEP         0.1
 RULE_STEP            00:00:00
 
 INERTIAL_DAMPING     PARTIAL
@@ -36,7 +36,7 @@ MAX_TRIALS           8
 HEAD_TOLERANCE       0.005
 SYS_FLOW_TOL         5
 LAT_FLOW_TOL         5
-MINIMUM_STEP         0.5
+MINIMUM_STEP         0.1
 THREADS              1
 
 [EVAPORATION]
@@ -48,48 +48,48 @@ DRY_ONLY         NO
 [JUNCTIONS]
 ;;Name           Elevation  MaxDepth   InitDepth  SurDepth   Aponded   
 ;;-------------- ---------- ---------- ---------- ---------- ----------
-J1               2.15       0          0          0          0         
-J2               2.7        0          0          0          0         
-J3               2.75       0          0          0          0         
-J4               3.12       0          0          0          0         
-J5               3.43       0          0          0          0         
-J6               3.96       0          0          0          0         
-J7               2.725      0          0          0          0         
-J8               2.725      0          0          0          0         
+1                2.15       0          0          0          0         
+2                2.7        0          0          0          0         
+3                2.75       0          0          0          0         
+4                3.12       0          0          0          0         
+5                3.43       0          0          0          0         
+6                3.96       0          0          0          0         
+7                2.725      0          0          0          0         
+8                2.725      0          0          0          0         
 
 [OUTFALLS]
 ;;Name           Elevation  Type       Stage Data       Gated    Route To        
 ;;-------------- ---------- ---------- ---------------- -------- ----------------
-Out1             1.68       FREE                        NO                       
+9                1.68       FREE                        NO                       
 
 [CONDUITS]
 ;;Name           From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   
 ;;-------------- ---------------- ---------------- ---------- ---------- ---------- ---------- ---------- ----------
-1                Out1             J1               10         0.01       0          0          0          0         
-2                J1               J2               10         0.01       0          0          0          0         
-4                J3               J4               10         0.01       0          0          0          0         
-5                J4               J5               10         0.01       0          0          0          0         
-6                J5               J6               10         0.01       0          0          0          0         
-7                J2               J7               0.755      0.01       0          0          0          0         
-8                J7               J8               0.69       0.01       0          0          0          0         
-9                J8               J3               0.755      0.01       0          0          0          0         
+9                6                5                10         0.01       0          0          0          0         
+10               5                4                10         0.01       0          0          0          0         
+11               4                3                10         0.01       0          0          0          0         
+12               3                8                10         0.01       0          0          0          0         
+13               8                7                10         0.01       0          0          0          0         
+14               7                2                10         0.01       0          0          0          0         
+15               2                1                10         0.01       0          0          0          0         
+16               1                9                10         0.01       0          0          0          0         
 
 [XSECTIONS]
 ;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels    Culvert   
 ;;-------------- ------------ ---------------- ---------- ---------- ---------- ---------- ----------
-1                CIRCULAR     0.25             0          0          0          1                    
-2                CIRCULAR     0.25             0          0          0          1                    
-4                CIRCULAR     0.25             0          0          0          1                    
-5                CIRCULAR     0.25             0          0          0          1                    
-6                CIRCULAR     0.25             0          0          0          1                    
-7                CIRCULAR     0.25             0          0          0          1                    
-8                CIRCULAR     0.25             0          0          0          1                    
 9                CIRCULAR     0.25             0          0          0          1                    
+10               CIRCULAR     0.25             0          0          0          1                    
+11               CIRCULAR     0.25             0          0          0          1                    
+12               CIRCULAR     0.25             0          0          0          1                    
+13               CIRCULAR     0.25             0          0          0          1                    
+14               CIRCULAR     0.25             0          0          0          1                    
+15               CIRCULAR     0.25             0          0          0          1                    
+16               CIRCULAR     0.25             0          0          0          1                    
 
 [INFLOWS]
 ;;Node           Constituent      Time Series      Type     Mfactor  Sfactor  Baseline Pattern
 ;;-------------- ---------------- ---------------- -------- -------- -------- -------- --------
-J6               FLOW             baseline1        FLOW     1.0      1.0              
+6                FLOW             baseline1        FLOW     1.0      1.0              
 
 [TIMESERIES]
 ;;Name           Date       Time       Value     
@@ -111,15 +111,15 @@ Units      Feet
 [COORDINATES]
 ;;Node           X-Coord            Y-Coord           
 ;;-------------- ------------------ ------------------
-J1               1613.286           4531.435          
-J2               3226.572           4567.023          
-J3               4934.757           4602.610          
-J4               6465.006           4638.197          
-J5               8125.741           4661.922          
-J6               9833.926           4827.995          
-J7               3772.242           4602.610          
-J8               4294.187           4614.472          
-Out1             -296.560           4472.123          
+1                1613.286           4531.435          
+2                3226.572           4567.023          
+3                4934.757           4602.610          
+4                6465.006           4638.197          
+5                8125.741           4661.922          
+6                9833.926           4827.995          
+7                3772.242           4602.610          
+8                4294.187           4614.472          
+9                -296.560           4472.123          
 
 [VERTICES]
 ;;Link           X-Coord            Y-Coord           
