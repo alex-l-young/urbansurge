@@ -1,0 +1,198 @@
+
+  EPA STORM WATER MANAGEMENT MODEL - VERSION 5.2 (Build 5.2.4)
+  ------------------------------------------------------------
+
+  WARNING 04: minimum elevation drop used for Conduit 13
+  
+  ****************
+  Analysis Options
+  ****************
+  Flow Units ............... CFS
+  Process Models:
+    Rainfall/Runoff ........ NO
+    RDII ................... NO
+    Snowmelt ............... NO
+    Groundwater ............ NO
+    Flow Routing ........... YES
+    Ponding Allowed ........ NO
+    Water Quality .......... NO
+  Flow Routing Method ...... DYNWAVE
+  Surcharge Method ......... EXTRAN
+  Starting Date ............ 01/01/2024 00:00:00
+  Ending Date .............. 01/01/2024 00:02:00
+  Antecedent Dry Days ...... 0.0
+  Report Time Step ......... 00:00:01
+  Routing Time Step ........ 0.01 sec
+  Variable Time Step ....... NO
+  Maximum Trials ........... 10
+  Number of Threads ........ 1
+  Head Tolerance ........... 0.000500 ft
+  
+  
+  **************************        Volume        Volume
+  Flow Routing Continuity        acre-feet      10^6 gal
+  **************************     ---------     ---------
+  Dry Weather Inflow .......         0.000         0.000
+  Wet Weather Inflow .......         0.000         0.000
+  Groundwater Inflow .......         0.000         0.000
+  RDII Inflow ..............         0.000         0.000
+  External Inflow ..........         0.000         0.000
+  External Outflow .........         0.000         0.000
+  Flooding Loss ............         0.000         0.000
+  Evaporation Loss .........         0.000         0.000
+  Exfiltration Loss ........         0.000         0.000
+  Initial Stored Volume ....         0.000         0.000
+  Final Stored Volume ......         0.000         0.000
+  Continuity Error (%) .....         0.000
+  
+  
+  *************************
+  Highest Continuity Errors
+  *************************
+  Node 3 (2.38%)
+  Node 1 (2.10%)
+  Node 2 (-1.71%)
+  Node 5 (1.51%)
+  Node 4 (1.12%)
+  
+  
+  ********************************
+  Highest Flow Instability Indexes
+  ********************************
+  All links are stable.
+  
+  
+  *********************************
+  Most Frequent Nonconverging Nodes
+  *********************************
+  Convergence obtained at all time steps.
+  
+  
+  *************************
+  Routing Time Step Summary
+  *************************
+  Minimum Time Step           :     0.01 sec
+  Average Time Step           :     0.01 sec
+  Maximum Time Step           :     0.01 sec
+  % of Time in Steady State   :     0.00
+  Average Iterations per Step :     2.00
+  % of Steps Not Converging   :     0.00
+  
+  
+  ******************
+  Node Depth Summary
+  ******************
+  
+  ---------------------------------------------------------------------------------
+                                 Average  Maximum  Maximum  Time of Max    Reported
+                                   Depth    Depth      HGL   Occurrence   Max Depth
+  Node                 Type         Feet     Feet     Feet  days hr:min        Feet
+  ---------------------------------------------------------------------------------
+  1                    JUNCTION     0.01     0.03     2.18     0  00:00        0.03
+  2                    JUNCTION     0.01     0.04     2.74     0  00:00        0.04
+  3                    JUNCTION     0.01     0.05     2.80     0  00:00        0.05
+  4                    JUNCTION     0.01     0.04     3.16     0  00:00        0.04
+  5                    JUNCTION     0.01     0.06     3.49     0  00:00        0.06
+  6                    JUNCTION     0.01     0.06     4.02     0  00:00        0.06
+  7                    JUNCTION     0.01     0.04     2.77     0  00:00        0.04
+  8                    JUNCTION     0.02     0.07     2.79     0  00:00        0.07
+  9                    OUTFALL      0.01     0.03     1.71     0  00:00        0.03
+  
+  
+  *******************
+  Node Inflow Summary
+  *******************
+  
+  -------------------------------------------------------------------------------------------------
+                                  Maximum  Maximum                  Lateral       Total        Flow
+                                  Lateral    Total  Time of Max      Inflow      Inflow     Balance
+                                   Inflow   Inflow   Occurrence      Volume      Volume       Error
+  Node                 Type           CFS      CFS  days hr:min    10^6 gal    10^6 gal     Percent
+  -------------------------------------------------------------------------------------------------
+  1                    JUNCTION      0.00     0.01     0  00:00           0    1.12e-06       0.024 gal
+  2                    JUNCTION      0.00     0.01     0  00:00           0    1.11e-06      -0.019 gal
+  3                    JUNCTION      0.00     0.01     0  00:00           0    1.13e-06       0.027 gal
+  4                    JUNCTION      0.00     0.02     0  00:00           0    1.15e-06       0.013 gal
+  5                    JUNCTION      0.00     0.02     0  00:00           0    1.16e-06       0.018 gal
+  6                    JUNCTION      0.02     0.02     0  00:00    1.11e-06    1.11e-06      -0.052 gal
+  7                    JUNCTION      0.00     0.01     0  00:00           0     1.1e-06      -0.000 gal
+  8                    JUNCTION      0.00     0.01     0  00:00           0    1.11e-06       0.001 gal
+  9                    OUTFALL       0.00     0.01     0  00:00           0     1.1e-06       0.000 gal
+  
+  
+  **********************
+  Node Surcharge Summary
+  **********************
+  
+  No nodes were surcharged.
+  
+  
+  *********************
+  Node Flooding Summary
+  *********************
+  
+  No nodes were flooded.
+  
+  
+  ***********************
+  Outfall Loading Summary
+  ***********************
+  
+  -----------------------------------------------------------
+                         Flow       Avg       Max       Total
+                         Freq      Flow      Flow      Volume
+  Outfall Node           Pcnt       CFS       CFS    10^6 gal
+  -----------------------------------------------------------
+  9                     27.50      0.00      0.01       0.000
+  -----------------------------------------------------------
+  System                27.50      0.00      0.01       0.000
+  
+  
+  ********************
+  Link Flow Summary
+  ********************
+  
+  -----------------------------------------------------------------------------
+                                 Maximum  Time of Max   Maximum    Max/    Max/
+                                  |Flow|   Occurrence   |Veloc|    Full    Full
+  Link                 Type          CFS  days hr:min    ft/sec    Flow   Depth
+  -----------------------------------------------------------------------------
+  9                    CONDUIT      0.02     0  00:00      3.55    0.09    0.21
+  10                   CONDUIT      0.02     0  00:00      2.95    0.09    0.18
+  11                   CONDUIT      0.01     0  00:00      2.49    0.06    0.17
+  12                   CONDUIT      0.01     0  00:00      1.32    0.05    0.23
+  13                   CONDUIT      0.01     0  00:00      1.70    0.30    0.22
+  14                   CONDUIT      0.01     0  00:00      2.57    0.06    0.16
+  15                   CONDUIT      0.01     0  00:00      3.15    0.04    0.13
+  16                   CONDUIT      0.01     0  00:00      2.38    0.03    0.13
+  
+  
+  ***************************
+  Flow Classification Summary
+  ***************************
+  
+  -------------------------------------------------------------------------------------
+                      Adjusted    ---------- Fraction of Time in Flow Class ---------- 
+                       /Actual         Up    Down  Sub   Sup   Up    Down  Norm  Inlet 
+  Conduit               Length    Dry  Dry   Dry   Crit  Crit  Crit  Crit  Ltd   Ctrl  
+  -------------------------------------------------------------------------------------
+  9                       1.00   0.00  0.00  0.00  0.86  0.14  0.00  0.00  0.94  0.00
+  10                      1.00   0.00  0.00  0.00  0.48  0.52  0.00  0.00  0.91  0.00
+  11                      1.00   0.02  0.00  0.00  0.30  0.68  0.00  0.00  0.89  0.00
+  12                      1.00   0.04  0.00  0.00  0.46  0.49  0.00  0.00  0.75  0.00
+  13                      1.00   0.07  0.00  0.00  0.44  0.49  0.00  0.00  0.00  0.00
+  14                      1.00   0.08  0.00  0.00  0.22  0.71  0.00  0.00  0.51  0.00
+  15                      1.00   0.09  0.00  0.00  0.16  0.75  0.00  0.00  0.84  0.00
+  16                      1.00   0.10  0.00  0.00  0.16  0.74  0.00  0.00  0.38  0.00
+  
+  
+  *************************
+  Conduit Surcharge Summary
+  *************************
+  
+  No conduits were surcharged.
+  
+
+  Analysis begun on:  Wed Mar  5 17:04:15 2025
+  Analysis ended on:  Wed Mar  5 17:04:15 2025
+  Total elapsed time: < 1 sec
