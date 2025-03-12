@@ -19,4 +19,10 @@ EPA SWMM
 
 You can use the ``urbansurge.swmm_model.SWMM`` class:
 
-You can use ``urbansurge.file_utils.set_inp_section`` function:
+.. py:function:: urbansurge.swmm_model.SWMM.get_component_names(self, section)
+    :noindex:
+
+    Returns the names of all components for a given section.
+
+    :param section: Section name.
+    :return: List of component names.

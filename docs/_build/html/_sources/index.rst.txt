@@ -7,24 +7,20 @@ Welcome to UrbanSurge's documentation!
 ======================================
 
 .. toctree::
+   :maxdepth: 2
 
    usage
    api
 
-.. :maxdepth: 2
-.. :caption: Contents:
 
-.. **UrbanSurge** is a Python library for cooks and food lovers that
-.. creates recipes mixing random ingredients.  It pulls data from the `Open Food
-.. Facts database <https://world.openfoodfacts.org/>`_ and offers a *simple* and
-.. *intuitive* API.
+.. :caption:: Contents:
 
 **UrbanSurge** is a Python library for stormwater system health monitoring.
 The library provides a streamlined way to manage all aspects of a smart stormwater system including:
 
 * Collection and management of sensor data.
 * Tools for data-driven analysis of sensor data.
-* Bindings for EPA SWMM to manage a stormwater system digital twin.
+* EPA SWMM automation.
 * Model-based fault detection using the digital twin.
 
 Check out the :doc:`usage` section for further information, including how to

@@ -1,14 +1,18 @@
 API
 ===
 
-.. module:: urbansurge.swmm_model
-
 EPA SWMM Interface
 ------------------
 .. autosummary:
 ..    :toctree: generated
 
-.. autoclass:: urbansurge.swmm_model.SWMM
-    :members:
+.. automodule:: urbansurge.swmm_model
+   :members:
+   :undoc-members:
 
-.. autofunction:: urbansurge.file_utils.set_inp_section
+Sensors
+----------------
+
+.. automodule:: urbansurge.sensors
+   :members:
+   :undoc-members:
