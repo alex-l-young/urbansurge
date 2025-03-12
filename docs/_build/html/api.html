@@ -6,235 +6,680 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>API &#8212; UrbanSurge 0.0.1 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b3523f8e" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b849a4e9" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css?v=0a676766" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=f6245a2f"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Usage" href="usage.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
+    <link rel="prev" title="Usage" href="usage.html" /> 
   </head><body>
-  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">UrbanSurge 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API</a></li> 
+      </ul>
+    </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          
-
           <div class="body" role="main">
             
-  <section id="module-urbansurge.swmm_model">
-<span id="api"></span><h1>API<a class="headerlink" href="#module-urbansurge.swmm_model" title="Permalink to this heading">¶</a></h1>
+  <section id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this heading">¶</a></h1>
 <section id="epa-swmm-interface">
 <h2>EPA SWMM Interface<a class="headerlink" href="#epa-swmm-interface" title="Permalink to this heading">¶</a></h2>
-<dl class="py class">
+<span class="target" id="module-urbansurge.swmm_model"></span><dl class="py class">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">urbansurge.swmm_model.</span></span><span class="sig-name descname"><span class="pre">SWMM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.add_prcp_timeseries">
+<span class="sig-name descname"><span class="pre">add_prcp_timeseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.add_prcp_timeseries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.add_timeseries_file">
+<span class="sig-name descname"><span class="pre">add_timeseries_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.add_timeseries_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add timeseries file to SWMM model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ts_name</strong> – Name of time series. No spaces.</p></li>
+<li><p><strong>ts_description</strong> – Description of time series.</p></li>
+</ul>
+</dd>
+<dt class="field-even">File_path<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to .dat time series file.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.compute_area_from_depth">
+<span class="sig-name descname"><span class="pre">compute_area_from_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.compute_area_from_depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the cross-sectional wetted area of the pipe from depth and diameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>depth</strong> – Depth of flow.</p></li>
+<li><p><strong>link_id</strong> – ID of link.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return area<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cross-sectional area of water.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.configure_model">
+<span class="sig-name descname"><span class="pre">configure_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.configure_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configure the EPA SWMM model from the configuration file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>No return.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.discretize_invert_elevations">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">discretize_invert_elevations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_segment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.discretize_invert_elevations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invert elevations for discretized nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>h1</strong> – Invert elevation of point 1.</p></li>
+<li><p><strong>h2</strong> – Invert elevation of point 2.</p></li>
+<li><p><strong>n_segment</strong> – Number of segments that the original link was discretized into.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Invert elevations of discretized nodes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.discretize_link">
+<span class="sig-name descname"><span class="pre">discretize_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_segment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.discretize_link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Discretize link into N segments that preserve the original properties of the original link.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>swmm</strong> – SWMM model object.</p></li>
+<li><p><strong>link_id</strong> – Link to discretize.</p></li>
+</ul>
+</dd>
+<dt class="field-even">N_segment<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of segments to discretize link into.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_component_names">
 <span class="sig-name descname"><span class="pre">get_component_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_component_names" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the names of all components for a given section.
-:param section: Section name.
-:return: List of component names.</p>
+<dd><p>Returns the names of all components for a given section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>section</strong> (<em>str</em>) – The name of the section.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of component names.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_components_by_tag">
+<span class="sig-name descname"><span class="pre">get_components_by_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_components_by_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the names of all components for a given tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tag</strong> – tag name.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of component names.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_downstream_components">
+<span class="sig-name descname"><span class="pre">get_downstream_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_component_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_component_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downstream_component_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_downstream_components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_circular_Rh">
+<span class="sig-name descname"><span class="pre">get_link_circular_Rh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diameter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_circular_Rh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes hydraulic radius (Rh) for a circular pipe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Hydraulic radius.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_depth">
 <span class="sig-name descname"><span class="pre">get_link_depth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_depth" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get link depth.
-:return: Pandas data frame of link depth.</p>
+<dd><p>Get link depth.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pandas data frame of link depth.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_flow">
 <span class="sig-name descname"><span class="pre">get_link_flow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_flow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get link flow rate.
-:return: Pandas data frame of link flow rate.</p>
+<dd><p>Get link flow rate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pandas data frame of link flow rate.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_geometry">
 <span class="sig-name descname"><span class="pre">get_link_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_geometry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets a link’s geometry.
-:param link_id: Link ID.
-:return: Geometry of link. 4 item list for “Geom1” through “Geom4”</p>
+<dd><p>Gets a link’s geometry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>link_id</strong> – Link ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Geometry of link. 4 item list for “Geom1” through “Geom4”</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_length">
 <span class="sig-name descname"><span class="pre">get_link_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets a link’s length.
-:param link_id: Link ID.
-:return: Length of link.</p>
+<dd><p>Gets a link’s length.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>link_id</strong> – Link ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Length of link.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_nodes">
+<span class="sig-name descname"><span class="pre">get_link_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the from and to node IDs at the end of a link.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>link_id</strong> – Link ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>from_node_id, to_node_id</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_offsets">
 <span class="sig-name descname"><span class="pre">get_link_offsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_offsets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets link upstream and downstream offsets.
-:param link_id: Link ID.
-:return: Link offsets as a tuple. (Inlet Offset, Outlet Offset)</p>
+<dd><p>Gets link upstream and downstream offsets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>link_id</strong> – Link ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Link offsets as a tuple. (Inlet Offset, Outlet Offset)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_roughness">
 <span class="sig-name descname"><span class="pre">get_link_roughness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_roughness" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets a link’s roughness.
-:param link_id: Link ID.
-:return: Roughness of link.</p>
+<dd><p>Gets a link’s roughness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>link_id</strong> – Link ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Roughness of link.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_seepage">
 <span class="sig-name descname"><span class="pre">get_link_seepage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_seepage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets link seepage rate.
-:param link_id: Link ID.
-:return: Link seepage rate.</p>
+<dd><p>Gets link seepage rate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>link_id</strong> – Link ID.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Link seepage rate.</p>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_slope">
+<span class="sig-name descname"><span class="pre">get_link_slope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_slope" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_velocity">
 <span class="sig-name descname"><span class="pre">get_link_velocity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_velocity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get link velocity.
-:return: Pandas data frame of link velocity.</p>
+<dd><p>Get link velocity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pandas data frame of link velocity.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_link_volume">
 <span class="sig-name descname"><span class="pre">get_link_volume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_link_volume" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get link volume.
-:return: Pandas data frame of link volume.</p>
+<dd><p>Get link volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pandas data frame of link volume.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_node_coordinates">
+<span class="sig-name descname"><span class="pre">get_node_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_node_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the X, Y coordinates of a node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node_id</strong> – ID of node.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(X, Y) as a numpy array.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_node_depth">
 <span class="sig-name descname"><span class="pre">get_node_depth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_node_depth" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get node depths.
-:return: Pandas data frame of node depths.</p>
+<dd><p>Get node depths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pandas data frame of node depths.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_node_flooding">
 <span class="sig-name descname"><span class="pre">get_node_flooding</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_node_flooding" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get node flooding.
-:return: Pandas data frame of node flooding.</p>
+<dd><p>Get node flooding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pandas data frame of node flooding.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_node_head">
 <span class="sig-name descname"><span class="pre">get_node_head</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_node_head" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get node head.
-:return: Pandas data frame of node head.</p>
+<dd><p>Get node head.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pandas data frame of node head.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_node_invert_elevation">
+<span class="sig-name descname"><span class="pre">get_node_invert_elevation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_node_invert_elevation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the invert elevation of a node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node_id</strong> – ID of the node.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Node invert elevation.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_node_lateral_inflow">
 <span class="sig-name descname"><span class="pre">get_node_lateral_inflow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_node_lateral_inflow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get node lateral inflow.
-:return: Pandas data frame of node lateral inflow.</p>
+<dd><p>Get node lateral inflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pandas data frame of node lateral inflow.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_node_ponded_volume">
 <span class="sig-name descname"><span class="pre">get_node_ponded_volume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_node_ponded_volume" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get node ponded volume.
-:return: Pandas data frame of node ponded volume.</p>
+<dd><p>Get node ponded volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pandas data frame of node ponded volume.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_node_section">
+<span class="sig-name descname"><span class="pre">get_node_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_node_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find which section the node ID falls under.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>node_id</strong> – </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Section name.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_node_total_inflow">
 <span class="sig-name descname"><span class="pre">get_node_total_inflow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_node_total_inflow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get node total inflow.
-:return: Pandas data frame of node total inflow.</p>
+<dd><p>Get node total inflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pandas data frame of node total inflow.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_storage_outfall_link">
-<span class="sig-name descname"><span class="pre">get_storage_outfall_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_storage_outfall_link" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the outfall link for a storage component.
-:param storage_id: ID of storage unit.
-:return: ID of outfall link.</p>
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_rainfall_timeseries">
+<span class="sig-name descname"><span class="pre">get_rainfall_timeseries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_rainfall_timeseries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_storage_inlet">
+<span class="sig-name descname"><span class="pre">get_storage_inlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_storage_inlet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the inlet link for a storage component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>storage_id</strong> – ID of storage unit.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ID of inlet link.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_storage_outlet">
+<span class="sig-name descname"><span class="pre">get_storage_outlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_storage_outlet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the outlet link for a storage component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>storage_id</strong> – ID of storage unit.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>ID of outlet link.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_storage_property">
 <span class="sig-name descname"><span class="pre">get_storage_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_storage_property" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the value of a storage property.
-:param storage_id: ID of storage unit.
-:param property: Name of the property.
-:return: Value of the storage property. Evaluates type automatically.</p>
+<dd><p>Get the value of a storage property.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>storage_id</strong> – ID of storage unit.</p></li>
+<li><p><strong>property</strong> – Name of the property.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the storage property. Evaluates type automatically.</p>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_weir_geometry">
+<span class="sig-name descname"><span class="pre">get_weir_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weir_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_weir_geometry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.get_weir_property">
+<span class="sig-name descname"><span class="pre">get_weir_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weir_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weir_property_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.get_weir_property" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.node_positions">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_segment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.node_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate equally spaced coordinates between two points.</p>
+<p>This function computes <cite>n_segment - 1</cite> intermediate coordinates between 
+two given points, <cite>s1</cite> and <cite>s2</cite>, such that they divide the segment into 
+<cite>n_segment</cite> equal parts.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>s1<span class="classifier">ndarray</span></dt><dd><p>A 1D NumPy array representing the coordinates of the starting point.</p>
+</dd>
+<dt>s2<span class="classifier">ndarray</span></dt><dd><p>A 1D NumPy array representing the coordinates of the ending point.</p>
+</dd>
+<dt>n_segment<span class="classifier">int</span></dt><dd><p>The total number of segments to divide the line into.</p>
+</dd>
+<dt>n_round<span class="classifier">int, optional</span></dt><dd><p>The number of decimal places to round the coordinates to (default is 3).</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>ndarray</dt><dd><p>A (n_segment-1, 2) NumPy array containing the intermediate coordinates.</p>
+</dd>
+</dl>
+</section>
+<section id="notes">
+<h3>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The function assumes <cite>s1</cite> and <cite>s2</cite> are 2D points (i.e., have two elements).</p></li>
+<li><p>The function does not include <cite>s1</cite> and <cite>s2</cite> in the returned array.</p></li>
+<li><p>The segments are evenly spaced along the straight line connecting <cite>s1</cite> and <cite>s2</cite>.</p></li>
+</ul>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h3>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6145.251</span><span class="p">,</span> <span class="mf">8446.927</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3709.497</span><span class="p">,</span> <span class="mf">4905.028</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">node_positions</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="n">n_segment</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">array([[5430.75 , 7591.962],</span>
+<span class="go">    [4716.248, 6737.005],</span>
+<span class="go">    [4001.747, 5882.038],</span>
+<span class="go">    [3287.246, 5027.071]])</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.run_simulation">
+<span class="sig-name descname"><span class="pre">run_simulation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.run_simulation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.set_link_geometry">
 <span class="sig-name descname"><span class="pre">set_link_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.set_link_geometry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a link’s geometry.
-:param link_id: Link ID to edit.
-:param geom: Four item list with values for “Geom1” through “Geom4”.
-:return: Prints success if verbose.</p>
+<dd><p>Set a link’s geometry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>link_id</strong> – Link ID to edit.</p></li>
+<li><p><strong>geom</strong> – Four item list with values for “Geom1” through “Geom4”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Prints success if verbose.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.set_link_length">
 <span class="sig-name descname"><span class="pre">set_link_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.set_link_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a link’s length.
-:param link_id: Link ID to edit.
-:param length: New link length.
-:return: Prints success if verbose.</p>
+<dd><p>Set a link’s length.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>link_id</strong> – Link ID to edit.</p></li>
+<li><p><strong>length</strong> – New link length.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Prints success if verbose.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.set_link_offsets">
 <span class="sig-name descname"><span class="pre">set_link_offsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offsets</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.set_link_offsets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the inlet and outlet offsets for a link.
-:param link_id: ID of the link.
-:param offsets: Link offsets as a tuple (Inlet Offset, Outlet Offset)
-:return: Offsets.</p>
+<dd><p>Sets the inlet and outlet offsets for a link.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>link_id</strong> – ID of the link.</p></li>
+<li><p><strong>offsets</strong> – Link offsets as a tuple (Inlet Offset, Outlet Offset)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Offsets.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.set_link_roughness">
 <span class="sig-name descname"><span class="pre">set_link_roughness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roughness</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.set_link_roughness" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a link’s roughness.
-:param link_id: Link ID to edit.
-:param roughness: New link roughness.
-:return: Prints success if verbose.</p>
+<dd><p>Set a link’s roughness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>link_id</strong> – Link ID to edit.</p></li>
+<li><p><strong>roughness</strong> – New link roughness.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Prints success if verbose.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.set_link_seepage">
 <span class="sig-name descname"><span class="pre">set_link_seepage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seepage_rate</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.set_link_seepage" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the link seepage rate. Roughly equivalent to hydraulic conductivity.
-:param link_id: ID of link.
-:param seepage_rate: Seepage rate in project units.
-:return: Prints success if verbose.</p>
+<dd><p>Set the link seepage rate. Roughly equivalent to hydraulic conductivity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>link_id</strong> – ID of link.</p></li>
+<li><p><strong>seepage_rate</strong> – Seepage rate in project units.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Prints success if verbose.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.set_node_inflow">
+<span class="sig-name descname"><span class="pre">set_node_inflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Sfactor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.set_node_inflow" title="Permalink to this definition">¶</a></dt>
+<dd><p># TODO: NOT COMPLETE.
+Add an inflow time series specified by a file to a node. Type is FLOW.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node_id</strong> – ID of node to add inflow to.</p></li>
+<li><p><strong>ts_name</strong> – Name of time series. Must match the &lt;timeseries name&gt;.dat</p></li>
+<li><p><strong>Sfactor</strong> – Scale factor. Default = 1.0.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.set_raingage_timeseries">
 <span class="sig-name descname"><span class="pre">set_raingage_timeseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raingage_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeseries_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.set_raingage_timeseries" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assign a timeseries to a rain gage.
-:param raingage_id: Rain gage ID.
-:param timeseries_name: Timeseries name.
-:return: None</p>
+<dd><p>Assign a timeseries to a rain gage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raingage_id</strong> – Rain gage ID.</p></li>
+<li><p><strong>timeseries_name</strong> – Timeseries name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.set_storage_property">
 <span class="sig-name descname"><span class="pre">set_storage_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.set_storage_property" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the value of a storage property.
-:param storage_id: ID of storage unit.
-:param property: Name of the property.
-:param property_value: New property value.
-:return: Prints success message.</p>
+<dd><p>Get the value of a storage property.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>storage_id</strong> – ID of storage unit.</p></li>
+<li><p><strong>property</strong> – Name of the property.</p></li>
+<li><p><strong>property_value</strong> – New property value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Prints success message.</p>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.set_weir_geometry">
+<span class="sig-name descname"><span class="pre">set_weir_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weir_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.set_weir_geometry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.set_weir_property">
+<span class="sig-name descname"><span class="pre">set_weir_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weir_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weir_property_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weir_property</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.set_weir_property" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.unpack_series">
@@ -242,81 +687,131 @@
 <dd><p>Unpacks SWMM output series into datetime and values.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.SWMM.upstream_distance">
+<span class="sig-name descname"><span class="pre">upstream_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_1_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_2_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.SWMM.upstream_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the distance upstream from component 1 to component 2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>component_1</strong> – ID of component 1.</p></li>
+<li><p><strong>component_2</strong> – ID of component 2.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Distance upstream from component 1 to component 2. Returns 0 if component_1 == component_2 and np.nan
+if component_1 is upstream of component 2.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="urbansurge.file_utils.set_inp_section">
-<span class="sig-prename descclassname"><span class="pre">urbansurge.file_utils.</span></span><span class="sig-name descname"><span class="pre">set_inp_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.file_utils.set_inp_section" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="urbansurge.swmm_model.diameter_fault">
+<span class="sig-prename descclassname"><span class="pre">urbansurge.swmm_model.</span></span><span class="sig-name descname"><span class="pre">diameter_fault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">swmm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.diameter_fault" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.roughness_fault">
+<span class="sig-prename descclassname"><span class="pre">urbansurge.swmm_model.</span></span><span class="sig-name descname"><span class="pre">roughness_fault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">swmm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.roughness_fault" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="urbansurge.swmm_model.silting_fault">
+<span class="sig-prename descclassname"><span class="pre">urbansurge.swmm_model.</span></span><span class="sig-name descname"><span class="pre">silting_fault</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">swmm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fault_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.swmm_model.silting_fault" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>
 </section>
 
 
+            <div class="clearer"></div>
           </div>
-          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">UrbanSurge</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#epa-swmm-interface">EPA SWMM Interface</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#urbansurge.swmm_model.SWMM"><code class="docutils literal notranslate"><span class="pre">SWMM</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_component_names"><code class="docutils literal notranslate"><span class="pre">SWMM.get_component_names()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_depth"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_depth()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_flow"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_flow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_geometry"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_geometry()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_length"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_length()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_offsets"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_offsets()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_roughness"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_roughness()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_seepage"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_seepage()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_velocity"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_velocity()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_volume"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_volume()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_depth"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_depth()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_flooding"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_flooding()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_head"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_head()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_lateral_inflow"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_lateral_inflow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_ponded_volume"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_ponded_volume()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_total_inflow"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_total_inflow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_storage_outfall_link"><code class="docutils literal notranslate"><span class="pre">SWMM.get_storage_outfall_link()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_storage_property"><code class="docutils literal notranslate"><span class="pre">SWMM.get_storage_property()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_link_geometry"><code class="docutils literal notranslate"><span class="pre">SWMM.set_link_geometry()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_link_length"><code class="docutils literal notranslate"><span class="pre">SWMM.set_link_length()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_link_offsets"><code class="docutils literal notranslate"><span class="pre">SWMM.set_link_offsets()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_link_roughness"><code class="docutils literal notranslate"><span class="pre">SWMM.set_link_roughness()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_link_seepage"><code class="docutils literal notranslate"><span class="pre">SWMM.set_link_seepage()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_raingage_timeseries"><code class="docutils literal notranslate"><span class="pre">SWMM.set_raingage_timeseries()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_storage_property"><code class="docutils literal notranslate"><span class="pre">SWMM.set_storage_property()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#urbansurge.swmm_model.SWMM.unpack_series"><code class="docutils literal notranslate"><span class="pre">SWMM.unpack_series()</span></code></a></li>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">API</a><ul>
+<li><a class="reference internal" href="#epa-swmm-interface">EPA SWMM Interface</a><ul>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM"><code class="docutils literal notranslate"><span class="pre">SWMM</span></code></a><ul>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.add_prcp_timeseries"><code class="docutils literal notranslate"><span class="pre">SWMM.add_prcp_timeseries()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.add_timeseries_file"><code class="docutils literal notranslate"><span class="pre">SWMM.add_timeseries_file()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.compute_area_from_depth"><code class="docutils literal notranslate"><span class="pre">SWMM.compute_area_from_depth()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.configure_model"><code class="docutils literal notranslate"><span class="pre">SWMM.configure_model()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.discretize_invert_elevations"><code class="docutils literal notranslate"><span class="pre">SWMM.discretize_invert_elevations()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.discretize_link"><code class="docutils literal notranslate"><span class="pre">SWMM.discretize_link()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_component_names"><code class="docutils literal notranslate"><span class="pre">SWMM.get_component_names()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_components_by_tag"><code class="docutils literal notranslate"><span class="pre">SWMM.get_components_by_tag()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_downstream_components"><code class="docutils literal notranslate"><span class="pre">SWMM.get_downstream_components()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_circular_Rh"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_circular_Rh()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_depth"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_depth()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_flow"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_flow()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_geometry"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_geometry()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_length"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_length()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_nodes"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_offsets"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_offsets()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_roughness"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_roughness()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_seepage"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_seepage()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_slope"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_slope()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_velocity"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_velocity()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_link_volume"><code class="docutils literal notranslate"><span class="pre">SWMM.get_link_volume()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_coordinates"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_coordinates()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_depth"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_depth()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_flooding"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_flooding()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_head"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_head()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_invert_elevation"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_invert_elevation()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_lateral_inflow"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_lateral_inflow()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_ponded_volume"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_ponded_volume()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_section"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_section()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_node_total_inflow"><code class="docutils literal notranslate"><span class="pre">SWMM.get_node_total_inflow()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_rainfall_timeseries"><code class="docutils literal notranslate"><span class="pre">SWMM.get_rainfall_timeseries()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_storage_inlet"><code class="docutils literal notranslate"><span class="pre">SWMM.get_storage_inlet()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_storage_outlet"><code class="docutils literal notranslate"><span class="pre">SWMM.get_storage_outlet()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_storage_property"><code class="docutils literal notranslate"><span class="pre">SWMM.get_storage_property()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_weir_geometry"><code class="docutils literal notranslate"><span class="pre">SWMM.get_weir_geometry()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.get_weir_property"><code class="docutils literal notranslate"><span class="pre">SWMM.get_weir_property()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.node_positions"><code class="docutils literal notranslate"><span class="pre">SWMM.node_positions()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.run_simulation"><code class="docutils literal notranslate"><span class="pre">SWMM.run_simulation()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_link_geometry"><code class="docutils literal notranslate"><span class="pre">SWMM.set_link_geometry()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_link_length"><code class="docutils literal notranslate"><span class="pre">SWMM.set_link_length()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_link_offsets"><code class="docutils literal notranslate"><span class="pre">SWMM.set_link_offsets()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_link_roughness"><code class="docutils literal notranslate"><span class="pre">SWMM.set_link_roughness()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_link_seepage"><code class="docutils literal notranslate"><span class="pre">SWMM.set_link_seepage()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_node_inflow"><code class="docutils literal notranslate"><span class="pre">SWMM.set_node_inflow()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_raingage_timeseries"><code class="docutils literal notranslate"><span class="pre">SWMM.set_raingage_timeseries()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_storage_property"><code class="docutils literal notranslate"><span class="pre">SWMM.set_storage_property()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_weir_geometry"><code class="docutils literal notranslate"><span class="pre">SWMM.set_weir_geometry()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.set_weir_property"><code class="docutils literal notranslate"><span class="pre">SWMM.set_weir_property()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.unpack_series"><code class="docutils literal notranslate"><span class="pre">SWMM.unpack_series()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.SWMM.upstream_distance"><code class="docutils literal notranslate"><span class="pre">SWMM.upstream_distance()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#urbansurge.file_utils.set_inp_section"><code class="docutils literal notranslate"><span class="pre">set_inp_section()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.diameter_fault"><code class="docutils literal notranslate"><span class="pre">diameter_fault()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.roughness_fault"><code class="docutils literal notranslate"><span class="pre">roughness_fault()</span></code></a></li>
+<li><a class="reference internal" href="#urbansurge.swmm_model.silting_fault"><code class="docutils literal notranslate"><span class="pre">silting_fault()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="usage.html" title="previous chapter">Usage</a></li>
-  </ul></li>
-</ul>
-</div>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="usage.html"
+                          title="previous chapter">Usage</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/api.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
@@ -327,32 +822,29 @@
     </div>
 </div>
 <script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="footer">
-      &copy;2024, Alex Young.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
-      
-      |
-      <a href="_sources/api.rst.txt"
-          rel="nofollow">Page source</a>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">UrbanSurge 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API</a></li> 
+      </ul>
     </div>
-
-    
-
-    
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Alex Young.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
   </body>
 </html>
