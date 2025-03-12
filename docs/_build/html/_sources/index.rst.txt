@@ -15,7 +15,7 @@ Welcome to UrbanSurge's documentation!
 
 .. :caption:: Contents:
 
-**UrbanSurge** is a Python library for stormwater system health monitoring.
+**UrbanSurge** is a Python library for stormwater system health monitoring developed in the Albertson Lab at Cornell University.
 The library provides a streamlined way to manage all aspects of a smart stormwater system including:
 
 * Collection and management of sensor data.

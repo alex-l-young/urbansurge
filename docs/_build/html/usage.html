@@ -52,21 +52,34 @@
 </section>
 <section id="epa-swmm">
 <span id="id2"></span><h2>EPA SWMM<a class="headerlink" href="#epa-swmm" title="Permalink to this heading">¶</a></h2>
-<p>You can use the <code class="docutils literal notranslate"><span class="pre">urbansurge.swmm_model.SWMM</span></code> class:</p>
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">urbansurge.swmm_model.SWMM.</span></span><span class="sig-name descname"><span class="pre">get_component_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section</span></span></em><span class="sig-paren">)</span></dt>
-<dd><p>Returns the names of all components for a given section.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>section</strong> – Section name.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of component names.</p>
-</dd>
-</dl>
-</dd></dl>
+<p>Load an EPA SWMM model with the <code class="docutils literal notranslate"><span class="pre">urbansurge.swmm_model.SWMM</span></code> class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">urbansurge.swmm_model</span> <span class="kn">import</span> <span class="n">SWMM</span>
 
+<span class="n">cfg_path</span> <span class="o">=</span> <span class="s1">&#39;./swmm_model_cfg.yml&#39;</span> <span class="c1"># Path to configuration file.</span>
+
+<span class="n">swmm</span> <span class="o">=</span> <span class="n">SWMM</span><span class="p">(</span><span class="n">cfg_path</span><span class="p">)</span> <span class="c1"># Create class instance.</span>
+<span class="n">swmm</span><span class="o">.</span><span class="n">configure_model</span><span class="p">()</span> <span class="c1"># Configure model.</span>
+<span class="n">swmm</span><span class="o">.</span><span class="n">run_simulation</span><span class="p">()</span> <span class="c1"># Run simulation.</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration-file">
+<span id="config-file"></span><h2>Configuration File<a class="headerlink" href="#configuration-file" title="Permalink to this heading">¶</a></h2>
+<p>Structure of an UrbanSurge SWMM configuration file.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># =================================================================</span>
+<span class="c1"># Configuration file for model run.</span>
+<span class="c1"># =================================================================</span>
+
+<span class="c1"># Path to SWMM .inp file.</span>
+<span class="nt">inp_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~/Path/to/swmm_model.inp</span>
+
+<span class="c1"># Run from temporary .inp file. True or False.</span>
+<span class="nt">temp_inp</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+
+<span class="c1"># Verbosity. 0 or 1.</span>
+<span class="nt">verbose</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -83,6 +96,7 @@
 <li><a class="reference internal" href="#">Usage</a><ul>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#epa-swmm">EPA SWMM</a></li>
+<li><a class="reference internal" href="#configuration-file">Configuration File</a></li>
 </ul>
 </li>
 </ul>

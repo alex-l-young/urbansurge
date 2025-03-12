@@ -723,105 +723,6 @@ if component_1 is upstream of component 2.</p>
 <dd></dd></dl>
 
 </section>
-<section id="module-urbansurge.sensors">
-<span id="sensors"></span><h2>Sensors<a class="headerlink" href="#module-urbansurge.sensors" title="Permalink to this heading">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="urbansurge.sensors.Sensor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">urbansurge.sensors.</span></span><span class="sig-name descname"><span class="pre">Sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_make</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.sensors.Sensor" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="urbansurge.sensors.Sensor.check_if_sensor_exists">
-<span class="sig-name descname"><span class="pre">check_if_sensor_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.sensors.Sensor.check_if_sensor_exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if the sensor directory already exists.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if the sensor directory exists, False if not.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="urbansurge.sensors.Sensor.get_record">
-<span class="sig-name descname"><span class="pre">get_record</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.sensors.Sensor.get_record" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the record associated with the record name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return record_df<span class="colon">:</span></dt>
-<dd class="field-odd"><p>DataFrame of record .csv file.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="urbansurge.sensors.Sensor.list_records">
-<span class="sig-name descname"><span class="pre">list_records</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.sensors.Sensor.list_records" title="Permalink to this definition">¶</a></dt>
-<dd><p>List all data records associated with the sensor.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return records<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List of record names.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="urbansurge.sensors.Sensor.metadata_entries">
-<span class="sig-name descname"><span class="pre">metadata_entries</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['sensor_name',</span> <span class="pre">'description',</span> <span class="pre">'sensor_make',</span> <span class="pre">'sensor_model']</span></em><a class="headerlink" href="#urbansurge.sensors.Sensor.metadata_entries" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="urbansurge.sensors.Sensor.read">
-<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">voltage_channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.sensors.Sensor.read" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="urbansurge.sensors.Sensor.sensor_directory_name">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sensor_directory_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.sensors.Sensor.sensor_directory_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if sensor name can form a valid directory name.
-- 20 or fewer characters.
-- Only contains letters, numbers, underscores, whitespace, and hyphens.
-Replace white spaces with underscores.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sensor_name</strong> – Name of sensor.</p>
-</dd>
-<dt class="field-even">Return sensor_dir<span class="colon">:</span></dt>
-<dd class="field-even"><p>Sensor directory name.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="urbansurge.sensors.list_sensors">
-<span class="sig-prename descclassname"><span class="pre">urbansurge.sensors.</span></span><span class="sig-name descname"><span class="pre">list_sensors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.sensors.list_sensors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Lists available sensors from sensor directory.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sensor_path</strong> – Sensor directory containing all sensor sub-directories.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="urbansurge.sensors.load_sensor">
-<span class="sig-prename descclassname"><span class="pre">urbansurge.sensors.</span></span><span class="sig-name descname"><span class="pre">load_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sensor_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#urbansurge.sensors.load_sensor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads an existing sensor based on the sensor name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sensor_path</strong> – Path to top-level sensor directory.</p></li>
-<li><p><strong>sensor_name</strong> – Name of sensor to load.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return sensor<span class="colon">:</span></dt>
-<dd class="field-even"><p>Loaded instance of sensor class.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
 </section>
 
 
@@ -892,20 +793,6 @@ Replace white spaces with underscores.</p>
 <li><a class="reference internal" href="#urbansurge.swmm_model.diameter_fault"><code class="docutils literal notranslate"><span class="pre">diameter_fault()</span></code></a></li>
 <li><a class="reference internal" href="#urbansurge.swmm_model.roughness_fault"><code class="docutils literal notranslate"><span class="pre">roughness_fault()</span></code></a></li>
 <li><a class="reference internal" href="#urbansurge.swmm_model.silting_fault"><code class="docutils literal notranslate"><span class="pre">silting_fault()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-urbansurge.sensors">Sensors</a><ul>
-<li><a class="reference internal" href="#urbansurge.sensors.Sensor"><code class="docutils literal notranslate"><span class="pre">Sensor</span></code></a><ul>
-<li><a class="reference internal" href="#urbansurge.sensors.Sensor.check_if_sensor_exists"><code class="docutils literal notranslate"><span class="pre">Sensor.check_if_sensor_exists()</span></code></a></li>
-<li><a class="reference internal" href="#urbansurge.sensors.Sensor.get_record"><code class="docutils literal notranslate"><span class="pre">Sensor.get_record()</span></code></a></li>
-<li><a class="reference internal" href="#urbansurge.sensors.Sensor.list_records"><code class="docutils literal notranslate"><span class="pre">Sensor.list_records()</span></code></a></li>
-<li><a class="reference internal" href="#urbansurge.sensors.Sensor.metadata_entries"><code class="docutils literal notranslate"><span class="pre">Sensor.metadata_entries</span></code></a></li>
-<li><a class="reference internal" href="#urbansurge.sensors.Sensor.read"><code class="docutils literal notranslate"><span class="pre">Sensor.read()</span></code></a></li>
-<li><a class="reference internal" href="#urbansurge.sensors.Sensor.sensor_directory_name"><code class="docutils literal notranslate"><span class="pre">Sensor.sensor_directory_name()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#urbansurge.sensors.list_sensors"><code class="docutils literal notranslate"><span class="pre">list_sensors()</span></code></a></li>
-<li><a class="reference internal" href="#urbansurge.sensors.load_sensor"><code class="docutils literal notranslate"><span class="pre">load_sensor()</span></code></a></li>
 </ul>
 </li>
 </ul>
