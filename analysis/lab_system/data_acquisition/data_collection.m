@@ -8,6 +8,10 @@ Write data to spreadsheet
 close all
 clear
 
+% experimental parameters
+fault_level = 0; % 0 for none, 1 for 20%, 2 for 40%
+drained = 0; % 0 for not drained, 1 for drained
+
 % Trigger valve.
 %************************************
 dq = daq("ni");
@@ -30,17 +34,16 @@ clear dq
 dq = daq("ni");
 
 % add inputs
-ch0 = addinput(dq, "Dev1", "ai0", "Voltage"); % bucket sensor
+ch0 = addinput(dq, "Dev1", "ai0", "Voltage"); % pipe sensor [NAME]
 ch0.TerminalConfig = "SingleEnded";
 
-ch1 = addinput(dq, "Dev1", "ai1", "Voltage"); % pipe sensor [###]
+ch1 = addinput(dq, "Dev1", "ai1", "Voltage"); % pipe sensor [NAME]
 ch1.TerminalConfig = "SingleEnded";
 
-ch2 = addinput(dq, "Dev1", "ai2", "Voltage"); % pipe sensor [###]
+ch2 = addinput(dq, "Dev1", "ai2", "Voltage"); % bucket sensor
 ch2.TerminalConfig = "SingleEnded";
 
 % collect data
-i = 0; % trial number (modify to write to new spreadsheet)
 dt_sensor = 0.03; % Sensor sampling rate.
 fs = 1/dt_sensor; % daq sampling rate (Hz)
 dt = 60; % trial length (s)
@@ -72,3 +75,9 @@ date = string(datetime('now', 'Format', 'yyyy-MM-dd''_''HH-mm-ss'));
 path = "sensor_data\";
 filename = date + "_" + "sensor_data" + ".csv";
 writetable(tab, fullfile(path,filename));
+
+%% add to file organization spreadsheet
+to_open = "data_organization_worksheet.csv";
+path_open = "data_acquisition\";
+tab = table(filename, fault_level, drained);
+writetable(tab, to_open);
