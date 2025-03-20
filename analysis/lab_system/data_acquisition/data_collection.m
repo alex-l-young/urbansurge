@@ -20,6 +20,7 @@ dq = daq("ni");
 ch0_out = addoutput(dq, "Dev1", "ao0", "Voltage");
 
 % Trigger signal.
+pause(1)
 write(dq, 0);
 write(dq, 4);
 pause(0.1)
@@ -80,4 +81,4 @@ writetable(tab, fullfile(path,filename));
 to_open = "data_organization_worksheet.csv";
 path_open = "data_acquisition\";
 tab = table(filename, fault_level, drained);
-writetable(tab, to_open);
+writetable(tab, to_open, 'WriteMode', 'append');
