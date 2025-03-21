@@ -9,7 +9,7 @@ close all
 clear
 
 % experimental parameters
-fault_level = 0; % 0 for none, 1 for 20%, 2 for 40%
+fault_level = 2; % 0 for none, 1 for 20%, 2 for 40%
 drained = 0; % 0 for not drained, 1 for drained
 
 % Trigger valve.
