@@ -9,7 +9,7 @@ close all
 clear
 
 % experimental parameters
-fault_level = 2; % 0 for none, 1 for 20%, 2 for 40%
+fault_level = 4; % 0 for none, 1 for 20%, 2 for 40%
 drained = 0; % 0 for not drained, 1 for drained
 
 % Trigger valve.
@@ -47,7 +47,7 @@ ch2.TerminalConfig = "SingleEnded";
 % collect data
 dt_sensor = 0.03; % Sensor sampling rate.
 fs = 1/dt_sensor; % daq sampling rate (Hz)
-dt = 60; % trial length (s)
+dt = 180; % trial length (s)
 dq.Rate = fs;
 [data, time, start] = read(dq, seconds(dt), OutputFormat="Matrix");
 V_ai0 = data(:,1);
