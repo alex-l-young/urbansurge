@@ -1,7 +1,7 @@
 <!-- ![UrbanSurge Logo](docs/_static/urbansurge_log.png) -->
 <img src="docs/_static/urbansurge_log.png" alt="drawing" width="400"/>
 
-UrbanSurge provides Python bindings and extensions to pyswmm for editing
+UrbanSurge provides Python bindings and extensions to [pyswmm](https://www.pyswmm.org) for editing
 and running SWMM models.
 
 ```python
