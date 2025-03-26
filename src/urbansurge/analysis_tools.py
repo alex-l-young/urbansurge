@@ -6,6 +6,7 @@
 # Library imports.
 import pandas as pd
 import numpy as np
+from scipy.integrate import quad
 from typing import Dict, List, Tuple
 
 
@@ -273,6 +274,59 @@ def mutual_information(s, q):
     return
 
 
+def compute_wedge_storage(D: float, d_b: float, S: float) -> tuple[float, float]:
+    """
+    Compute the wedge storage volume in a partially blocked pipe.
+    
+    The wedge storage regime occurs when water accumulates behind a blockage in a pipe.
+    The volume is determined by integrating the cross-sectional area along the wedge length.
+    
+    :param D: Pipe diameter (meters)
+    :param d_b: Blockage height (meters)
+    :param S: Pipe slope (dimensionless, assumed small angle approximation)
+    :return: A tuple containing the wedge storage volume (cubic meters) and the wedge length L (meters)
+    
+    The wedge length, :math:`L`, is computed as:
+    
+    .. math::
+        L = \frac{d_b \cos(S)}{\cos(\pi/2 - S)}
+    
+    The cross-sectional area, :math:`A(x)`, varies with distance and is given by:
+    
+    .. math::
+        A(x) = \frac{D^2}{8} \left(\theta(x) - \sin(\theta(x))\right)
+    
+    where the angle :math:`\theta(x)` is:
+    
+    .. math::
+        \theta(x) = 2 \cos^{-1}\left(1 - \frac{2d(x)}{D}\right)
+    
+    and the depth function is:
+    
+    .. math::
+        d(x) = d_b \frac{x}{L}
+    
+    The wedge storage volume is obtained by integrating :math:`A(x)` over :math:`[0, L]`.
+    """
+    # Compute the wedge length L
+    L = (d_b * np.cos(S)) / np.cos(np.pi / 2 - S)
+    
+    # Define depth function d(x)
+    def d_x(x: float) -> float:
+        return d_b * (x / L)
+    
+    # Define the cross-sectional area function A(x)
+    def A_x(x: float) -> float:
+        d = d_x(x)
+        theta = 2 * np.arccos(1 - (2 * d / D))
+        return (D**2 / 8) * (theta - np.sin(theta))
+    
+    # Integrate A(x) from 0 to L to get the wedge storage volume
+    V_wedge, _ = quad(A_x, 0, L)
+    
+    return V_wedge, L
+
+
 if __name__ == '__main__':
     data = {'dt': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
           'node1': [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115],
@@ -280,3 +334,7 @@ if __name__ == '__main__':
           'node3': [301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315]}
     df = pd.DataFrame(data)
     flatten_df(df)
+
+    # Test wedge storage.
+    V_wedge, L = compute_wedge_storage(0.5, 0.25, 0.02)
+    print(V_wedge, L)
