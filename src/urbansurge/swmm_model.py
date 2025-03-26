@@ -226,11 +226,52 @@ class SWMM:
         :return: Node invert elevation.
         """
         section = self.get_node_section(str(node_id))
-        column_name = 'Elevation'
+        if section == 'STORAGE':
+            column_name = 'Elev.'
+        else:
+            column_name = 'Elevation'
         component_name = str(node_id)
         invert_elevation = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
 
         return float(invert_elevation)
+    
+
+    def get_node_surcharge_depth(self, node_id) -> float:
+        """
+        Get the surcharge depth of a node.
+
+        :param node_id: ID of the node.
+        :return: Node node surcharge depth.
+        """
+        section = self.get_node_section(str(node_id))
+        column_name = 'SurDepth'
+        component_name = str(node_id)
+        try:
+            surcharge_depth = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
+        except Exception as e:
+            print(e)
+            print(section)
+
+        return float(surcharge_depth)
+    
+
+    def get_node_max_depth(self, node_id) -> float:
+        """
+        Get the maximum depth of a node.
+
+        :param node_id: ID of the node.
+        :return: Node maximum depth.
+        """
+        section = self.get_node_section(str(node_id))
+        column_name = 'MaxDepth'
+        component_name = str(node_id)
+        try:
+            max_depth = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
+        except Exception as e:
+            print(e)
+            print(section)
+
+        return float(max_depth)
 
 
     def get_downstream_components(self, start_component_id, start_component_type, downstream_component_type):
