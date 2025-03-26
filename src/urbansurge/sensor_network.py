@@ -3,7 +3,9 @@
 # ========================================================
 
 # Library imports.
+from collections import OrderedDict
 import numpy as np
+import numpy.typing as npt
 from typing import List, Dict
 
 # UrbanSurge imports.
@@ -56,11 +58,10 @@ def dfs_upstream(adj_matrix: List[List[int]], start_node: int) -> List[int]:
     return traversal_order
 
 
-def dfs_surcharge(adj_matrix: List[List[int]], start_node: int, invert_elevations: Dict, surcharge_depths: Dict) -> Dict:
+def dfs_surcharge_old(A: List[List[int]], node_names: List, start_node: int, invert_elevations: Dict, total_elevations: Dict) -> Dict:
     # Dictionary of exceedance lists for each node.
-    exceed_dict = {start_node: {}}
+    exceed_dict = {start_node: OrderedDict()}
 
-    num_nodes = len(adj_matrix)
     visited = set()
     traversal_order = []
     
@@ -77,15 +78,19 @@ def dfs_surcharge(adj_matrix: List[List[int]], start_node: int, invert_elevation
         # Keep nodes in L where surcharge depth > invert elevation.
         L = {k: v for k, v in L.items() if v > inv_elev}
         
-        # Add current node's surcharge depth.
-        L[node] = surcharge_depths[node]
+        # Add current node's maximum depth.
+        L[node] = total_elevations[node]
 
         # Add L to exceedance dictionary.
         exceed_dict[node] = L
-        
-        for neighbor in range(num_nodes):
-            if adj_matrix[neighbor][node] == 1:  # Flow from neighbor to node (upstream direction)
-                dfs(neighbor, exceed_dict[node])
+
+        # Upstream nodes.
+        node_idx = node_names.index(node)
+        upstream_indices = np.argwhere(A[:,node_idx] == 1).flatten()
+        upstream_nodes = [node_names[i] for i in upstream_indices]
+
+        for upstream_node in upstream_nodes:
+            dfs(upstream_node, exceed_dict[node])
     
     dfs(start_node, exceed_dict[start_node])
 
@@ -93,6 +98,113 @@ def dfs_surcharge(adj_matrix: List[List[int]], start_node: int, invert_elevation
     for node, L in exceed_dict.items():
         L.pop(node)
 
+    return exceed_dict
+
+
+def dfs_surcharge_old1(A, node_names, start_node, invert_elevations, total_elevations) -> dict:
+    # Dictionary of exceedance lists for each node; using OrderedDict to keep downstream order.
+    exceed_dict = {start_node: OrderedDict()}
+    visited = set()
+    
+    def dfs(node: int, L: OrderedDict) -> None:
+        if node in visited:
+            return
+        
+        visited.add(node)
+
+        # Get current node’s invert elevation.
+        inv_elev = invert_elevations[node]
+
+        # Build a new L by iterating over L in its downstream (insertion) order.
+        # Once a node is removed (fails the requirement), all nodes later in the order are dropped.
+        new_L = OrderedDict()
+        violation_found = False
+        for key, surcharge in L.items():
+            if violation_found:
+                continue
+            if surcharge > inv_elev:
+                new_L[key] = surcharge
+            else:
+                violation_found = True
+        
+        # Add current node’s maximum depth.
+        new_L[node] = total_elevations[node]
+        
+        # Save the current new_L for the current node.
+        exceed_dict[node] = new_L
+
+        # Find upstream nodes.
+        node_idx = node_names.index(node)
+        upstream_indices = np.argwhere(A[:, node_idx] == 1).flatten()
+        upstream_nodes = [node_names[i] for i in upstream_indices]
+
+        # Recurse upstream using the updated new_L.
+        for upstream_node in upstream_nodes:
+            dfs(upstream_node, new_L)
+    
+    dfs(start_node, exceed_dict[start_node])
+    
+    # Remove self-references from the exceedance dictionaries.
+    for node, L in exceed_dict.items():
+        if node in L:
+            del L[node]
+    
+    return exceed_dict
+
+
+def dfs_surcharge(A, node_names, start_node, invert_elevations, total_elevations) -> dict:
+    # Dictionary of exceedance lists for each node; using OrderedDict to maintain insertion order.
+    exceed_dict = {start_node: OrderedDict()}
+    visited = set()
+    
+    def dfs(node: int, L: OrderedDict) -> None:
+        if node in visited:
+            return
+        visited.add(node)
+        
+        # Get current node's invert elevation.
+        inv_elev = invert_elevations[node]
+        
+        # Process L: Remove all entries that were added before any violation.
+        # We'll iterate through L in order, and if we encounter a violation (surcharge <= inv_elev),
+        # we update our valid_block_start to be the index just after the violation.
+        keys = list(L.keys())
+        valid_block_start = 0
+        for i, key in enumerate(keys):
+            if L[key] > inv_elev:
+                # Valid entry, do nothing.
+                continue
+            else:
+                # Violation encountered, update valid_block_start to drop this entry and everything before it.
+                valid_block_start = i + 1
+        
+        # Build new_L using only the entries from valid_block_start onward.
+        new_L = OrderedDict()
+        for key in keys[valid_block_start:]:
+            # It is not necessary to re-check validity here because if an item in this block was invalid,
+            # the pointer would have been updated further.
+            new_L[key] = L[key]
+        
+        # Add current node's maximum depth.
+        new_L[node] = total_elevations[node]
+        exceed_dict[node] = new_L
+        
+        # Identify upstream nodes.
+        node_idx = node_names.index(node)
+        upstream_indices = np.argwhere(A[:, node_idx] == 1).flatten()
+        upstream_nodes = [node_names[i] for i in upstream_indices]
+        
+        # Recurse upstream with the updated new_L.
+        for upstream_node in upstream_nodes:
+            dfs(upstream_node, new_L)
+    
+    dfs(start_node, exceed_dict[start_node])
+    
+    # Remove self-references from the exceedance dictionaries.
+    for node, L in exceed_dict.items():
+        if node in L:
+            del L[node]
+    
     return exceed_dict
 
 
@@ -109,7 +221,9 @@ def link_nodes(inp_filepath, int_convert=False):
 
     # Filter names if they start with ';' which is a line comment.
     conduit_names = [c for c in conduit_names if c[0] != ';']
-    weir_names = [w for w in weir_names if w[0] != ';']
+
+    if weir_names:
+        weir_names = [w for w in weir_names if w[0] != ';']
 
     # Dictionary to store link nodes.
     link_nodes_dict = {}
@@ -184,3 +298,39 @@ def adjacency_matrix(conduit_nodes_dict, inp_filepath, include_cnames=False):
     return A, node_names
 
 
+def assign_elevation_sensor_nodes(exceed_all, n_min=0):
+    sensor_nodes = []
+    exceed_counts = compute_exceed_counts(exceed_all)
+
+    while exceed_counts:
+        max_node = max(exceed_counts, key=exceed_counts.get)
+
+        # Test whether max_node has more than n_min in its FOV.
+        if exceed_counts[max_node] < n_min:
+            break
+
+        sensor_nodes.append(max_node)
+
+        # Nodes in sensor field of view.
+        fov_nodes = list(exceed_all[max_node].keys())
+        fov_nodes.append(max_node)
+
+        # Remove top-level keys that are in fov_nodes
+        exceed_all = {k: v for k, v in exceed_all.items() if k not in fov_nodes}
+
+        # Remove keys in fov_nodes from the sub-dictionaries
+        for key, sub_dict in exceed_all.items():
+            exceed_all[key] = {sub_k: sub_v for sub_k, sub_v in sub_dict.items() if sub_k not in fov_nodes}
+
+        # Recompute exceed_counts.
+        exceed_counts = compute_exceed_counts(exceed_all)
+
+    return sensor_nodes
+
+
+def compute_exceed_counts(exceed_all):
+    exceed_counts = {}
+    for node, exceed_node_dict in exceed_all.items():
+        exceed_counts[node] = len(exceed_node_dict.keys())
+
+    return exceed_counts
