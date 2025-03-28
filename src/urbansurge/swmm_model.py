@@ -280,9 +280,10 @@ class SWMM:
         start_component_id = str(start_component_id)
 
         # Handle section names for different component types.
-        section_dict = {'Link': 'CONDUITS', 'Junction': 'JUNCTIONS', 'Outfall': 'OUTFALLS', 'Storage': 'STORAGE'}
+        section_dict = {'Link': 'CONDUITS', 'Junction': 'JUNCTIONS', 'Outfall': 'OUTFALLS', 'Storage': 'STORAGE', 'Weir': 'WEIRS'}
         non_link_component_types = list(section_dict.keys())
         non_link_component_types.remove('Link')
+        non_link_component_types.remove('Weir')
         downstream_section = section_dict[downstream_component_type]
         downstream_section_ids = self.get_component_names(downstream_section)
 
@@ -295,21 +296,33 @@ class SWMM:
         junction_ids = self.get_component_names('JUNCTIONS')
         storage_ids = self.get_component_names('STORAGE')
         outfall_ids = self.get_component_names('OUTFALLS')
+        weir_ids = self.get_component_names('WEIRS')
+
+        # Weirs are treated as conduits.
+        if weir_ids:
+            conduit_ids = conduit_ids + weir_ids
 
         # {Node: component type} dictionary.
         node_type_dict = {}
-        for id in junction_ids:
-            node_type_dict[id] = 'Junction'
-        for id in storage_ids:
-            node_type_dict[id] = 'Storage'
-        for id in outfall_ids:
-            node_type_dict[id] = 'Outfall'
+        if junction_ids:
+            for id in junction_ids:
+                node_type_dict[id] = 'Junction'
+        if storage_ids:
+            for id in storage_ids:
+                node_type_dict[id] = 'Storage'
+        if outfall_ids:
+            for id in outfall_ids:
+                node_type_dict[id] = 'Outfall'
 
         # Create dataframe with columns | conduit_id | from_node_id | to_node_id | from CONDUITS section.
         nodes = {'conduit_id': [], 'from_node_id': [], 'to_node_id': []}
         for i, id in enumerate(conduit_ids):
-            from_node_id = file_utils.get_inp_section(self.inp_path, 'CONDUITS', from_column_name, id)
-            to_node_id = file_utils.get_inp_section(self.inp_path, 'CONDUITS', to_column_name, id)
+            if weir_ids and id in weir_ids:
+                from_node_id = file_utils.get_inp_section(self.inp_path, 'WEIRS', from_column_name, id)
+                to_node_id = file_utils.get_inp_section(self.inp_path, 'WEIRS', to_column_name, id)
+            else:
+                from_node_id = file_utils.get_inp_section(self.inp_path, 'CONDUITS', from_column_name, id)
+                to_node_id = file_utils.get_inp_section(self.inp_path, 'CONDUITS', to_column_name, id)
             nodes['conduit_id'].append(id)
             nodes['from_node_id'].append(from_node_id)
             nodes['to_node_id'].append(to_node_id)
@@ -327,7 +340,8 @@ class SWMM:
             downstream_components.append(component_id)
 
         break_counter = 1
-        while component_id not in outfall_ids:
+        while component_id not in outfall_ids or component_type != 'Outfall':
+            
             # Immediate downstream component.
             if component_type == 'Link':
                 # Get the outlet node (to node) of the link.
@@ -341,7 +355,7 @@ class SWMM:
                 raise Exception(f'Component type of "{component_type}" not one of {list(section_dict.keys())}')
 
             # Add component to downstream components if the component should be collected.
-            if next_component_type == downstream_component_type and next_component_id in downstream_section_ids:
+            if next_component_type == downstream_component_type and str(next_component_id) in downstream_section_ids:
                 downstream_components.append(next_component_id)
 
             # Update component ID.
@@ -373,23 +387,23 @@ class SWMM:
         component_2 = str(component_2)
 
         # All links downstream of component 2.
-        downstream_links = self.get_downstream_components(component_2, component_2_type, component_1_type)
+        downstream_links = self.get_downstream_components(component_2, component_2_type, 'Link')
 
         # Handle edge cases.
         if component_1 == component_2 and component_1_type == component_2_type:
             return 0.0
-        elif component_1 not in downstream_links:
+        elif  not downstream_links:
             # Check if component_1 is in downstream links.
             return np.nan
-        elif downstream_links[0] == component_1:
+        elif downstream_links[0] == component_1 and component_1_type == 'Link':
             # If there are no between links, component_1 == component_2, return length of current link.
             return self.get_link_length(component_1)
-
+        
         # List of links between component 2 and component 1.
         # TODO: if component_1 isn't a link, it will not be found.
         between_links = []
         for link in downstream_links:
-            if link == component_1:
+            if link == component_1 and component_1_type == 'Link':
                 break
             else:
                 between_links.append(link)
@@ -1360,6 +1374,14 @@ def diameter_fault(swmm, fault_component, fault_value, value_type):
     swmm.set_link_offsets(fault_component, (offset, offset))
     
     return swmm
+
+
+def weir_fault(swmm, fault_component, fault_value):
+    # Set the crest height as the fault value.
+    swmm.set_weir_property(fault_component, 'CrestHt', fault_value)
+    
+    return swmm
+
 
 def roughness_fault(swmm, fault_component, fault_value, value_type):
     # Assign fault variables.
