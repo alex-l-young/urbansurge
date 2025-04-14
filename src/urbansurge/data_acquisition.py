@@ -210,3 +210,41 @@ def flow_to_swmm_readable(Q: np.ndarray, t: List[datetime], file_dir: Path, file
 
     # Save the dataframe as a dat file
     df.to_csv(file_dir / file_name, index=False, header=False, sep='\t')
+
+
+def select_experiments(db_filepath: Path, experiment_dir: Path, date: str, fault_level: int, drained: int):
+    """
+    Select experiment file names corresponding to a specified date, fault level, and drainage scenario.
+
+    :param db_filepath: Path to database csv file.
+    :param date: Date of the data in yyyy-mm-dd.
+    :param fault_level: Fault level value.
+    :param drained: Drainage scenario.
+
+    :return: List of corresponding file names from database.
+    """
+    # Load database as data frame.
+    db = pd.read_csv(db_filepath)
+
+    # Extract date from filename (assumes format: yyyy-mm-dd_HH-MM-SS_sensor_data.csv)
+    db['date'] = db['filename'].str.extract(r'(^\d{4}-\d{2}-\d{2})')
+
+    # Filter based on date, fault_level, and drained
+    filtered = db[
+        (db['date'] == date) &
+        (db['fault_level'] == fault_level) &
+        (db['drained'] == drained)
+    ]
+
+    # List of file names.
+    fnames = filtered['filename'].tolist()
+
+    # Load data frames.
+    dfs = [pd.read_csv(experiment_dir / f) for f in fnames]
+
+    return dfs
+
+
+
+
+
