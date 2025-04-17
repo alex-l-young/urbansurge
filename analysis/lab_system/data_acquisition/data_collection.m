@@ -9,8 +9,9 @@ close all
 clear
 
 % experimental parameters
-fault_level = 0; % 0 for none, 1 for 20%, 2 for 40%
+fault_level = 2; % 0 for none, 1 for 20%, 2 for 40%
 drained = 0; % 0 for not drained, 1 for drained
+impulse_length = 1; % 0 is shortest  !!! check how many seconds !!!
 
 % Trigger valve.
 %************************************
@@ -47,7 +48,7 @@ ch2.TerminalConfig = "SingleEnded";
 % collect data
 dt_sensor = 0.03; % Sensor sampling rate.
 fs = 1/dt_sensor; % daq sampling rate (Hz)
-dt = 120; % trial length (s)
+dt = 600; % trial length (s)
 dq.Rate = fs;
 [data, time, start] = read(dq, seconds(dt), OutputFormat="Matrix");
 V_ai0 = data(:,1);
@@ -78,7 +79,7 @@ filename = date + "_" + "sensor_data" + ".csv";
 writetable(tab, fullfile(path,filename));
 
 %% add to file organization spreadsheet
-to_open = "data_organization_worksheet.csv";
+to_open = "data_organization_updated.csv";
 path_open = "data_acquisition\";
-tab = table(filename, fault_level, drained);
+tab = table(filename, fault_level, drained, impulse_length);
 writetable(tab, to_open, 'WriteMode', 'append');
