@@ -19,9 +19,9 @@ void loop() {
   val = analogRead(triggerPin);  // read the input pin
 
   if (val > trigger) {
-    Serial.println("VALVE2 OPENED");   // debug value
     delay(2000); // Wait a bit for data collection to start.
     analogWrite(valve2Pin, 255);
+    Serial.println("VALVE2 OPENED");   // debug value
 
     val2 = analogRead(triggerPin);
     while (val2 < trigger) {   // wait until signal for closing valve2 is received.
