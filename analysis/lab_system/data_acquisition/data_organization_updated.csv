@@ -49,6 +49,7 @@ filename,fault_level,drained,longer_impulse
 2025-04-09_18-26-17_sensor_data.csv,2,0,1
 2025-04-09_18-43-25_sensor_data.csv,0,0,1
 2025-04-09_18-47-43_sensor_data.csv,0,0,1
+<<<<<<< Updated upstream
 2025-04-14_15-57-27_sensor_data.csv,0,0,1
 2025-04-14_15-59-48_sensor_data.csv,2,1,1
 2025-04-14_16-04-36_sensor_data.csv,2,0,1
@@ -68,3 +69,6 @@ filename,fault_level,drained,longer_impulse
 2025-04-16_13-55-35_sensor_data.csv,2,0,1
 2025-04-16_14-14-57_sensor_data.csv,3,0,1
 2025-04-16_14-32-44_sensor_data.csv,2,0,1
+=======
+2025-04-17_14-27-40_sensor_data.csv,0,0,1
+>>>>>>> Stashed changes
