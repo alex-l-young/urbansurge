@@ -7,7 +7,7 @@ dq = daq("ni");
 duration = 3; % Seconds
 
 % DAQ channel.
-channel = 'ai1';
+channel = 'ai2';
 
 % DAQ sampling rate.
 dt_sensor = 0.03; % Sensor sampling rate.

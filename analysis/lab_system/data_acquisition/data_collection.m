@@ -9,9 +9,9 @@ close all
 clear
 
 % experimental parameters
-fault_level = 0; % 0 for none, 1 for 20%, 2 for 40%
-drained = 0; % 0 for not drained, 1 for drained
-impulse_length = 1; % 0 is shortest  !!! check how many seconds !!!
+fault_level = 0; % 0 for none, 1 for 20%, 2 for 40%, 3=60%, 4=80%
+drained = 0; % 0 for drained (DEFAULT), 1 for not drained
+impulse_length = 0; % 0 is not a trial, 1 is 12 sec
 
 % Trigger valve to fill tank.
 %************************************
@@ -35,10 +35,11 @@ disp('FILLING STARTED')
 % ************************************
 % Then send another trigger signal
 
+
 threshold = 1.5; % volts
 
 while true
-    tank_val = read(dq);
+    [tank_val, tt, ss] = read(dq, OutputFormat="Matrix")
 
     if tank_val <= threshold
         write(dq, 4);
@@ -70,7 +71,7 @@ ch2.TerminalConfig = "SingleEnded";
 % collect data
 dt_sensor = 0.03; % Sensor sampling rate.
 fs = 1/dt_sensor; % daq sampling rate (Hz)
-dt = 20; % trial length (s)
+dt = 120; % trial length (s)
 dq.Rate = fs;
 [data, time, start] = read(dq, seconds(dt), OutputFormat="Matrix");
 V_ai0 = data(:,1);
@@ -101,6 +102,9 @@ ylabel('Voltage (V)')
 %writetable(tab, fullfile(path,filename));
 
 %% add to file organization spreadsheet
+date = string(datetime('now', 'Format', 'yyyy-MM-dd''_''HH-mm-ss'));
+path = "sensor_data\";
+filename = date + "_" + "sensor_data" + ".csv";
 to_open = "final_data_organization.csv";
 path_open = "data_acquisition\";
 tab = table(filename, fault_level, drained, impulse_length);
