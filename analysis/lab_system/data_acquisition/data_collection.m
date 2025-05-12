@@ -9,9 +9,9 @@ close all
 clear
 
 % experimental parameters
-fault_level = 0; % 0 for none, 1 for 20%, 2 for 40%, 3=60%, 4=80%
+fault_level = 4; % 0 for none, 1 for 20%, 2 for 40%, 3=60%, 4=80%
 drained = 0; % 0 for drained (DEFAULT), 1 for not drained
-impulse_length = 0; % 0 is not a trial, 1 is 12 sec
+impulse_length = 1; % 0 is not a trial, 1 is 12 sec
 
 % Trigger valve to fill tank.
 %************************************
@@ -95,16 +95,13 @@ xlabel('Time (s)')
 ylabel('Voltage (V)')
 
 %% write to spreadsheet
-%tab = table(time, V_ai0, V_ai1, V_ai2);
-%date = string(datetime('now', 'Format', 'yyyy-MM-dd''_''HH-mm-ss'));
-%path = "sensor_data\";
-%filename = date + "_" + "sensor_data" + ".csv";
-%writetable(tab, fullfile(path,filename));
-
-%% add to file organization spreadsheet
+tab = table(time, V_ai0, V_ai1, V_ai2);
 date = string(datetime('now', 'Format', 'yyyy-MM-dd''_''HH-mm-ss'));
 path = "sensor_data\";
 filename = date + "_" + "sensor_data" + ".csv";
+writetable(tab, fullfile(path,filename));
+
+%% add to file organization spreadsheet
 to_open = "final_data_organization.csv";
 path_open = "data_acquisition\";
 tab = table(filename, fault_level, drained, impulse_length);
