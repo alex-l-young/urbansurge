@@ -9,9 +9,9 @@ close all
 clear
 
 % experimental parameters
-fault_level = 4; % 0 for none, 1 for 20%, 2 for 40%, 3=60%, 4=80%
-drained = 0; % 0 for drained (DEFAULT), 1 for not drained
-impulse_length = 1; % 0 is not a trial, 1 is 12 sec
+fault_level = 2; % 0 for none, 1 for 20%, 2 for 40%, 3=60%, 4=80%
+drained = 1; % 0 for drained (DEFAULT), 1 for not drained
+impulse_length = 1; % 0 is not a trial, 1 is 12 sec, 2 is for 20 sec, 3 is for 30 sec
 
 % Trigger valve to fill tank.
 %************************************
