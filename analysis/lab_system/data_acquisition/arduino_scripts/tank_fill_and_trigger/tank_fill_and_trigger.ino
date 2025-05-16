@@ -1,4 +1,4 @@
-int trialLength = 8000; // How long to keep valve1 open (ms). 
+int trialLength = 12000; // How long to keep valve1 open (ms). 
 int pos = 0;          // Initial ball valve position.
 int runLoop = 0;      // Run loop flag.
 int triggerPin = A3;  // Pin to read trigger signal.
@@ -19,9 +19,9 @@ void loop() {
   val = analogRead(triggerPin);  // read the input pin
 
   if (val > trigger) {
-    delay(2000); // Wait a bit for data collection to start.
     analogWrite(valve2Pin, 255);
     Serial.println("VALVE2 OPENED");   // debug value
+    delay(2000); 
 
     val2 = analogRead(triggerPin);
     while (val2 < trigger) {   // wait until signal for closing valve2 is received.
@@ -31,6 +31,7 @@ void loop() {
     Serial.println("VALVE2 CLOSED");
     val2 = 0;
 
+    delay(10000);
     analogWrite(valve1Pin, 255);  // open valve1.
     Serial.println("VALVE1 OPENED");
     delay(trialLength); // How long to keep valve open.

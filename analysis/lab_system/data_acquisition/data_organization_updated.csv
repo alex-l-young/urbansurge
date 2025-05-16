@@ -1,4 +1,4 @@
-filename,fault_level,drained,longer_impulse
+filename,fault_level,drained,impulse_length
 2025-03-19_21-42-59_sensor_data.csv,0,0,0
 2025-03-19_21-44-48_sensor_data.csv,0,0,0
 2025-03-19_21-46-39_sensor_data.csv,0,0,0
