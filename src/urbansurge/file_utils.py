@@ -3,6 +3,8 @@
 # ========================================================
 
 # Library imports.
+from collections import defaultdict
+import pandas as pd
 import re
 from typing import List, Union
 
@@ -67,6 +69,53 @@ def set_inp_section(in_filepath: str, section: str, column_name: str, component_
             print(f"No line found with Name value {component_name} in {component_name}")
 
 
+def get_inp_section_from_lines(lines, section, column_name, component_name):
+    """
+    Gets the value from a specified section, column name, and component name from the SWMM .inp file lines.
+    :param lines: Lines from inp file.
+    :param section: Section to choose data from. E.g., XSECTIONS
+    :param column_name: Name of column to get data from.
+    :param component_name: Component name.
+        Will use the first column of the section table which is either "Name" or "Link".
+    :return: Returns the requested value as a string.
+    """
+    # Find the line number where the section table starts
+    start_line = None
+    for i, line in enumerate(lines):
+        if line.startswith('[' + section + ']'):
+            start_line = i + 3  # Skip the header lines
+            break
+
+    # Find the index of the "Name" and specified column in the header line
+    header_line = lines[start_line-2]
+    header_values = re.split(r" {2,}", header_line.strip())
+    name_col_index = 0
+    column_index = header_values.index(column_name)
+
+    # Find the line number that corresponds to the specified "Name" value
+    update_line = None
+    for i in range(start_line, len(lines)):
+        line_values = lines[i].strip().split()
+        if line_values[name_col_index] == str(component_name):
+            update_line = i
+            break
+
+    if update_line is not None:
+        # Handle weird storage formatting.
+        if section == 'STORAGE' and column_index > 4:
+            column_index += 2
+
+        # Update the specified column's value for the found line
+        line_values = lines[update_line].strip().split()
+        component_value = line_values[column_index]
+
+        # print(f"Found {column_name} value to be {component_value} for {component_name} in {component_name}")
+        return component_value
+
+    else:
+        raise ValueError(f"No line found with Name value {component_name} in {component_name}")
+
+
 def get_inp_section(in_filepath, section, column_name, component_name):
     """
     Gets the value from a specified section, column name, and component name from the SWMM .inp file.
@@ -117,6 +166,83 @@ def get_inp_section(in_filepath, section, column_name, component_name):
 
         else:
             raise ValueError(f"No line found with Name value {component_name} in {component_name}")
+        
+
+def inp_section_to_dataframe(inp_filepath, section):
+    """
+    Convert the section table from an inp file to a Pandas DataFrame.
+
+    :param inp_filepath: Path to SWMM input file.
+    :param section: Name of the section to convert.
+
+    :return: DataFrame of the section with columns corresponding to the section headers.
+    """
+    with open(inp_filepath, 'r') as file:
+        # Read the file into a list of lines
+        lines = file.readlines()
+
+        # Find the line number where the section table starts
+        start_line = None
+        for i, line in enumerate(lines):
+            if line.startswith('[' + section + ']'):
+                start_line = i + 3  # Skip the header lines
+                break
+
+        # Find the index of the "Name" and specified column in the header line
+        header_line = lines[start_line-2]
+        header_values = re.split(r" {2,}", header_line.strip())
+
+        # Create empty DataFrame.
+        df = pd.DataFrame(columns=header_values)
+
+        # Find the line number that corresponds to the specified "Name" value
+        dfs_to_concat = []
+        for i in range(start_line, len(lines)):
+            # Extract line values
+            line_values = lines[i].strip().split()
+
+            # Stop when the end of the section is reached.
+            if len(line_values) == 0:
+                break
+
+            # Skip line if it starts with a comment.
+            if line_values[0][0] == ';':
+                continue
+
+            # Pad line values with nan if it's shorter than the number of rows.
+            if len(line_values) < len(df.columns):
+                pad_values = [None for _ in range(len(df.columns) - len(line_values))]
+                line_values += pad_values
+
+            # Create a new DataFrame from the list
+            print(df.columns)
+            print(lines)
+            new_row_df = pd.DataFrame([line_values], columns=df.columns) 
+            dfs_to_concat.append(new_row_df)
+
+        # Concatenate the original DataFrame with the new row DataFrame
+        df = pd.concat(dfs_to_concat, ignore_index=True)
+        
+        return df
+    
+
+def check_for_section(inp_filepath, section):
+    """
+    Checks whether the EPA SWMM input section passed to the function exists.
+    """
+    with open(inp_filepath, 'r') as file:
+        # Read the file into a list of lines
+        lines = file.readlines()
+
+        # Find the line number where the section table starts
+        found_section = False
+        for i, line in enumerate(lines):
+            if line.startswith('[' + section + ']'):
+                found_section = True
+                break
+        
+        return found_section
+
         
 
 def get_section_column_names(in_filepath, section):
@@ -524,6 +650,82 @@ def string_index(full_string, match_string):
     return start_idx, end_idx
 
 
+def parse_inp_file(filepath):
+    with open(filepath, 'r') as f:
+        lines = f.readlines()
+
+    data = defaultdict(list)
+    section = None
+
+    for line in lines:
+        line = line.strip()
+        if line.startswith('[') and line.endswith(']'):
+            section = line.strip('[]')
+        elif section and line.startswith(';;') and not line.startswith(';;-'):
+            data[section].append(line)
+        elif section and line and not line.startswith(';'):
+            data[section].append(line)
+
+    return data
+
+
+def parse_section_to_df(lines):
+
+    header_names = {
+        'TITLE': ['Project Title/Notes'],
+        'OPTIONS': ['Option', 'Value'],
+        'EVAPORATION': ['Data Source', 'Parameters'],
+        'RAINGAGES': ['Name', 'Format', 'Interval', 'SCF', 'Source', 'Filename', 'Units'],
+        'SUBCATCHMENTS': ['Name', 'Rain Gage', 'Outlet', 'Area', '%Imperv', 'Width', '%Slope', 'CurbLen', 'SnowPack'],
+        'SUBAREAS': ['Subcatchment', 'N-Imperv', 'N-Perv', 'S-Imperv', 'S-Perv', 'PctZero', 'RouteTo', 'PctRouted']
+    }
+    
+    # Find the header (first line starting with ";;")
+    headers = []
+    data_rows = []
+    for line in lines:
+        if line.startswith(';;'):
+            headers = re.split(r'\s{2,}', line[2:].strip())
+        else:
+            row = re.split(r'\s{1,}', line.strip())
+            data_rows.append(row)
+
+    
+    if data_rows:
+        for row in data_rows:
+            # Difference between length of row and headers.
+            diff = len(row) - len(headers)
+
+            # If there are fewer headers than data columns, pad headers.
+            if diff > 0:
+                [headers.append(f'col_{i}') for i in range(len(headers), len(headers) + diff)]
+            
+            # If there are fewer data columns than headers, pad rows.
+            if diff < 0:
+                [row.append('0') for _ in range(len(row), len(row) - diff)]
+
+    # Fall back if no headers found
+    if not headers:
+        headers = [f'col_{i}' for i in range(len(data_rows[0]))]
+
+    # Make data frame.
+    df = pd.DataFrame(data_rows, columns=headers)
+
+    return df
+
+
+def inp_to_database(filepath):
+    raw_sections = parse_inp_file(filepath)
+    database = {}
+    for section, lines in raw_sections.items():
+        try:
+            df = parse_section_to_df(lines)
+            database[section] = df
+        except Exception as e:
+            print(f"Error parsing section [{section}]: {e}")
+    return database
+
+
 
 if __name__ == '__main__':
     in_filepath = r"C:\Users\ay434\Box\Research\Digital_Twin_Interpretable_AI\SWMM\SWMM_Files\SWMM\Canandaigua.inp"
@@ -548,5 +750,10 @@ if __name__ == '__main__':
     # add_prcp_timeseries(in_filepath, ts_name, ts_description, times, values, dates=None, overwrite=True,
     #                     out_filepath=out_filepath)
 
-    # Test name collection.
-    get_component_names(in_filepath, section)
+    inp_path = r'C:\Users\ay434\Documents\urbansurge\analysis\Bellinge\7_SWMM\BellingeSWMM_v021_nopervious_tmp.inp'
+    db = inp_to_database(inp_path)
+
+    print(db.keys())
+
+    # Example: access subcatchments
+    print(db['RAINGAGES'].head())
