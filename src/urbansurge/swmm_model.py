@@ -14,7 +14,7 @@ import shutil
 import os
 import numpy as np
 import pandas as pd
-from typing import Union
+from typing import Union, List
 
 
 class SWMM:
@@ -45,6 +45,9 @@ class SWMM:
             print("System Units: {}".format(system_units))
             print("Start Time: {}".format(sim.start_time))
             print("Start Time: {}".format(sim.end_time))
+
+        # Parse input file into a database.
+        self.inp_db = file_utils.inp_to_database(self.inp_path)
 
 
     def _parse_config(self, config_path: str) -> dict:
@@ -164,7 +167,8 @@ class SWMM:
         :rtype: list
 
         """
-        component_names = file_utils.get_component_names(self.inp_path, section)
+        name_col_idx = 0
+        component_names = list(self.inp_db[section].iloc[:, name_col_idx])
 
         return component_names
 
@@ -201,7 +205,7 @@ class SWMM:
         return 'NODE ID NOT FOUND IN ANY NODE SECTION'
     
 
-    def get_node_coordinates(self, node_id) -> np.array:
+    def get_node_coordinates(self, node_ids) -> np.array:
         """
         Get the X, Y coordinates of a node.
 
@@ -211,11 +215,18 @@ class SWMM:
         section = 'COORDINATES'
         x_column_name = 'X-Coord'
         y_column_name = 'Y-Coord'
-        component_name = node_id
-        X = file_utils.get_inp_section(self.inp_path, section, x_column_name, component_name)
-        Y = file_utils.get_inp_section(self.inp_path, section, y_column_name, component_name)
+        X = np.zeros(len(node_ids))
+        Y = np.zeros(len(node_ids))
+        with open(self.inp_path, 'r') as file:
+            # Read the file into a list of lines
+            lines = file.readlines()
+            for i, component_name in enumerate(node_ids):
+                x = file_utils.get_inp_section_from_lines(lines, section, x_column_name, component_name)
+                y = file_utils.get_inp_section_from_lines(lines, section, y_column_name, component_name)
+                X[i] = float(x)
+                Y[i] = float(y)
 
-        return np.array([float(X), float(Y)])
+        return np.column_stack((X, Y))
     
 
     def get_node_invert_elevation(self, node_id) -> float:
@@ -231,7 +242,10 @@ class SWMM:
         else:
             column_name = 'Elevation'
         component_name = str(node_id)
-        invert_elevation = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
+        # invert_elevation = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
+
+        node_df = self.inp_db[section]
+        invert_elevation = node_df.loc[node_df['Name']==component_name, column_name].iloc[0]
 
         return float(invert_elevation)
     
@@ -347,6 +361,7 @@ class SWMM:
                 # Get the outlet node (to node) of the link.
                 next_component_id = nodes.loc[nodes['conduit_id'] == component_id, 'to_node_id'].iloc[0]
                 next_component_type = node_type_dict[next_component_id]
+                print(next_component_id, next_component_type)
             elif component_type in non_link_component_types:
                 # Get the conduit corresponding to the node.
                 next_component_id = nodes.loc[nodes['from_node_id'] == component_id, 'conduit_id'].iloc[0]
@@ -415,6 +430,33 @@ class SWMM:
         dist = np.sum(between_lengths)
 
         return dist
+    
+
+    def get_upstream_links_OLD(self, node_id: str) -> List:
+        """
+        Gets the link id(s) upstream of a specified node.
+
+        :param node_id: ID of node.
+        :return List of upstream links. If there is only one upstream link, the list will have a length of 1.
+        """
+        to_column_name = 'To Node'
+        link_sections = ['CONDUITS', 'WEIRS', 'PUMPS', 'ORIFICES', 'OUTLETS']
+
+        upstream_links = []
+        for link_section in link_sections:
+            # Check if section exists. If not, skip.
+            if file_utils.check_for_section(self.inp_path, link_section) is False:
+                continue
+
+            # DataFrame corresponding to link section.
+            section_df = file_utils.inp_section_to_dataframe(self.inp_path, link_section)
+
+            # Extend list of upstream links.
+            upstream_links.extend(list(section_df.loc[section_df[to_column_name]==node_id, :].iloc[:,0]))
+
+        return upstream_links
+    
+
 
 
     def get_link_geometry(self, link_id):
@@ -433,7 +475,7 @@ class SWMM:
         link_geometry = []
         for column_name in column_names:
             geom = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
-            geom = float(geom)
+            # geom = float(geom)
             link_geometry.append(geom)
 
         return link_geometry
@@ -476,8 +518,12 @@ class SWMM:
         to_column_name = 'To Node'
         component_name = link_id
 
-        from_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, from_column_name, component_name)
-        to_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, to_column_name, component_name)
+        # from_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, from_column_name, component_name)
+        # to_node_id = file_utils.get_inp_section(self.inp_path, conduit_section, to_column_name, component_name)
+
+        conduit_df = self.inp_db[conduit_section]
+        from_node_id = conduit_df.loc[conduit_df['Name']==component_name, from_column_name].iloc[0]
+        to_node_id = conduit_df.loc[conduit_df['Name']==component_name, to_column_name].iloc[0]
 
         return from_node_id, to_node_id
 
@@ -1162,6 +1208,9 @@ class SWMM:
         except Exception as e:
             print('Model has no storage components.')
 
+        # Remove any nodes with names starting with semicolon, these are commented out.
+        node_ids = [node_id for node_id in node_ids if node_id[0] != ';']
+
         # Dictionary of node series.
         series_dict = {}
 
@@ -1265,7 +1314,7 @@ class SWMM:
         geom = self.get_link_geometry(link_id)
 
         # Link diameter.
-        D = geom[0]
+        D = float(geom[0])
 
         # Depth cannot be greater than diameter or less than 0.
         if np.any(depth > D):
@@ -1281,7 +1330,141 @@ class SWMM:
         area = (D**2 / 8) * (theta - np.sin(theta))
         
         return area
+    
 
+    @staticmethod
+    def depth_to_AP(d, D):
+        theta = 2 * np.arccos(1 - 2 * d / D)
+        A = (D**2 / 8) * (theta - np.sin(theta))
+        P = 0.5 * D * theta
+
+        return A, P
+    
+
+    def compute_manning_velocity(self, depth, link_id, alpha=1.49):
+        """
+        Compute the velocity from Manning's equation for a specific link given a time series of depth.
+
+        :param depth: Array of depths.
+        :param link_id: Link ID.
+        :param alpha: Unit correction for imperial or metric. 1.49 for imperial, 1.0 for metric.
+
+        :return: Array of velocities computed from Manning's equation.
+        """
+
+        # Slope.
+        S = self.get_link_slope(link_id) * -1
+
+        # Diameter.
+        D = float(self.get_link_geometry(link_id)[0])
+
+        # Hydraulic radius.
+        Rh = np.zeros_like(depth)
+        for i, d in enumerate(depth):
+            Rh[i] = self.get_link_circular_Rh(d, D)
+
+        # Roughness.
+        n = self.get_link_roughness(link_id)
+
+        # Velocity.
+        v = alpha / n * S**(1 / 2) * Rh**(2 / 3)
+
+        return v
+
+
+    def compute_normal_depth_from_flow_OLD(self, Q, D, S, n):
+
+        # Solver tolerance.
+        tol = 1e-6
+
+        # Initial guess of d.
+        d = 0.5 * D
+        
+        # Inital area.
+        A, P = self.depth_to_AP(d, D)
+        A_new = (Q * n) / (S**(1 / 2) * (A / P)**(2 / 3))
+
+        # # Initial flow.
+        # Q_new = (1 / n) * A * S**(1 / 2) * (A / P)**(2 / 3)
+
+        # Iterate for solution.
+        cA = 0
+        while abs(A - A_new) > tol:
+            # Solve for diameter that produces A_new.
+            d_new = d + 2 * tol
+            cd = 0
+            while abs(d - d_new) > tol:
+                d = d_new
+                d_new = (D / 2) * (1 - np.cos((4 * A_new) / D + np.sin(2 * np.arccos(1 - 2 * d / D))))
+                print(d_new)
+                if cd == 1000:
+                    print(f'Loop stuck, d={d_new}, A={A_new}')
+                    raise ValueError('Loop Error')
+                cd += 1
+            print(d_new)
+
+            # Solve for new area.
+            A, P = self.depth_to_AP(d_new, D)
+            A_new = (Q * n) / (S**(1 / 2) * (A / P)**(2 / 3))
+
+            if cA == 5:
+                Q_new = (1 / n) * A_new * S**(1 / 2) * (A_new / P)**(2 / 3)
+                print(f'Loop stuck, d={d_new}, A={A_new}')
+                raise ValueError('Loop Error')
+            cA += 1
+
+        return d_new
+    
+
+    def compute_normal_depth_area_from_flow(self, Q, D, S, n):
+
+        # Solver tolerance.
+        tol = 1e-4
+
+        # Initial guess of d.
+        d = 0.5 * D
+        theta = 0
+        theta_new = 2 * np.cos(1 - 2 * d / D)
+        
+        c = 0
+        while abs(theta - theta_new) > tol:
+            theta = theta_new
+            alpha = S**(1 / 2) * (D * (theta - np.sin(theta)) / (4 * theta))**(2/3)
+            theta_new = (8 * Q * n) / (D**2 * (1 - (1 / theta) * np.sin(theta)) * alpha)
+            print(theta_new)
+            if c == 100:
+                print('Loop limit reached')
+                break
+            c += 1
+
+        d = 0.5 * D * (1 - np.cos(theta / 2))
+        A = (D**2 / 8) * (theta - np.sin(theta))
+
+        return d, A
+
+    def compute_normal_depth_from_flow(self, Q, D, C):
+        # Solver tolerance.
+        tol = 1e-6
+
+        # Initial guess of d.
+        d = 0.5 * D
+        theta = 0
+        theta_new = 2 * np.cos(1 - 2 * d / D)
+        
+        c = 0
+        while abs(theta - theta_new) > tol:
+            theta = theta_new
+            alpha = (D * (theta - np.sin(theta)) / (4 * theta))**(2/3)
+            theta_new = (8 * Q) / (D**2 * (1 - (1 / theta) * np.sin(theta)) * alpha * C)
+            print(theta_new)
+            if c == 100:
+                print('Loop limit reached')
+                break
+            c += 1
+
+        d = 0.5 * D * (1 - np.cos(theta / 2))
+
+        return d
 
     def _get_link_series(self, link_attribute):
         """
