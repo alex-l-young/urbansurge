@@ -688,6 +688,9 @@ def parse_section_to_df(lines):
             headers = re.split(r'\s{2,}', line[2:].strip())
         else:
             row = re.split(r'\s{1,}', line.strip())
+            # If first element of row starts with ";", skip since it is a comment.
+            if row[0][0] == ";":
+                continue
             data_rows.append(row)
 
     
