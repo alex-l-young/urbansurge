@@ -7,6 +7,8 @@
 import pandas as pd
 import numpy as np
 from scipy.integrate import quad
+from scipy.fft import fft, ifft
+from scipy.signal import find_peaks
 from typing import Dict, List, Tuple
 
 
@@ -269,12 +271,89 @@ def generate_runoff(
     return R, t
 
 
-def mutual_information(s, q):
+def power_spectrum(y, t):
+    """
+    Compute the power spectral density of signal y with corresponding time t.
 
-    return
+    :param y: Signal.
+    :param t: Time series.
+
+    :return spectrum: Power spectrum of y.
+    :return s: Frequency bins of the spectrum.
+    """
+    # Length of data.
+    N = len(y)
+
+    # Compute the spectra of the jet data.
+    y_norm = y - np.mean(y)
+    Ruu = (1 / N) * ifft(abs(fft(y_norm))**2)
+    spectrum = fft(Ruu)
+
+    # Plot the spectrum.
+    dt = t[1] - t[0]
+    s = np.arange(N) / (N * dt)
+
+    return spectrum, s
 
 
-def compute_wedge_storage(D: float, d_b: float, S: float) -> tuple[float, float]:
+def power_spectrum_chunk(y, t, n_chunk=3):
+    # Break up data into n_chunk chunks.
+    L_chunk = int(len(y) // n_chunk)
+
+    # Chunked time array.
+    t_chunk = t[:L_chunk]
+
+    # Chunk y.
+    y_spectra_chunks = np.zeros((n_chunk, L_chunk))
+    for i in range(n_chunk):
+        # Get chunk from y.
+        y_chunk = y[i * L_chunk:i * L_chunk + L_chunk]
+
+        # Compute the power spectrum.
+        y_spectrum, s = power_spectrum(y_chunk, t_chunk)
+
+        # Add to y_spectra_chunks.
+        y_spectra_chunks[i, :] = np.abs(y_spectrum)
+
+    # Ensemble the spectra.
+    y_spectra_ensemble = np.mean(y_spectra_chunks, axis=0)
+
+    return y_spectra_ensemble, s
+
+
+def find_recessions(y, height=0.3, distance=500, prominence=0.03):
+    peaks, _ = find_peaks(y, height=height, distance=distance, prominence=prominence)
+
+    # Maximum peak difference.
+    max_peak_diff = np.max(peaks[1:] - peaks[:-1])
+
+    # Find the end of the recession curve.
+    recessions = []
+    recession_idxs = []
+    recession_k = 33 * 5
+    for p in range(len(peaks) - 1):
+        peak = peaks[p]
+        i = 0
+        # for i in range(max_peak_diff - 1):
+        for i in range(max_peak_diff):
+            # Check if mean of window of following points is significantly greater than window of current points.
+            y1 = np.mean(y[peak+i:peak+i+recession_k])
+            y2 = np.mean(y[peak+i+1:peak+i+1+recession_k])
+            y1 = y[peak+i]
+            y2 = y[peak+i+1+recession_k]
+            if y2 - y1 > 0.05:
+                break
+            if i + peak >= peaks[p+1]:
+                break
+        # Save recession and recession indices.
+        recessions.append(y[peak:peak + i])
+        recession_idxs.append(np.arange(peak, peak + i))
+
+    return recessions, recession_idxs
+
+    
+
+def compute_wedge_storage(D: float, d_b: float, S: float) -> Tuple[float, float]:
     """
     Compute the wedge storage volume in a partially blocked pipe.
     
