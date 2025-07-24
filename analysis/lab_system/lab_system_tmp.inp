@@ -16,13 +16,13 @@ START_TIME           00:00:00
 REPORT_START_DATE    01/01/2020
 REPORT_START_TIME    00:00:00
 END_DATE             01/01/2020
-END_TIME             23:00:00
+END_TIME             06:00:00
 SWEEP_START          01/01
 SWEEP_END            12/31
 DRY_DAYS             0
 REPORT_STEP          00:01:00
-WET_STEP             00:01:00
-DRY_STEP             00:01:00
+WET_STEP             00:00:10
+DRY_STEP             00:00:10
 ROUTING_STEP         0:00:10 
 RULE_STEP            00:00:00
 
@@ -48,30 +48,31 @@ DRY_ONLY         NO
 [RAINGAGES]
 ;;Name           Format    Interval SCF      Source    
 ;;-------------- --------- ------ ------ ----------
-1                INTENSITY 0:05     1.0      TIMESERIES impulse_ramp_n20_60min
+1                INTENSITY 0:01     1.0      TIMESERIES Pimpulse_M2_L30_R1
+19               INTENSITY 0:05     1.0      TIMESERIES Dry             
 
 [SUBCATCHMENTS]
 ;;Name           Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  SnowPack        
 ;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- ----------------
-65               1                59               5        25       500      0.5      0                        
-66               1                14               5        25       500      0.5      0                        
-67               1                13               5        25       500      0.5      0                        
-68               1                11               5        25       500      0.5      0                        
-69               1                10               5        25       500      0.5      0                        
-70               1                9                5        25       500      0.5      0                        
-71               1                8                5        25       500      0.5      0                        
-72               1                7                5        25       500      0.5      0                        
-73               1                6                5        25       500      0.5      0                        
-74               1                2                5        25       500      0.5      0                        
-75               1                5                5        25       500      0.5      0                        
-76               1                3                5        25       500      0.5      0                        
-77               1                4                5        25       500      0.5      0                        
-78               1                15               5        25       500      0.5      0                        
-79               1                16               5        25       500      0.5      0                        
-80               1                19               5        25       500      0.5      0                        
-81               1                18               5        25       500      0.5      0                        
-82               1                17               5        25       500      0.5      0                        
-83               1                20               5        25       500      0.5      0                        
+65               19               59               5        0        500      10       0                        
+66               19               14               5        0        500      10       0                        
+67               19               13               5        0        500      10       0                        
+68               19               11               5        0        500      10       0                        
+69               19               10               5        0        500      10       0                        
+70               19               9                5        0        500      10       0                        
+71               19               8                5        0        500      10       0                        
+72               19               7                5        0        500      10       0                        
+73               19               6                5        0        500      10       0                        
+74               19               2                5        0        500      10       0                        
+75               19               5                5        0        500      10       0                        
+76               19               3                5        0        500      10       0                        
+77               19               4                5        0        500      10       0                        
+78               19               15               5        0        500      10       0                        
+79               19               16               5        0        500      10       0                        
+80               19               19               5        0        500      10       0                        
+81               19               18               100      1        500      10       0                        
+82               19               17               5        0        500      10       0                        
+83               19               20               5        0        500      10       0                        
 
 [SUBAREAS]
 ;;Subcatchment   N-Imperv   N-Perv     S-Imperv   S-Perv     PctZero    RouteTo    PctRouted 
@@ -139,47 +140,47 @@ DRY_ONLY         NO
 17               40         0          0          0          0         
 18               50         0          0          0          0         
 19               50         0          0          0          0         
-21               5          0          0          0          0         
-22               5          0          0          0          0         
-23               15         0          0          0          0         
-24               15         0          0          0          0         
-25               25         0          0          0          0         
-26               25         0          0          0          0         
-27               25         0          0          0          0         
-28               25         0          0          0          0         
-29               15         0          0          0          0         
-30               15         0          0          0          0         
-31               25         0          0          0          0         
-33               45         0          0          0          0         
-34               45         0          0          0          0         
-35               45         0          0          0          0         
-36               45         0          0          0          0         
-37               35         0          0          0          0         
-38               35         0          0          0          0         
-39               45         0          0          0          0         
-40               45         0          0          0          0         
-41               55         0          0          0          0         
-42               55         0          0          0          0         
-43               55         0          0          0          0         
-44               55         0          0          0          0         
-45               45         0          0          0          0         
-46               45         0          0          0          0         
-47               15         0          0          0          0         
-48               15         0          0          0          0         
-49               25         0          0          0          0         
-50               25         0          0          0          0         
-51               35         0          0          0          0         
-52               35         0          0          0          0         
-53               25         0          0          0          0         
-54               25         0          0          0          0         
-55               45         0          0          0          0         
-56               45         0          0          0          0         
-57               45         0          0          0          0         
-58               45         0          0          0          0         
+21               5.1        0          0          100        0         
+22               4.95       0          0          100        0         
+23               14.95      0          0          0          0         
+24               15.1       0          0          0          0         
+25               24.95      0          0          0          0         
+26               25.1       0          0          0          0         
+27               24.95      0          0          0          0         
+28               25.1       0          0          0          0         
+29               14.95      0          0          0          0         
+30               15.1       0          0          0          0         
+31               24.95      0          0          0          0         
+33               44.95      0          0          0          0         
+34               45.1       0          0          0          0         
+35               44.95      0          0          0          0         
+36               45.1       0          0          0          0         
+37               34.95      0          0          0          0         
+38               35.1       0          0          0          0         
+39               44.95      0          0          0          0         
+40               45.1       0          0          0          0         
+41               54.95      0          0          0          0         
+42               55.1       0          0          0          0         
+43               54.95      0          0          0          0         
+44               55.1       0          0          0          0         
+45               44.95      0          0          0          0         
+46               45.1       0          0          0          0         
+47               14.95      0          0          100        0         
+48               15.1       0          0          100        0         
+49               24.95      0          0          0          0         
+50               25.1       0          0          0          0         
+51               35.1       0          0          100        0         
+52               34.95      0          0          100        0         
+53               25.1       0          0          100        0         
+54               24.95      0          0          100        0         
+55               44.95      0          0          100        0         
+56               45.1       0          0          100        0         
+57               45.1       0          0          0          0         
+58               44.95      0          0          0          0         
 59               30         0          0          0          0         
-60               25         0          0          0          0         
-61               35         0          0          0          0         
-62               35         0          0          0          0         
+60               25.1       0          0          0          0         
+61               34.95      0          0          0          0         
+62               35.1       0          0          0          0         
 63               40         0          0          0          0         
 
 [OUTFALLS]
@@ -190,7 +191,7 @@ DRY_ONLY         NO
 [STORAGE]
 ;;Name           Elev.    MaxDepth   InitDepth  Shape      Curve Type/Params            SurDepth  Fevap    Psi      Ksat     IMD     
 ;;-------------- -------- ---------- ----------- ---------- ---------------------------- --------- --------          -------- --------
-20               30       1          0          FUNCTIONAL 0          0          10000    0         0       
+20               29       2          0          PYRAMIDAL  30         30         0        0         0       
 
 [CONDUITS]
 ;;Name           From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   
@@ -212,8 +213,8 @@ DRY_ONLY         NO
 39               18               56               250        0.01       0          0          0          0         
 40               55               17               250        0.01       0          0          0          0         
 41               17               51               250        0.01       0          0          0          0         
-42               52               20               250        0.01       0          0          0          0         
-43               20               53               250        0.01       0          0          0          0         
+42               52               20               250        0.01       0          1          0          0         
+43               20               53               250        0.01       1          0          0          0         
 44               54               15               250        0.01       0          0          0          0         
 45               15               48               250        0.01       0          0          0          0         
 46               16               50               250        0.01       0          0          0          0         
@@ -235,30 +236,26 @@ DRY_ONLY         NO
 62               35               63               250        0.01       0          0          0          0         
 63               63               62               250        0.01       0          0          0          0         
 65               61               59               250        0.01       0          0          0          0         
-
-[WEIRS]
-;;Name           From Node        To Node          Type         CrestHt    Qcoeff     Gated    EndCon   EndCoeff   Surcharge  RoadWidth  RoadSurf   Coeff. Curve
-;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- -------- ---------- ---------- ---------- ---------- ----------------
-6                34               33               TRANSVERSE   0          3.33       NO       0        0          NO        
-7                62               61               TRANSVERSE   0          3.33       NO       0        0          NO        
-8                60               31               TRANSVERSE   0          3.33       NO       0        0          NO        
-9                30               29               TRANSVERSE   0          3.33       NO       0        0          NO        
-10               21               22               TRANSVERSE   0          3.33       NO       0        0          NO        
-11               36               35               TRANSVERSE   0          3.33       NO       0        0          NO        
-12               26               25               TRANSVERSE   0          3.33       NO       0        0          NO        
-13               24               23               TRANSVERSE   0          3.33       NO       0        0          NO        
-14               28               27               TRANSVERSE   0          3.33       NO       0        0          NO        
-15               42               41               TRANSVERSE   0          3.33       NO       0        0          NO        
-16               40               39               TRANSVERSE   0          3.33       NO       0        0          NO        
-17 38 37 TRANSVERSE 0.9 3.33 NO 0 0 NO
-18               46               45               TRANSVERSE   0          3.33       NO       0        0          NO        
-19               44               43               TRANSVERSE   0          3.33       NO       0        0          NO        
-30               56               55               TRANSVERSE   0          3.33       NO       0        0          NO        
-31               57               58               TRANSVERSE   0          3.33       NO       0        0          NO        
-32               51               52               TRANSVERSE   0          3.33       NO       0        0          NO        
-35               53               54               TRANSVERSE   0          3.33       NO       0        0          NO        
-36               50               49               TRANSVERSE   0          3.33       NO       0        0          NO        
-64               48               47               TRANSVERSE   0          3.33       NO       0        0          NO        
+66               36               35               5          0.01       0          0          0          0         
+67               34               33               5          0.01       0          0          0          0         
+68               46               45               5          0.01       0          0          0          0         
+69               44               43               5          0.01       0          0          0          0         
+70               42               41               5          0.01       0          0          0          0         
+71               40               39               5          0.01       0          0          0          0         
+72               38               37               5          0.01       0          0          0          0         
+73               62               61               5          0.01       0          0          0          0         
+74               60               31               5          0.01       0          0          0          0         
+75               30               29               5          0.01       0          0          0          0         
+76               21               22               5          0.01       0          0          0          0         
+77               56               55               5          0.01       0          0          0          0         
+78               51               52               5          0.01       0          0          0          0         
+79               53               54               5          0.01       0          0          0          0         
+80               48               47               5          0.01       0          0          0          0         
+81               57               58               5          0.01       0          0          0          0         
+82               50               49               5          0.01       0          0          0          0         
+84               24               23               5          0.01       0          0          0          0         
+85               28               27               5          0.01       0          0          0          0         
+83               26               25               400        0.01       0          0          0          0         
 
 [XSECTIONS]
 ;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels    Culvert   
@@ -303,45 +300,57 @@ DRY_ONLY         NO
 62               CIRCULAR     1                0          0          0          1                    
 63               CIRCULAR     1                0          0          0          1                    
 65               CIRCULAR     1                0          0          0          1                    
-6                RECT_OPEN    1                1          0          0         
-7                RECT_OPEN    1                1          0          0         
-8                RECT_OPEN    1                1          0          0         
-9                RECT_OPEN    1                1          0          0         
-10               RECT_OPEN    1.5              1.5        0          0         
-11               RECT_OPEN    1                1          0          0         
-12               RECT_OPEN    1                1          0          0         
-13               RECT_OPEN    1                1          0          0         
-14               RECT_OPEN    1                1          0          0         
-15               RECT_OPEN    1                1          0          0         
-16               RECT_OPEN    1                1          0          0         
-17 RECT_OPEN 0.09999999999999998 1.0 0.0 0.0
-18               RECT_OPEN    1                1          0          0         
-19               RECT_OPEN    1                1          0          0         
-30               RECT_OPEN    1                1          0          0         
-31               RECT_OPEN    1                1          0          0         
-32               RECT_OPEN    1                1          0          0         
-35               RECT_OPEN    1                1          0          0         
-36               RECT_OPEN    1                1          0          0         
-64               RECT_OPEN    1                1          0          0         
+66               CIRCULAR     1                0          0          0          1                    
+67               CIRCULAR     1                0          0          0          1                    
+68               CIRCULAR     1                0          0          0          1                    
+69               CIRCULAR     1                0          0          0          1                    
+70               CIRCULAR     1                0          0          0          1                    
+71               CIRCULAR     1                0          0          0          1                    
+72               CIRCULAR     1                0          0          0          1                    
+73               CIRCULAR     1                0          0          0          1                    
+74               CIRCULAR     1                0          0          0          1                    
+75               CIRCULAR     1                0          0          0          1                    
+76               CIRCULAR     1                0          0          0          1                    
+77               CIRCULAR     1                0          0          0          1                    
+78               CIRCULAR     1                0          0          0          1                    
+79               CIRCULAR     1                0          0          0          1                    
+80               CIRCULAR     1                0          0          0          1                    
+81               CIRCULAR     1                0          0          0          1                    
+82               CIRCULAR     1                0          0          0          1                    
+84               CIRCULAR     1                0          0          0          1                    
+85               CIRCULAR     1                0          0          0          1                    
+83               CIRCULAR     1                0          0          0          1                    
+
+[INFLOWS]
+;;Node           Constituent      Time Series      Type     Mfactor  Sfactor  Baseline Pattern
+;;-------------- ---------------- ---------------- -------- -------- -------- -------- --------
+18               FLOW             Pimpulse_M1_L30_R1 FLOW     1.0      5.727            
 
 [TIMESERIES]
 ;;Name           Date       Time       Value     
 ;;-------------- ---------- ---------- ----------
-;Impulses ramped up to 2 in w/ 20 min intervals
-impulse_ramp_20min FILE "precipitation\impulse_ramp.dat"
+P_N20_M2_L10_R50 FILE "precipitation\precip_data\P_N20_M2_L10_R50.dat"
 ;
-;Impulse ramp to 2in w/ 60 min intervals
-impulse_ramp_60min FILE "precipitation\impulse_ramp_60min.dat"
+P_N20_M1_L10_R50 FILE "precipitation\precip_data\P_N20_M1_L10_R50.dat"
 ;
-;Impulses drawn from uniform distribution 2in max w/ 60 min spacing
-impulse_unif_60min FILE "precipitation\impulse_unif_60min.dat"
+P_N20_M1_L1_R50  FILE "precipitation\precip_data\P_N20_M1_L1_R50.dat"
 ;
-;Ramp impulse, 60 min interval, 20 impulse, max 3 in
-impulse_ramp_n20_60min FILE "precipitation\impulse_ramp_n20_60min.dat"
+P_N5_M1_L1_R50   FILE "precipitation\precip_data\P_N5_M1_L1_R50.dat"
 ;
-ensemble_forcing FILE "precipitation\ensemble_prcp.dat"
+P_N1_M1_L4_R50   FILE "precipitation\precip_data\P_N1_M1_L4_R50.dat"
 ;
-sub_flood                   0          1         
+;No precipitation time series.
+Dry                         0          0         
+;
+P_N1_M2_L4_R50   FILE "precipitation\precip_data\P_N1_M2_L4_R50.dat"
+;
+Pimpulse_M4_L30_R1 FILE "precipitation\precip_data\Pimpulse_M4_L30_R1.dat"
+;
+Pimpulse_M3.5_L30_R1 FILE "precipitation\precip_data\Pimpulse_M3.5_L30_R1.dat"
+;
+Pimpulse_M2_L30_R1 FILE "precipitation\precip_data\Pimpulse_M2_L30_R1.dat"
+;
+Pimpulse_M1_L30_R1 FILE "precipitation\precip_data\Pimpulse_M1_L30_R1.dat"
 
 [REPORT]
 ;;Reporting Options
@@ -350,9 +359,28 @@ NODES ALL
 LINKS ALL
 
 [TAGS]
+Link       66               clog            
+Link       67               clog            
+Link       68               clog            
+Link       69               clog            
+Link       70               clog            
+Link       71               clog            
+Link       72               clog            
+Link       73               clog            
+Link       74               clog            
+Link       75               clog            
+Link       76               clog            
+Link       77               clog            
+Link       78               clog            
+Link       79               clog            
+Link       80               clog            
+Link       81               clog            
+Link       82               clog            
+Link       84               clog            
+Link       85               clog            
 
 [MAP]
-DIMENSIONS -121.788 0.000 10423.464 10000.000
+DIMENSIONS -922.970 0.000 10886.238 10000.000
 Units      None
 
 [COORDINATES]
@@ -495,5 +523,11 @@ Units      None
 [SYMBOLS]
 ;;Gage           X-Coord            Y-Coord           
 ;;-------------- ------------------ ------------------
-1                357.542            7184.358          
+1                -386.188           7823.613          
+19               10349.456          7253.886          
 
+
+[PROFILES]
+;;Name           Links     
+;;-------------- ----------
+"storage profile " 42 43

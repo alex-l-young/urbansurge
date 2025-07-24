@@ -1,0 +1,163 @@
+[TITLE]
+;;Project Title/Notes
+
+[OPTIONS]
+;;Option             Value
+FLOW_UNITS           CFS
+INFILTRATION         HORTON
+FLOW_ROUTING         DYNWAVE
+LINK_OFFSETS         DEPTH
+MIN_SLOPE            0
+ALLOW_PONDING        NO
+SKIP_STEADY_STATE    NO
+
+START_DATE           10/11/2024
+START_TIME           00:00:00
+REPORT_START_DATE    10/11/2024
+REPORT_START_TIME    00:00:00
+END_DATE             10/11/2024
+END_TIME             06:00:00
+SWEEP_START          1/1
+SWEEP_END            12/31
+DRY_DAYS             0
+REPORT_STEP          00:15:00
+WET_STEP             00:05:00
+DRY_STEP             01:00:00
+ROUTING_STEP         0:00:20 
+RULE_STEP            00:00:00
+
+INERTIAL_DAMPING     PARTIAL
+NORMAL_FLOW_LIMITED  BOTH
+FORCE_MAIN_EQUATION  H-W
+VARIABLE_STEP        0.75
+LENGTHENING_STEP     0
+MIN_SURFAREA         0
+MAX_TRIALS           0
+HEAD_TOLERANCE       0
+SYS_FLOW_TOL         5
+LAT_FLOW_TOL         5
+MINIMUM_STEP         0.5
+THREADS              1
+
+[EVAPORATION]
+;;Data Source    Parameters
+;;-------------- ----------------
+CONSTANT         0.0
+DRY_ONLY         NO
+
+[JUNCTIONS]
+;;Name           Elevation  MaxDepth   InitDepth  SurDepth   Aponded   
+;;-------------- ---------- ---------- ---------- ---------- ----------
+2                4          0          0          0          0         
+3                8          0          0          0          0         
+4                16         0          0          0          0         
+5                32         0          0          0          0         
+
+[OUTFALLS]
+;;Name           Elevation  Type       Stage Data       Gated    Route To        
+;;-------------- ---------- ---------- ---------------- -------- ----------------
+1                0          FREE                        NO                       
+
+[STORAGE]
+;;Name           Elev.    MaxDepth   InitDepth  Shape      Curve Type/Params            SurDepth  Fevap    Psi      Ksat     IMD     
+;;-------------- -------- ---------- ----------- ---------- ---------------------------- --------- --------          -------- --------
+6                36       1          0          PYRAMIDAL  1000       1000       0        0         0       
+7                0        0          0          FUNCTIONAL 0          0          10000    0         0       
+8                0        0          0          FUNCTIONAL 0          0          10000    0         0       
+
+[CONDUITS]
+;;Name           From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   
+;;-------------- ---------------- ---------------- ---------- ---------- ---------- ---------- ---------- ----------
+2                5                4                400        0.01       0          0          0          0         
+3                4                3                400        0.01       0          0          0          0         
+4                3                2                400        0.01       0          0          0          0         
+5                2                1                400        0.01       0          0          0          0         
+
+[PUMPS]
+;;Name           From Node        To Node          Pump Curve       Status   Sartup Shutoff 
+;;-------------- ---------------- ---------------- ---------------- ------ -------- --------
+7                8                5                *                ON       0        0       
+
+[ORIFICES]
+;;Name           From Node        To Node          Type         Offset     Qcoeff     Gated    CloseTime 
+;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- ----------
+1                6                5                SIDE         0          0.65       NO       0         
+
+[WEIRS]
+;;Name           From Node        To Node          Type         CrestHt    Qcoeff     Gated    EndCon   EndCoeff   Surcharge  RoadWidth  RoadSurf   Coeff. Curve
+;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- -------- ---------- ---------- ---------- ---------- ----------------
+6                7                5                TRANSVERSE   0          3.33       NO       0        0          YES       
+
+[XSECTIONS]
+;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels    Culvert   
+;;-------------- ------------ ---------------- ---------- ---------- ---------- ---------- ----------
+2                CIRCULAR     1                0          0          0          1                    
+3                CIRCULAR     1                0          0          0          1                    
+4                CIRCULAR     1                0          0          0          1                    
+5                CIRCULAR     1                0          0          0          1                    
+1                CIRCULAR     1                0          0          0
+6                RECT_OPEN    1                1          0          0         
+
+[CONTROLS]
+RULE MC2
+
+IF SIMULATION TIME > 0
+
+THEN ORIFICE 1 SETTING = TIMESERIES Orifice
+
+[TIMESERIES]
+;;Name           Date       Time       Value     
+;;-------------- ---------- ---------- ----------
+Orifice                     00:01      .1        
+Orifice                     00:02      .2        
+Orifice                     00:03      .5        
+Orifice                     00:04      .4        
+Orifice                     00:05      0         
+
+[REPORT]
+;;Reporting Options
+SUBCATCHMENTS ALL
+NODES ALL
+LINKS ALL
+
+[TAGS]
+
+[MAP]
+DIMENSIONS 0.000 0.000 10000.000 10000.000
+Units      None
+
+[COORDINATES]
+;;Node           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+2                1017.857           5196.429          
+3                2750.000           5214.286          
+4                4375.000           5214.286          
+5                6339.286           5214.286          
+1                -589.286           5178.571          
+6                8801.020           5158.163          
+7                6575.893           3464.286          
+8                6410.714           6647.321          
+
+[VERTICES]
+;;Link           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+
+[Polygons]
+;;Storage Node   X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+6                8000.000           5500.000          
+6                8000.000           5500.000          
+6                9910.714           5517.857          
+6                9910.714           5517.857          
+6                9892.857           4285.714          
+6                7946.429           4250.000          
+6                7946.429           5535.714          
+7                6946.429           3750.000          
+7                6946.429           3178.571          
+7                6196.429           3178.571          
+7                6214.286           3750.000          
+8                6750.000           6928.571          
+8                6821.429           6339.286          
+8                6000.000           6339.286          
+8                6071.429           6982.143          
+

@@ -1,0 +1,169 @@
+[TITLE]
+;;Project Title/Notes
+
+[OPTIONS]
+;;Option             Value
+FLOW_UNITS           CFS
+INFILTRATION         HORTON
+FLOW_ROUTING         DYNWAVE
+LINK_OFFSETS         DEPTH
+MIN_SLOPE            0
+ALLOW_PONDING        NO
+SKIP_STEADY_STATE    NO
+
+START_DATE           01/01/2020
+START_TIME           00:00:00
+REPORT_START_DATE    01/01/2020
+REPORT_START_TIME    00:00:00
+END_DATE             01/02/2020
+END_TIME             06:00:00
+SWEEP_START          01/01
+SWEEP_END            12/31
+DRY_DAYS             0
+REPORT_STEP          00:00:10
+WET_STEP             00:00:10
+DRY_STEP             00:00:10
+ROUTING_STEP         0:00:10 
+RULE_STEP            00:00:00
+
+INERTIAL_DAMPING     PARTIAL
+NORMAL_FLOW_LIMITED  BOTH
+FORCE_MAIN_EQUATION  H-W
+VARIABLE_STEP        0.75
+LENGTHENING_STEP     0
+MIN_SURFAREA         12.566
+MAX_TRIALS           8
+HEAD_TOLERANCE       0.005
+SYS_FLOW_TOL         5
+LAT_FLOW_TOL         5
+MINIMUM_STEP         0.5
+THREADS              1
+
+[EVAPORATION]
+;;Data Source    Parameters
+;;-------------- ----------------
+CONSTANT         0.0
+DRY_ONLY         NO
+
+[JUNCTIONS]
+;;Name           Elevation  MaxDepth   InitDepth  SurDepth   Aponded   
+;;-------------- ---------- ---------- ---------- ---------- ----------
+38               9          2          0          0          0         
+39               8          2          0          0          0         
+40               8          2          0          0          0         
+41               6          2          0          0          0         
+42               6          2          0          0          0         
+43               4          2          0          0          0         
+44               4          2          0          0          0         
+45               2          2          0          0          0         
+46               2          2          0          0          0         
+
+[OUTFALLS]
+;;Name           Elevation  Type       Stage Data       Gated    Route To        
+;;-------------- ---------- ---------- ---------------- -------- ----------------
+10               0          FREE                        NO                       
+
+[CONDUITS]
+;;Name           From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   
+;;-------------- ---------------- ---------------- ---------- ---------- ---------- ---------- ---------- ----------
+14               38               39               100        0.03       0          0          0          0         
+15               40               41               100        0.03       0          0          0          0         
+16               42               43               100        0.03       0          0          0          0         
+17               44               45               100        0.03       0          0          0          0         
+18               46               10               100        0.03       0          0          0          0         
+
+[WEIRS]
+;;Name           From Node        To Node          Type         CrestHt    Qcoeff     Gated    EndCon   EndCoeff   Surcharge  RoadWidth  RoadSurf   Coeff. Curve
+;;-------------- ---------------- ---------------- ------------ ---------- ---------- -------- -------- ---------- ---------- ---------- ---------- ----------------
+19               39               40               TRANSVERSE   0          3.33       NO       0        0          NO        
+20               41               42               TRANSVERSE   0          3.33       NO       0        0          NO        
+21               43               44               TRANSVERSE   0          3.33       NO       0        0          NO        
+22               45               46               TRANSVERSE   0          3.33       NO       0        0          NO        
+
+[XSECTIONS]
+;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels    Culvert   
+;;-------------- ------------ ---------------- ---------- ---------- ---------- ---------- ----------
+14               CIRCULAR     1                0          0          0          1                    
+15               CIRCULAR     1                0          0          0          1                    
+16               CIRCULAR     1                0          0          0          1                    
+17               CIRCULAR     1                0          0          0          1                    
+18               CIRCULAR     1                0          0          0          1                    
+19 RECT_OPEN 0.914 1.0 0.0 0.0
+20 RECT_OPEN 0.87 1.0 0.0 0.0
+21 RECT_OPEN 0.622 1.0 0.0 0.0
+22 RECT_OPEN 0.937 1.0 0.0 0.0
+
+[INFLOWS]
+;;Node           Constituent      Time Series      Type     Mfactor  Sfactor  Baseline Pattern
+;;-------------- ---------------- ---------------- -------- -------- -------- -------- --------
+38               FLOW             R38              FLOW     1.0      1                
+40               FLOW             R40              FLOW     1.0      1.0              
+42               FLOW             R42              FLOW     1.0      1.0              
+44               FLOW             R44              FLOW     1.0      1.0              
+46               FLOW             R46              FLOW     1.0      1.0              
+
+[TIMESERIES]
+;;Name           Date       Time       Value     
+;;-------------- ---------- ---------- ----------
+P1M1             FILE "precipitation\precip_data\Pimpulse_M1_L30_R1.dat"
+;
+;5-yr storm
+R5               FILE "precipitation\precip_data\Q5.dat"
+;
+R2.5             FILE "precipitation\precip_data\Q2.5.dat"
+;
+;TEST DESCRIPTION
+TESTNAME         FILE "precipitation\precip_data\P_N1_M1_L4_R50.dat"
+;
+;TEST MANUAL
+TESTMANUAL                  0          1         
+TESTMANUAL                  1          2         
+TESTMANUAL                  2          3         
+TESTMANUAL                  3          4         
+TESTMANUAL                  4          3         
+TESTMANUAL                  5          2         
+TESTMANUAL                  6          1         
+;
+R46              FILE "precipitation\precip_data\paper3_exp\R46.dat"
+;
+R44              FILE "precipitation\precip_data\paper3_exp\R44.dat"
+;
+R42              FILE "precipitation\precip_data\paper3_exp\R42.dat"
+;
+R40              FILE "precipitation\precip_data\paper3_exp\R40.dat"
+;
+R38              FILE "precipitation\precip_data\paper3_exp\R38.dat"
+;
+ResFor           FILE "precipitation\precip_data\paper3_exp\ResFor.dat"
+
+[REPORT]
+;;Reporting Options
+SUBCATCHMENTS ALL
+NODES ALL
+LINKS ALL
+
+[TAGS]
+
+[MAP]
+DIMENSIONS -3941.256 0.000 13163.921 10000.000
+Units      None
+
+[COORDINATES]
+;;Node           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+38               12386.413          5647.249          
+39               9845.960           5647.249          
+40               9166.349           5647.249          
+41               6771.527           5679.612          
+42               6140.459           5695.793          
+43               3422.012           5695.793          
+44               2677.675           5679.612          
+45               137.222            5760.518          
+46               -574.752           5776.699          
+10               -3163.748          5825.243          
+
+[VERTICES]
+;;Link           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+
+[Polygons]
