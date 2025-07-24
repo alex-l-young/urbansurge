@@ -10,11 +10,12 @@ from urbansurge import swmm_model
 import numpy as np
 import os
 import pandas as pd
+from pathlib import Path
 
 class TestSWMM():
-    def setup(self):
-        self.in_filepath = r"test_files\lab_system.inp"
-        self.config_path = r"test_files\lab_system_config.yml"
+    def setup_method(self):
+        self.in_filepath = r"C:\Users\ay434\Documents\urbansurge\analysis\Bellinge\7_SWMM\BellingeSWMM_v021_nopervious_tmp.inp"
+        self.config_path = r"C:\Users\ay434\Documents\urbansurge\analysis\Bellinge\7_SWMM\Bellinge_config.yml"
 
         self.swmm = swmm_model.SWMM(self.config_path)
         self.swmm.configure_model()
@@ -119,3 +120,54 @@ class TestSWMM():
 
         assert distance == true_distance
 
+
+    def test_add_timeseries_file(self):
+        ts_name = 'TESTTIMESERIES'
+        ts_description = 'TEST TIMESERIES'
+        file_path = Path(r'C:\Users\ay434\Documents\urbansurge\tests\test_files\Canandaigua_5min_period2_noise.dat')
+        self.swmm.add_timeseries_file(ts_name, ts_description, file_path)
+
+
+    def test_set_node_inflow(self):
+        node_id = 19
+        ts_name = 'DEFAULT'
+
+        self.swmm.set_node_inflow(self, node_id, ts_name)
+
+
+    def test_get_upstream_links(self):
+        node_id = '28'
+        upstream_links = self.swmm.get_upstream_links(node_id)
+
+        assert len(upstream_links) > 0
+
+    def test_get_component_names(self):
+        section = 'CONDUITS'
+        component_names = self.swmm.get_component_names(section)
+
+        assert len(component_names) > 0
+
+    def test_get_link_nodes(self):
+        link_id = 'F74F370_F74F360_l1'
+        from_node_id, to_node_id = self.swmm.get_link_nodes(link_id)
+
+        assert from_node_id == 'F74F370'
+        assert to_node_id == 'F74F360'
+
+    def test_get_node_invert_elevation(self):
+        # Junction.
+        node_id = 'F74F370'
+        invert_elevation = self.swmm.get_node_invert_elevation(node_id)
+        assert invert_elevation == 9.419
+
+        # Outfall.
+        node_id = 'F74F360'
+        invert_elevation = self.swmm.get_node_invert_elevation(node_id)
+        assert invert_elevation == 9.409
+
+        # Storage.
+        node_id = 'G71F04R'
+        invert_elevation = self.swmm.get_node_invert_elevation(node_id)
+        assert invert_elevation == 12.74
+
+        
