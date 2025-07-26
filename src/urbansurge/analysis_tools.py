@@ -406,6 +406,19 @@ def compute_wedge_storage(D: float, d_b: float, S: float) -> Tuple[float, float]
     return V_wedge, L
 
 
+def moving_average(y, k=3):
+    """
+    Compute moving average of the array y with window size k.
+    Moving average is the convolution of a window of length k with weights 1 / k.
+
+    :param y: Array to compute moving average over.
+    :param k: Window size for moving average. 
+    """
+    y_ma = np.convolve(y, np.ones(k) / k, mode='valid')
+
+    return y_ma
+
+
 if __name__ == '__main__':
     data = {'dt': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
           'node1': [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115],
