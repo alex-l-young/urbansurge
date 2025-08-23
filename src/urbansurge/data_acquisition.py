@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Tuple
 import math
+from scipy.stats import t
 
 # UrbanSurge imports.
 
@@ -243,6 +244,96 @@ def select_experiments(db_filepath: Path, experiment_dir: Path, date: str, fault
     dfs = [pd.read_csv(experiment_dir / f) for f in fnames]
 
     return dfs
+
+
+def agw_filter(Data, Time, DataMin, DataMax, verbose=False):
+    """
+    Apply thresholding and adaptive Gaussian filtering to data as a function of time.
+    
+    Parameters:
+    - Data: np.ndarray of shape (N, M) or (M, N) where the longer axis is assumed to be time.
+    - Time: np.ndarray of shape (M,)
+    - DataMin: float, minimum valid data value
+    - DataMax: float, maximum valid data value
+    
+    Returns:
+    - Data: Filtered data (with time as rows)
+    - Time: Filtered time array
+    """
+    Data = np.asarray(Data)
+    Time = np.asarray(Time)
+
+    NI, NJ = Data.shape
+    if NI > NJ:
+        Data = Data.T
+        NI, NJ = Data.shape
+    Nstart = NJ
+
+    # Initial threshold filtering
+    valid = np.logical_and(Data <= DataMax, Data >= DataMin)
+    valid = np.sum(valid, axis=0) == NI
+
+    Data = Data[:, valid]
+    Time = Time[valid]
+    NI, NJ = Data.shape
+    if verbose is True:
+        print(f'Started with {Nstart}, filtered to {NJ}, threshold')
+
+    # Adaptive Gaussian Filtering
+    coef = [2, 1.25, 1.15, 1.1, 1.06, 1.03, 1.01]
+
+    # Return empty arrays if NJ is less than or equal to 1.
+    if NJ <= 1:
+        return np.array([]), np.array([])
+    
+    for c in coef:
+        DOF = NJ - 1
+        p = 1 / (2 * NJ)
+        filtFact = -t.ppf(p, DOF)
+        t_fact = t.ppf(0.75, DOF)
+
+        DataMedian = np.median(Data, axis=1)
+        s = (np.subtract(*np.percentile(Data, [75, 25], axis=1))) / (2 * t_fact)
+        HiLim = DataMedian[:, None] + c * filtFact * s[:, None]
+        LoLim = DataMedian[:, None] - c * filtFact * s[:, None]
+
+        valid = np.logical_and(Data <= HiLim, Data >= LoLim)
+        valid = np.sum(valid, axis=0) == NI
+
+        Data = Data[:, valid]
+        Time = Time[valid]
+        NI, NJ = Data.shape
+        if verbose is True:
+            print(f'Started with {Nstart}, filtered to {NJ}')
+
+        if NJ <= 1:
+            return np.array([]), np.array([])
+
+    # Iterative filtering using mean and std
+    NJprev = NJ + 1
+    while NJprev > NJ:
+        DOF = NJ - 1
+        p = 1 / (2 * NJ)
+        filtFact = -t.ppf(p, DOF)
+
+        DataMean = np.mean(Data, axis=1)
+        s = np.std(Data, axis=1)
+        HiLim = DataMean[:, None] + c * filtFact * s[:, None]
+        LoLim = DataMean[:, None] - c * filtFact * s[:, None]
+
+        valid = np.logical_and(Data <= HiLim, Data >= LoLim)
+        valid = np.sum(valid, axis=0) == NI
+
+        Data = Data[:, valid]
+        Time = Time[valid]
+        NJprev = NJ
+        NI, NJ = Data.shape
+        if verbose is True:
+            print(f'Started with {Nstart}, filtered to {NJ}, in iterative loop')
+        if NJ <= 1:
+            return np.array([]), np.array([])
+
+    return Data, Time
 
 
 

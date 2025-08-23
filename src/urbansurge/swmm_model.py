@@ -14,7 +14,7 @@ import shutil
 import os
 import numpy as np
 import pandas as pd
-from typing import Union, List
+from typing import Union, List, Dict, Tuple
 
 
 class SWMM:
@@ -205,28 +205,31 @@ class SWMM:
         return 'NODE ID NOT FOUND IN ANY NODE SECTION'
     
 
-    def get_node_coordinates(self, node_ids) -> np.array:
+    def get_node_coordinates(self, node_ids: List) -> np.array:
         """
         Get the X, Y coordinates of a node.
 
         :param node_id: ID of node.
         :return: (X, Y) as a numpy array.
         """
-        section = 'COORDINATES'
-        x_column_name = 'X-Coord'
-        y_column_name = 'Y-Coord'
-        X = np.zeros(len(node_ids))
-        Y = np.zeros(len(node_ids))
-        with open(self.inp_path, 'r') as file:
-            # Read the file into a list of lines
-            lines = file.readlines()
-            for i, component_name in enumerate(node_ids):
-                x = file_utils.get_inp_section_from_lines(lines, section, x_column_name, component_name)
-                y = file_utils.get_inp_section_from_lines(lines, section, y_column_name, component_name)
-                X[i] = float(x)
-                Y[i] = float(y)
+        # section = 'COORDINATES'
+        # x_column_name = 'X-Coord'
+        # y_column_name = 'Y-Coord'
+        # X = np.zeros(len(node_ids))
+        # Y = np.zeros(len(node_ids))
+        # # with open(self.inp_path, 'r') as file:
+        # #     # Read the file into a list of lines
+        # #     lines = file.readlines()
+        # #     for i, component_name in enumerate(node_ids):
+        # #         x = file_utils.get_inp_section_from_lines(lines, section, x_column_name, component_name)
+        # #         y = file_utils.get_inp_section_from_lines(lines, section, y_column_name, component_name)
+        # #         X[i] = float(x)
+        # #         Y[i] = float(y)
 
-        return np.column_stack((X, Y))
+        df = self.inp_db['COORDINATES']
+        coords = df[df['Node'].isin(node_ids)].set_index('Node')[['X-Coord', 'Y-Coord']]
+
+        return coords.loc[node_ids].to_numpy()
     
 
     def get_node_invert_elevation(self, node_id) -> float:
@@ -280,7 +283,9 @@ class SWMM:
         column_name = 'MaxDepth'
         component_name = str(node_id)
         try:
-            max_depth = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
+            # max_depth = file_utils.get_inp_section(self.inp_path, section, column_name, component_name)
+            node_df = self.inp_db[section]
+            max_depth = node_df.loc[node_df['Name']==component_name, column_name].iloc[0]
         except Exception as e:
             print(e)
             print(section)
@@ -310,7 +315,10 @@ class SWMM:
         junction_ids = self.get_component_names('JUNCTIONS')
         storage_ids = self.get_component_names('STORAGE')
         outfall_ids = self.get_component_names('OUTFALLS')
-        weir_ids = self.get_component_names('WEIRS')
+        try:
+            weir_ids = self.get_component_names('WEIRS')
+        except:
+            weir_ids = None
 
         # Weirs are treated as conduits.
         if weir_ids:
@@ -432,31 +440,101 @@ class SWMM:
         return dist
     
 
-    def get_upstream_links_OLD(self, node_id: str) -> List:
+    def get_upstream_links(self, node_id: str, only_upstream=True) -> List:
         """
         Gets the link id(s) upstream of a specified node.
 
         :param node_id: ID of node.
+        :param only_upstream: If set to false, will return downstream link(s) if no upstream links are found.
         :return List of upstream links. If there is only one upstream link, the list will have a length of 1.
         """
-        to_column_name = 'To Node'
-        link_sections = ['CONDUITS', 'WEIRS', 'PUMPS', 'ORIFICES', 'OUTLETS']
+        conduit_df = self.inp_db['CONDUITS']
+        upstream_links = list(conduit_df.loc[conduit_df['To Node']==node_id, 'Name'])
 
-        upstream_links = []
-        for link_section in link_sections:
-            # Check if section exists. If not, skip.
-            if file_utils.check_for_section(self.inp_path, link_section) is False:
-                continue
-
-            # DataFrame corresponding to link section.
-            section_df = file_utils.inp_section_to_dataframe(self.inp_path, link_section)
-
-            # Extend list of upstream links.
-            upstream_links.extend(list(section_df.loc[section_df[to_column_name]==node_id, :].iloc[:,0]))
+        # Try downstream if unable to find upstream pipes and only_upstream is False.
+        if not upstream_links and only_upstream is False:
+            upstream_links = list(conduit_df.loc[conduit_df['From Node']==node_id, 'Name'])
 
         return upstream_links
     
 
+    def get_downstream_links(self, node_id: str) -> List:
+        """
+        Gets the link id(s) downstream of a specified node.
+
+        :param node_id: ID of node.
+        :return List of downstream links. If there is only one downstream link, the list will have a length of 1.
+        """
+        conduit_df = self.inp_db['CONDUITS']
+        downstream_links = list(conduit_df.loc[conduit_df['From Node']==node_id, 'Name'])
+
+        return downstream_links
+    
+
+    def get_upstream_link_diameters(self, node_id, only_upstream=False):
+
+        # Get the upstream links. Use downstream links if there are no upstream links.
+        upstream_links = self.get_upstream_links(node_id, only_upstream=only_upstream)
+
+        # List of diameters.
+        D_list = []
+        for upstream_link in upstream_links:
+            geom = self.get_link_geometry(upstream_link)
+            D_list.append(float(geom[0]))
+
+        return D_list
+    
+
+    def get_downstream_link_diameters(self, node_id):
+
+        # Get the downstream link ids.
+        downstream_links = self.get_downstream_links(node_id)
+
+        # List of diameters.
+        D_list = []
+        for downstream_link in downstream_links:
+            geom = self.get_link_geometry(downstream_link)
+            D_list.append(float(geom[0]))
+
+        return D_list
+
+
+    def get_link_node_map(self, int_convert=False, link_sections=None):
+        """
+        Create a dictionary of edge: (start_node, end_node) from a swmm network.
+        :param swmm: Instance of urbansurge.swmm_model.SWMM.
+        :param int_convert: Convert edge and node IDs/names to int.
+        :return link_nodes_dict: Dictionary of {edge:(from_node, to_node), ...}
+        """
+        if link_sections is None:
+            link_sections=['CONDUITS', 'WEIRS', 'PUMPS', 'ORIFICES', 'OUTLETS']
+
+        # Get the names within all link sections.
+        link_nodes_dict = {} # Dictionary to store link nodes.
+        for link_section in link_sections:
+            # link_names = file_utils.get_component_names(inp_filepath, link_section)
+            link_names = self.get_component_names(link_section)
+
+            # If section doesn't exist or has no names, skip.
+            if link_names is None:
+                continue
+
+            # Filter names if they start with ';' which is a line comment.
+            link_names = [c for c in link_names if c[0] != ';']
+
+            for name in link_names:
+                # from_node = file_utils.get_inp_section(inp_filepath, link_section, 'From Node', name)
+                # to_node = file_utils.get_inp_section(inp_filepath, link_section, 'To Node', name)
+                from_node, to_node = self.get_link_nodes(name)
+
+                # Populate dictionary as {conduit_name: (from_node, to_node), ...}
+                if int_convert is True:
+                    name = int(name)
+                    from_node = int(from_node)
+                    to_node = int(to_node)
+                link_nodes_dict[name] = (from_node, to_node)
+
+        return link_nodes_dict
 
 
     def get_link_geometry(self, link_id):
@@ -505,15 +583,16 @@ class SWMM:
         return geom
     
 
-    def get_link_nodes(self, link_id):
+    def get_link_nodes(self, link_id, link_section='CONDUITS'):
         """
         Get the from and to node IDs at the end of a link.
 
         :param link_id: Link ID.
+        :param link_section: Link section to search. Options are one of ['CONDUITS', 'ORIFICES', 'WEIRS', 'OUTLETS', 'PUMPS']
         :return: from_node_id, to_node_id
         """
         # Get the endpoint node IDs.
-        conduit_section = 'CONDUITS'
+        conduit_section = link_section
         from_column_name = 'From Node'
         to_column_name = 'To Node'
         component_name = link_id
@@ -1193,17 +1272,18 @@ class SWMM:
         """
         # Get list of node IDs.
         node_ids = file_utils.get_component_names(self.inp_path, 'JUNCTIONS')
+        node_ids = self.get_component_names('JUNCTIONS')
 
         # Add outfall ids.
         try:
-            outfall_ids = file_utils.get_component_names(self.inp_path, 'OUTFALLS')
+            outfall_ids = self.get_component_names('OUTFALLS')
             node_ids.extend(outfall_ids)
         except Exception as e:
             print('Model has no outfalls.')
 
         # Add storage nodes.
         try:
-            storage_ids = file_utils.get_component_names(self.inp_path, 'STORAGE')
+            storage_ids = self.get_component_names('STORAGE')
             node_ids.extend(storage_ids)
         except Exception as e:
             print('Model has no storage components.')
@@ -1538,7 +1618,7 @@ class SWMM:
 def diameter_fault(swmm, fault_component, fault_value, value_type):
     # Get initial diameter.
     initial_geometry = swmm.get_link_geometry(fault_component)
-    initial_diameter = initial_geometry[0]
+    initial_diameter = float(initial_geometry[0])
 
     # Handle percentage fault or absolute fault.
     if value_type == 'fraction':

@@ -127,3 +127,89 @@ def moment_fault_detect(dt, y_base, y_obs, significance=0.05, detection_method='
         return detect, moments
     else:
         return detect
+    
+
+def moment_welch_test(t, y_base, y_obs, significance=0.05, return_moments=False):
+    """
+
+    :param t: Time stamps as datetime objects.
+    :param y_base: Baseline samples at one sensor location. Dimension: (samples, timesteps)
+    :param y_obs: Observed sensor reading. Dimension: (samples, timesteps)
+    :param significance: Significance level.
+    :param pad: If detection_method is 'diverge, the padding is added to the range of the baseline moments, decreasing false positives at the expense of true sensitivity.
+    :param return_moments: Return baseline and observation moment arrays.
+
+    :return: Whether or not a fault was detected at the sensor.
+    """
+    # Number of samples and time steps.
+    y_base = np.squeeze(y_base)
+    n_samples = y_base.shape[0]
+    Nt = len(t)
+    n_samples_obs = y_obs.shape[0]
+    
+    # Time steps to hours since first time step.
+    t_hr = np.array([(t[i] - t[0]).total_seconds() / 3600 for i in range(Nt)])
+
+    # Compute moments for baseline scenarios.
+    m0_base = np.zeros(n_samples)
+    m1_base = np.zeros_like(m0_base)
+    m2_base = np.zeros_like(m0_base)
+    m3_base = np.zeros_like(m0_base)
+    for i in range(n_samples):
+        y_samp = y_base[i,:]
+        m0_base[i] = np.sum(y_samp)
+        m1_base[i] = np.sum(t_hr * y_samp) / m0_base[i]
+        m2_base[i] = np.sum((t_hr - m1_base[i])**2 * y_samp) / m0_base[i]
+        m3_base[i] = np.sum((t_hr - m1_base[i])**3 * y_samp) / m0_base[i]
+
+    # Fit an MVN on the moments.
+    # Stack the vectors to create a data matrix of shape (n_observations, n_variables)
+    base_moments = np.stack((m0_base, m1_base, m2_base, m3_base), axis=1)
+
+    # Compute moments for observation.
+    m0_obs = np.zeros(n_samples_obs)
+    m1_obs = np.zeros_like(m0_base)
+    m2_obs = np.zeros_like(m0_base)
+    m3_obs = np.zeros_like(m0_base)
+    for i in range(n_samples_obs):
+        y_obs_sensor = y_obs[i,:]
+        m0_obs[i] = np.sum(y_obs_sensor)
+        m1_obs[i] = np.sum(t_hr * y_obs_sensor) / m0_obs[i]
+        m2_obs[i] = np.sum((t_hr - m1_obs[i])**2 * y_obs_sensor) / m0_obs[i]
+        m3_obs[i] = np.sum((t_hr - m1_obs[i])**3 * y_obs_sensor) / m0_obs[i]
+
+    # Concatenate into a single vector.
+    obs_moments = np.stack([m0_obs, m1_obs, m2_obs, m3_obs], axis=1)
+
+    # print('base', base_moments)
+    # print('OBS', obs_moments)
+
+    # If m0_obs is 0.0, then other moments will be nan. This is a fault.
+    if np.any(m0_obs) == 0:
+        print('NO FLOW OBSERVED >>> Declaring fault')
+        detection = 1
+    else:
+        # Bonferroni correction.
+        alpha = significance / 4
+
+        detections = np.zeros(4)
+        for i in range(4):
+            data_group1 = base_moments[:,i]
+            data_group2 = obs_moments[:,i]
+            _, p_val = stats.ttest_ind(data_group1, data_group2, equal_var = False)
+            if p_val < alpha:
+                detections[i] = 1
+            else:
+                detections[i] = 0
+
+        if np.any(detections):
+            detection = 1
+        else:
+            detection = 0
+
+    # Optional return moments.
+    if return_moments is True:
+        moments = {'baseline': base_moments, 'observation': obs_moments}
+        return detection, moments
+    else:
+        return detection

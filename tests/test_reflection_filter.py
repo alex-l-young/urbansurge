@@ -9,7 +9,7 @@ import pandas as pd
 from pathlib import Path
 
 # Urbansurge imports.
-from urbansurge.data_acquisition import reflection_filter
+from urbansurge.data_collection import reflection_filter
 
 
 class TestAnalysisTools():
