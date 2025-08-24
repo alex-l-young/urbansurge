@@ -2,7 +2,11 @@
 # ========================================================
 
 # Library imports.
+from datetime import datetime
 import json
+import matplotlib.pyplot as plt
+import nidaqmx
+from nidaqmx.constants import AcquisitionType, READ_ALL_AVAILABLE
 import numpy as np
 import os
 import pandas as pd
@@ -105,10 +109,45 @@ class Sensor:
         return record_df
     
 
-    def read(self):
+    def read(self, voltage_channel, sampling_rate, duration, plot=False):
+        """
+        
+        """
+        # Sampling parameters.
+        fs = sampling_rate  # DAQ sampling rate (Hz)
+        dt = 1 / fs  # Time step length (s).
+        T = duration # Trial duration (s).
+        L = int(T / dt) # Number of samples.
+
+        # Sample.
+        with nidaqmx.Task() as task:
+            task.ai_channels.add_ai_voltage_chan(voltage_channel)
+            task.timing.cfg_samp_clk_timing(fs, sample_mode=AcquisitionType.FINITE, samps_per_chan=L)
+            data = task.read(READ_ALL_AVAILABLE, timeout=T + 0.1)
+
+        # Time array.
+        t = np.arange(0, T, dt)
+
+        # Create and save record.
+
+        # Verification plot.
+        if plot is True:
+            plt.plot(t, data)
+
+            plt.ylabel('Amplitude')
+            plt.xlabel('Time')
+            plt.title('Sensor Reading')
+
+            plt.show()
 
         return
     
+
+    def _save_data_record(self, data, time):
+        """
+        
+        """
+        
 
     @staticmethod
     def sensor_directory_name(sensor_name):
