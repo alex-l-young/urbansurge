@@ -9,7 +9,6 @@ from urbansurge import file_utils
 from pathlib import Path
 from pyswmm import Simulation, Nodes, Links, Output
 from swmm.toolkit.shared_enum import LinkAttribute, NodeAttribute, SubcatchAttribute, SystemAttribute
-import yaml
 import shutil
 import os
 import numpy as np
@@ -18,17 +17,21 @@ from typing import Union, List, Dict, Tuple
 
 
 class SWMM:
-    def __init__(self, config_path):
+    def __init__(self, inp_path, temp_inp=True, verbose=True):
         """
         SWMM class for manipulation of an EPA SWMM model.
 
         :param config_path: Path to configuration file.
         """
-        # Parse the configuration file into a dictionary.
-        self.cfg = self._parse_config(config_path)
+        # Parse the configurations into a dictionary.
+        self.cfg = {
+            "inp_path": inp_path,
+            "tmp_inp": temp_inp,
+            "verbose": verbose
+        }
 
         # Run from temporary file if needed.
-        if self.cfg['temp_inp'] is True:
+        if temp_inp is True:
             self._create_temp_inp()
 
         # Extract required configurations.
@@ -48,20 +51,6 @@ class SWMM:
 
         # Parse input file into a database.
         self.inp_db = file_utils.inp_to_database(self.inp_path)
-
-
-    def _parse_config(self, config_path: str) -> dict:
-        """
-        Parses the configuration file.
-
-        :param config_path: Path to configuration file.
-        :return: Configuration dictionary.
-
-        """
-        with open(config_path, "r") as ymlfile:
-            cfg = yaml.safe_load(ymlfile)
-
-        return cfg
 
 
     def configure_model(self):
