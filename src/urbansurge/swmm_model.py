@@ -1297,8 +1297,14 @@ class SWMM:
         series_attribute = node_attr[node_attribute]
 
         with Output(self.out_path) as out:
+            # Times. 
+            times = out.times
+            start_idx = 0
+            end_idx = len(times) - 1
+
             for node_id in node_ids:
-                node_dt, node_series = self.unpack_series(out.node_series(node_id, series_attribute))
+                node_dt, node_series = self.unpack_series(out.node_series(node_id, series_attribute, 
+                                                                          start_index=start_idx, end_index=end_idx))
                 series_dict[f'{node_attribute}_node_{node_id}'] = node_series
 
             # Only take datetime from final node. It will be the same as the rest.
@@ -1560,8 +1566,18 @@ class SWMM:
         series_attribute = attr_dict[link_attribute]
 
         with Output(self.out_path) as out:
+            # Times. 
+            times = out.times
+            start_idx = 0
+            end_idx = len(times) - 1
+
             for link_id in link_ids:
-                link_dt, link_series = self.unpack_series(out.link_series(link_id, series_attribute))
+                link_dt, link_series = self.unpack_series(out.link_series(
+                    link_id, 
+                    series_attribute,
+                    start_index=start_idx,
+                    end_index=end_idx
+                    ))
                 series_dict[f'{link_attribute}_link_{link_id}'] = link_series
 
             # Only take datetime from final link. It will be the same as the rest.
