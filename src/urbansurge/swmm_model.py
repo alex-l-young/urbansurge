@@ -874,7 +874,6 @@ class SWMM:
         """
 
         return np.linspace(h1, h2, n_segment + 1)[1:-1]
-    
 
     def discretize_link(self, link_id, n_segment):
         """
@@ -886,10 +885,11 @@ class SWMM:
         """
         # Get upstream and downstream node IDs.
         from_node_id, to_node_id = self.get_link_nodes(link_id)
-        
+
         # Get coordinates of the nodes.
-        s1 = self.get_node_coordinates(from_node_id)
-        s2 = self.get_node_coordinates(to_node_id)
+        node_coords = self.get_node_coordinates([from_node_id, to_node_id]).astype(float)
+        s1 = node_coords[0]
+        s2 = node_coords[1]
 
         # Get discretized node coordinates.
         Dnode_coords = SWMM.node_positions(s1, s2, n_segment)
@@ -902,28 +902,37 @@ class SWMM:
         Dnode_elev = SWMM.discretize_invert_elevations(h1, h2, n_segment)
 
         # Format new nodes.
-        #------------------------------------------------
-        # Get IDs of existing coordinate nodes.
-        exist_node_ids = self.get_component_names('COORDINATES')
-        exist_node_ids = [int(i) for i in exist_node_ids]
-        
-        # Create new discretized node ids.
-        Dnode_ids = [max(exist_node_ids) + i + 1 for i in range(len(Dnode_coords))]
+        # ------------------------------------------------
+        # Keep a running tracker of max node ID to avoid duplicates
+        if not hasattr(self, '_max_node_id'):
+            exist_node_ids = self.get_component_names('COORDINATES')
+            exist_node_ids = [int(i) for i in exist_node_ids]
+            self._max_node_id = max(exist_node_ids) if exist_node_ids else 0
+
+            # We only need to calculate the global max elevation once as well
+            self._global_max_elev = max(self.get_node_invert_elevation(int(nid)) for nid in exist_node_ids)
+
+        # Create new discretized node ids based on the running max.
+        Dnode_ids = [self._max_node_id + i + 1 for i in range(len(Dnode_coords))]
+
+        # Update the running max for the next time this function is called
+        if Dnode_ids:
+            self._max_node_id = Dnode_ids[-1]
 
         # Set surcharge depth to 100 + maximum invert elevation.
-        max_elev = max(self.get_node_invert_elevation(int(nid)) for nid in exist_node_ids)
-        sur_depth = max_elev + 100
+        sur_depth = self._global_max_elev + 100
 
         # Add new junctions.
         for i in range(Dnode_coords.shape[0]):
-            coord_dict = {'Node': Dnode_ids[i], 'X-Coord': Dnode_coords[i,0], 'Y-Coord': Dnode_coords[i,1]}
+            coord_dict = {'Node': Dnode_ids[i], 'X-Coord': Dnode_coords[i, 0], 'Y-Coord': Dnode_coords[i, 1]}
             file_utils.add_inp_row(self.inp_path, 'COORDINATES', coord_dict)
 
-            junction_dict = {'Name': Dnode_ids[i], 'Elevation': Dnode_elev[i], 'MaxDepth': 0, 'InitDepth': 0, 'SurDepth': sur_depth, 'Aponded': 0}
+            junction_dict = {'Name': Dnode_ids[i], 'Elevation': Dnode_elev[i], 'MaxDepth': 0, 'InitDepth': 0,
+                             'SurDepth': sur_depth, 'Aponded': 0}
             file_utils.add_inp_row(self.inp_path, 'JUNCTIONS', junction_dict)
 
         # Format new conduits.
-        #------------------------------------------------
+        # ------------------------------------------------
         # Existing conduit parameters.
         geom = self.get_link_geometry(link_id)
         L = self.get_link_length(link_id)
@@ -936,13 +945,17 @@ class SWMM:
         file_utils.remove_inp_row(self.inp_path, 'CONDUITS', link_id)
         file_utils.remove_inp_row(self.inp_path, 'XSECTIONS', link_id)
 
-        # Existing conduit IDs.
-        # Get IDs of existing coordinate nodes.
-        exist_link_ids = self.get_component_names('CONDUITS')
-        exist_link_ids = [int(i) for i in exist_link_ids]
-        
-        # Create new discretized node ids.
-        c_ids = [str(max(exist_link_ids) + i + 1) for i in range(n_segment)]
+        # Keep a running tracker of max link ID
+        if not hasattr(self, '_max_link_id'):
+            exist_link_ids = self.get_component_names('CONDUITS')
+            exist_link_ids = [int(i) for i in exist_link_ids]
+            self._max_link_id = max(exist_link_ids) if exist_link_ids else 0
+
+        # Create new discretized link ids.
+        c_ids = [str(self._max_link_id + i + 1) for i in range(n_segment)]
+
+        # Update the running max link ID
+        self._max_link_id += n_segment
 
         # Set new CONDUITS AND XSECTIONS sections.
         for i in range(n_segment):
@@ -951,17 +964,22 @@ class SWMM:
                 from_node = from_node_id
                 to_node = Dnode_ids[i]
             elif i == n_segment - 1:
-                from_node = Dnode_ids[i-1]
+                from_node = Dnode_ids[i - 1]
                 to_node = to_node_id
             else:
-                from_node = Dnode_ids[i-1]
+                from_node = Dnode_ids[i - 1]
                 to_node = Dnode_ids[i]
 
-            xsection_dict = {'Link': c_ids[i], 'Shape': 'CIRCULAR', 'Geom1': geom[0], 'Geom2': geom[1], 'Geom3': geom[2], 'Geom4': geom[3], 'Barrels': 1, 'Culvert': ''}
-            conduits_dict = {'Name': c_ids[i], 'From Node': from_node, 'To Node': to_node, 'Length': Lc, 'Roughness': roughness, 'InOffset': 0, 'OutOffset': 0, 'InitFlow': 0, 'MaxFlow': 0}
+            xsection_dict = {'Link': c_ids[i], 'Shape': 'CIRCULAR', 'Geom1': geom[0], 'Geom2': geom[1],
+                             'Geom3': geom[2], 'Geom4': geom[3], 'Barrels': 1, 'Culvert': ''}
+            conduits_dict = {'Name': c_ids[i], 'From Node': from_node, 'To Node': to_node, 'Length': Lc,
+                             'Roughness': roughness, 'InOffset': 0, 'OutOffset': 0, 'InitFlow': 0, 'MaxFlow': 0}
 
             file_utils.add_inp_row(self.inp_path, 'XSECTIONS', xsection_dict)
             file_utils.add_inp_row(self.inp_path, 'CONDUITS', conduits_dict)
+
+        # Update inp database.
+        self.inp_db = file_utils.inp_to_database(self.inp_path)
 
 
     def get_weir_property(self, weir_id, weir_property_name):
