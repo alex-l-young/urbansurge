@@ -157,7 +157,7 @@ def discrete_flow_series(Q: np.ndarray, t: np.ndarray, h = 1): #### chop off aft
         if sum < 0:
             sum = 0
         flow_series.append(sum/pts_per_h)
-        dt.append(datetime(2024, 1, 1, 0, 0, k))
+        dt.append(datetime(2024, 1, 1, 0, 0, 0) + timedelta(seconds=k))
         k += 1
 
     return (np.array(flow_series[:30]), dt[:30])
