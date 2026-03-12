@@ -41,28 +41,93 @@ def linear_spaced_array(value1, value2, N=5, D=1):
     return rounded_array.tolist()
 
 
-def plot_network(swmm, node_weights=None, figsize=(6,5)):
+def plot_swmm_network(swmm):
     """
-    Plots the network.
+    Plots the swmm network nodes and conduits.
+
+    :param swmm: swmm_model.SWMM object.
     """
-    # Inp filepath. 
-    inp_filepath = swmm.inp_path
+    # Get input path.
+    inp_path = swmm.inp_path
 
-    # Link-nodes dictionary.
-    link_nodes_dict = sensor_network.link_nodes(inp_filepath)
+    nodes = {}
+    conduits = {}
 
-    # Link-coordinates dictionary.
-    fig, ax = plt.subplots(figsize=figsize)
-    for _, nodes in link_nodes_dict.items():
-        from_node_coords = swmm.get_node_coordinates(nodes[0])
-        to_node_coords = swmm.get_node_coordinates(nodes[1])
-        coords = np.stack((from_node_coords, to_node_coords))
-        ax.plot(coords[:,0], coords[:,1], 'k', linewidth=1)
-        ax.scatter(coords[:,0], coords[:,1], c='k')
+    # Parse the .inp file
+    with open(inp_path, 'r') as file:
+        lines = file.readlines()
 
-    
-    # for i in range(0, coords.shape[0], 2):
-    #     ax.plot(coords[i:i+2,0], coords[i:i+2,1], 'k')
+    current_section = None
+
+    for line in lines:
+        line = line.strip()
+        # Skip empty lines
+        if not line:
+            continue
+
+        # Track current section
+        if line.startswith('['):
+            current_section = line
+            continue
+
+        # Skip comment lines
+        if line.startswith(';'):
+            continue
+
+        # Extract Node Coordinates
+        if current_section == '[COORDINATES]':
+            parts = line.split()
+            if len(parts) >= 3:
+                node_id = parts[0]
+                x = float(parts[1])
+                y = float(parts[2])
+                nodes[node_id] = (x, y)
+
+        # Extract Conduit Connections
+        elif current_section == '[CONDUITS]':
+            parts = line.split()
+            if len(parts) >= 3:
+                conduit_id = parts[0]
+                from_node = parts[1]
+                to_node = parts[2]
+                conduits[conduit_id] = (from_node, to_node)
+
+    # Initialize the plot
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Plot Conduits
+    for cid, (from_n, to_n) in conduits.items():
+        if from_n in nodes and to_n in nodes:
+            x1, y1 = nodes[from_n]
+            x2, y2 = nodes[to_n]
+
+            # Draw line
+            ax.plot([x1, x2], [y1, y2], color='royalblue', linewidth=2, zorder=1)
+
+            # Label conduit in the middle
+            mid_x = (x1 + x2) / 2
+            mid_y = (y1 + y2) / 2
+            ax.text(mid_x, mid_y, cid, color='darkblue', fontsize=8, ha='center', va='center',
+                    bbox=dict(facecolor='white', edgecolor='none', alpha=0.7, pad=1))
+
+    # Plot Nodes
+    for nid, (x, y) in nodes.items():
+        # Draw node point
+        ax.scatter(x, y, color='firebrick', s=40, zorder=2)
+
+        # Label node slightly offset from the point
+        ax.annotate(nid, (x, y), xytext=(4, 4), textcoords='offset points',
+                    color='darkred', fontsize=9, fontweight='bold')
+
+    # Formatting the plot
+    ax.set_aspect('equal')  # Ensures the network isn't warped
+    plt.title('SWMM Network Map')
+    plt.xlabel('X-Coordinate')
+    plt.ylabel('Y-Coordinate')
+    plt.grid(True, linestyle='--', alpha=0.5)
+
+    # Display the plot
+    plt.show()
 
 
 def link_nodes_to_shp(swmm, link_nodes_dict):
